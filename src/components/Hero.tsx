@@ -5,14 +5,9 @@ const Hero: React.FC = () => {
     return (
         <section className="hero-section">
             <div className="hero-content">
-                <h1 className="hero-title">
-                    SCENT<br />
-                    NOT FOUND<br />
-                    <span className="hero-subtitle">404</span>
-                </h1>
-                <p className="hero-description">
-                    찾을 수 없는 향기,<br />
-                    당신만의 고유한 분위기를 완성하세요.
+                <p className="hero-description" style={{ fontSize: '1.2rem', fontWeight: 600 }}>
+                    향을 덮지 않습니다.<br />
+                    냄새의 원인을 삭제합니다.
                 </p>
             </div>
             <div className="spline-container">
