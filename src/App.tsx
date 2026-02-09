@@ -9,6 +9,9 @@ import Checkout from './components/Checkout';
 import OrderComplete from './components/OrderComplete';
 import MyPage from './components/MyPage';
 
+import LegalPage from './components/LegalPage';
+import { TERMS_CONTENT, PRIVACY_CONTENT } from './data/legalText';
+
 interface CartItem {
   id: string;
   name: string;
@@ -18,7 +21,7 @@ interface CartItem {
 }
 
 function App() {
-  const [view, setView] = useState<'home' | 'detail' | 'checkout' | 'orderComplete' | 'mypage'>('home');
+  const [view, setView] = useState<'home' | 'detail' | 'checkout' | 'orderComplete' | 'mypage' | 'terms' | 'privacy'>('home');
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [orderData, setOrderData] = useState<{ orderId: string; totalAmount: number; buyerName: string; shippingAddress: string } | null>(null);
   /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -30,13 +33,25 @@ function App() {
   const [savedAddress, setSavedAddress] = useState<{ zipcode: string; address: string; addressDetail: string }>(
     { zipcode: '', address: '', addressDetail: '' }
   );
-  const [users, setUsers] = useState<any[]>([]); // Simple user storage
+  const [users, setUsers] = useState<any[]>(() => {
+    const saved = localStorage.getItem('users');
+    return saved ? JSON.parse(saved) : [];
+  }); // Simple user storage with persistence
 
-  // OAuth Callback Handler
+  // OAuth Callback Handler & Simple Router
   useEffect(() => {
     const currentPath = window.location.pathname;
     const hash = window.location.hash;
     const search = window.location.search;
+
+    if (currentPath === '/terms') {
+      setView('terms');
+      return;
+    }
+    if (currentPath === '/privacy-policy') {
+      setView('privacy');
+      return;
+    }
 
     if (currentPath === '/oauth/callback') {
       // --- Naver Login Callback ---
@@ -66,8 +81,10 @@ function App() {
                 const user = naverLogin.user;
                 const name = user.getName() || user.getNickName() || '네이버 사용자';
                 const email = user.getEmail() || '';
+                const mobile = user.getMobile() || '';
                 setUsername(name);
                 setUserEmail(email);
+                setUserPhone(mobile);
                 console.log('Naver user profile:', user);
               }
             });
@@ -124,6 +141,17 @@ function App() {
                 const profile = account.profile || {};
                 setUsername(profile.nickname || '카카오 사용자');
                 setUserEmail(account.email || '');
+
+                // Handle Phone Number (Kakao returns +82 10-1234-5678)
+                let mobile = account.phone_number || '';
+                if (mobile.startsWith('+82 ')) {
+                  mobile = '0' + mobile.slice(4).replace(/-/g, '').replace(/ /g, ''); // 01012345678
+                  // Format as 010-1234-5678
+                  if (mobile.length === 11) {
+                    mobile = mobile.replace(/(\d{3})(\d{4})(\d{4})/, '$1-$2-$3');
+                  }
+                }
+                setUserPhone(mobile);
               }
             } catch (err) {
               console.warn('Kakao user info fetch failed:', err);
@@ -136,6 +164,11 @@ function App() {
       }
     }
   }, []);
+
+  // Persist users to localStorage
+  useEffect(() => {
+    localStorage.setItem('users', JSON.stringify(users));
+  }, [users]);
 
   // Scroll to top when view changes
   useEffect(() => {
@@ -172,11 +205,18 @@ function App() {
   const cartTotalPrice = cartItems.reduce((acc, item) => acc + (item.price * item.quantity), 0);
 
   const handleSignup = (userInfo: any) => {
-    // Check if user already exists
+    // Check if user already exists (ID or Email)
     if (users.some(u => u.username === userInfo.username)) {
       alert('이미 존재하는 아이디입니다.');
       return false;
     }
+    // Check password strength again (Backend simulation)
+    const pwRegex = /^(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[!@#$%^&*?_~]).{8,}$/;
+    if (!pwRegex.test(userInfo.password)) {
+      alert('비밀번호는 영문, 숫자, 특수문자 포함 8자 이상이어야 합니다.');
+      return false;
+    }
+
     setUsers([...users, userInfo]);
     alert('회원가입이 완료되었습니다! 로그인해주세요.');
     console.log('Registered Users:', [...users, userInfo]); // For debugging
@@ -281,6 +321,34 @@ function App() {
           username={username}
           savedAddress={savedAddress}
           onAddressChange={(addr) => setSavedAddress(addr)}
+        />
+      )}
+      {view === 'terms' && (
+        <LegalPage
+          title="이용약관"
+          content={TERMS_CONTENT}
+          onHomeClick={() => {
+            setView('home');
+            window.history.pushState({}, '', '/');
+          }}
+          isLoggedIn={isLoggedIn}
+          username={username}
+          onLoginClick={() => setIsLoginModalOpen(true)}
+          onLogoutClick={handleLogout}
+        />
+      )}
+      {view === 'privacy' && (
+        <LegalPage
+          title="개인정보처리방침"
+          content={PRIVACY_CONTENT}
+          onHomeClick={() => {
+            setView('home');
+            window.history.pushState({}, '', '/');
+          }}
+          isLoggedIn={isLoggedIn}
+          username={username}
+          onLoginClick={() => setIsLoginModalOpen(true)}
+          onLogoutClick={handleLogout}
         />
       )}
       <Footer />

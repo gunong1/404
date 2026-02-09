@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import './LoginModal.css';
 
 interface LoginModalProps {
@@ -14,23 +14,65 @@ import { useNaverLogin } from '../hooks/useNaverLogin';
 
 const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onLogin, onSignup, onCheckDuplicate }) => {
     const [isSignup, setIsSignup] = useState(false);
-    const [username, setUsername] = useState('');
-    const [password, setPassword] = useState('');
-    const [name, setName] = useState('');
-    const [email, setEmail] = useState('');
-    const [phone, setPhone] = useState('');
-    const [confirmPassword, setConfirmPassword] = useState('');
     const [isIdChecked, setIsIdChecked] = useState(false);
+
+    // Password Validation State
+    const [isPasswordValid, setIsPasswordValid] = useState(false);
+    const [passwordMsg, setPasswordMsg] = useState('');
+
+    // Agreement States
+    const [agreements, setAgreements] = useState({
+        terms: false,
+        privacy: false,
+        age: false,
+        marketing: false
+    });
+
+    // Use Refs for uncontrolled inputs to prevent re-renders on every keystroke
+    const usernameRef = useRef<HTMLInputElement>(null);
+    const passwordRef = useRef<HTMLInputElement>(null);
+    const nameRef = useRef<HTMLInputElement>(null);
+    const emailRef = useRef<HTMLInputElement>(null);
+    const phoneRef = useRef<HTMLInputElement>(null);
+    const confirmPasswordRef = useRef<HTMLInputElement>(null);
 
     const { loginWithKakao } = useKakaoLogin();
     const { loginWithNaver } = useNaverLogin();
 
     if (!isOpen) return null;
 
+    const allRequiredChecked = agreements.terms && agreements.privacy && agreements.age;
+    const allChecked = allRequiredChecked && agreements.marketing;
+
+    const handleTotalCheck = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const checked = e.target.checked;
+        setAgreements({
+            terms: checked,
+            privacy: checked,
+            age: checked,
+            marketing: checked
+        });
+    };
+
+    const handleSingleCheck = (name: keyof typeof agreements) => (e: React.ChangeEvent<HTMLInputElement>) => {
+        setAgreements(prev => ({
+            ...prev,
+            [name]: e.target.checked
+        }));
+    };
+
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
 
+        const username = usernameRef.current?.value || '';
+        const password = passwordRef.current?.value || '';
+
         if (isSignup) {
+            const name = nameRef.current?.value || '';
+            const email = emailRef.current?.value || '';
+            const phone = phoneRef.current?.value || '';
+            const confirmPassword = confirmPasswordRef.current?.value || '';
+
             // Signup Logic
             if (!username || !password || !name || !email || !phone || !confirmPassword) {
                 alert('모든 필드를 입력해주세요.');
@@ -44,19 +86,28 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onLogin, onSig
                 alert('비밀번호가 일치하지 않습니다.');
                 return;
             }
+            if (!isPasswordValid) {
+                alert('비밀번호가 보안 규칙(영문+숫자+특수문자 8자 이상)을 만족하지 않습니다.');
+                return;
+            }
+            if (!allRequiredChecked) {
+                alert('필수 약관에 모두 동의해 주세요.');
+                return;
+            }
 
             // Call onSignup prop
-            const success = onSignup({ username, password, name, email, phone });
+            const success = onSignup({
+                username,
+                password,
+                name,
+                email,
+                phone,
+                marketingConsent: agreements.marketing
+            });
             if (success) {
                 // If signup successful, switch to login view and reset fields
                 setIsSignup(false);
-                setUsername('');
-                setPassword('');
-                setName('');
-                setEmail('');
-                setPhone('');
-                setConfirmPassword('');
-                setIsIdChecked(false);
+                resetFields();
             }
         } else {
             // Login Logic
@@ -64,9 +115,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onLogin, onSig
                 const success = onLogin(username, password);
                 if (success) {
                     onClose();
-                    // Fields will be reset when closed/reopened or controlled by parent if needed
-                    setUsername('');
-                    setPassword('');
+                    resetFields();
                 }
             } else {
                 alert('아이디와 비밀번호를 모두 입력해주세요.');
@@ -74,16 +123,27 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onLogin, onSig
         }
     };
 
+    const resetFields = () => {
+        if (usernameRef.current) usernameRef.current.value = '';
+        if (passwordRef.current) passwordRef.current.value = '';
+        if (nameRef.current) nameRef.current.value = '';
+        if (emailRef.current) emailRef.current.value = '';
+        if (phoneRef.current) phoneRef.current.value = '';
+        if (confirmPasswordRef.current) confirmPasswordRef.current.value = '';
+        setIsIdChecked(false);
+        setAgreements({ terms: false, privacy: false, age: false, marketing: false });
+        setIsPasswordValid(false);
+        setPasswordMsg('');
+    };
+
     const toggleMode = () => {
         setIsSignup(!isSignup);
-        // Reset fields when switching
-        setUsername('');
-        setPassword('');
-        setName('');
-        setEmail('');
-        setPhone('');
-        setConfirmPassword('');
-        setIsIdChecked(false);
+        resetFields();
+    };
+
+    const handleLinkClick = (path: string) => (e: React.MouseEvent) => {
+        e.preventDefault();
+        window.open(path, '_blank');
     };
 
     return (
@@ -99,8 +159,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onLogin, onSig
                             <input
                                 type="text"
                                 id="name"
-                                value={name}
-                                onChange={(e) => setName(e.target.value)}
+                                ref={nameRef}
                                 placeholder="이름을 입력하세요"
                             />
                         </div>
@@ -112,8 +171,8 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onLogin, onSig
                             <input
                                 type="text"
                                 id="username"
-                                value={username}
-                                onChange={(e) => { setUsername(e.target.value); setIsIdChecked(false); }}
+                                ref={usernameRef}
+                                onChange={() => { if (isIdChecked) setIsIdChecked(false); }}
                                 placeholder="아이디를 입력하세요"
                                 style={{ flex: 1 }}
                             />
@@ -121,11 +180,12 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onLogin, onSig
                                 <button
                                     type="button"
                                     onClick={() => {
-                                        if (!username.trim()) {
+                                        const val = usernameRef.current?.value || '';
+                                        if (!val.trim()) {
                                             alert('아이디를 입력해주세요.');
                                             return;
                                         }
-                                        if (onCheckDuplicate && onCheckDuplicate(username)) {
+                                        if (onCheckDuplicate && onCheckDuplicate(val)) {
                                             setIsIdChecked(true);
                                             alert('사용 가능한 아이디입니다.');
                                         } else {
@@ -158,8 +218,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onLogin, onSig
                             <input
                                 type="email"
                                 id="email"
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
+                                ref={emailRef}
                                 placeholder="이메일을 입력하세요"
                             />
                         </div>
@@ -171,8 +230,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onLogin, onSig
                             <input
                                 type="tel"
                                 id="phone"
-                                value={phone}
-                                onChange={(e) => setPhone(e.target.value)}
+                                ref={phoneRef}
                                 placeholder="010-0000-0000"
                             />
                         </div>
@@ -183,10 +241,30 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onLogin, onSig
                         <input
                             type="password"
                             id="password"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
+                            ref={passwordRef}
+                            onChange={(e) => {
+                                if (isSignup) {
+                                    const val = e.target.value;
+                                    // Regex: At least one letter, one number, on special char, min 8 chars
+                                    const isValid = /^(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[!@#$%^&*?_~]).{8,}$/.test(val);
+                                    const msg = isValid
+                                        ? '사용 가능한 안전한 비밀번호입니다.'
+                                        : '영문, 숫자, 특수문자(!@#$%^&*?_~) 포함 8자 이상 입력해 주세요.';
+                                    setPasswordMsg(msg);
+                                    setIsPasswordValid(isValid);
+                                }
+                            }}
                             placeholder="비밀번호를 입력하세요"
                         />
+                        {isSignup && (
+                            <span style={{
+                                fontSize: '0.8rem',
+                                color: isPasswordValid ? '#2ecc71' : '#e74c3c',
+                                marginTop: '4px'
+                            }}>
+                                {passwordMsg}
+                            </span>
+                        )}
                     </div>
 
                     {isSignup && (
@@ -195,10 +273,56 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onLogin, onSig
                             <input
                                 type="password"
                                 id="confirmPassword"
-                                value={confirmPassword}
-                                onChange={(e) => setConfirmPassword(e.target.value)}
+                                ref={confirmPasswordRef}
                                 placeholder="비밀번호를 다시 입력하세요"
                             />
+                        </div>
+                    )}
+
+                    {isSignup && (
+                        <div className="agreement-section">
+                            <label className="agreement-total">
+                                <input
+                                    type="checkbox"
+                                    checked={allChecked}
+                                    onChange={handleTotalCheck}
+                                />
+                                <span>(전체 동의) 약관에 모두 동의합니다.</span>
+                            </label>
+                            <div className="agreement-list">
+                                <label className="agreement-item">
+                                    <input
+                                        type="checkbox"
+                                        checked={agreements.terms}
+                                        onChange={handleSingleCheck('terms')}
+                                    />
+                                    <span>[필수] <a href="/terms" onClick={handleLinkClick('/terms')} className="text-link">이용약관 동의</a></span>
+                                </label>
+                                <label className="agreement-item">
+                                    <input
+                                        type="checkbox"
+                                        checked={agreements.privacy}
+                                        onChange={handleSingleCheck('privacy')}
+                                    />
+                                    <span>[필수] <a href="/privacy-policy" onClick={handleLinkClick('/privacy-policy')} className="text-link">개인정보 수집 및 이용 동의</a></span>
+                                </label>
+                                <label className="agreement-item">
+                                    <input
+                                        type="checkbox"
+                                        checked={agreements.age}
+                                        onChange={handleSingleCheck('age')}
+                                    />
+                                    <span>[필수] 본인은 만 14세 이상입니다.</span>
+                                </label>
+                                <label className="agreement-item">
+                                    <input
+                                        type="checkbox"
+                                        checked={agreements.marketing}
+                                        onChange={handleSingleCheck('marketing')}
+                                    />
+                                    <span>[선택] 쇼핑 정보 수신 동의 (SMS, 이메일)</span>
+                                </label>
+                            </div>
                         </div>
                     )}
 
@@ -211,7 +335,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onLogin, onSig
                         </div>
                     )}
 
-                    <button type="submit" className="login-submit-btn">
+                    <button type="submit" className="login-submit-btn" disabled={isSignup && (!allRequiredChecked || !isPasswordValid)} style={{ opacity: (isSignup && (!allRequiredChecked || !isPasswordValid)) ? 0.5 : 1 }}>
                         {isSignup ? '회원가입' : '로그인'}
                     </button>
 
@@ -240,4 +364,4 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onLogin, onSig
     );
 };
 
-export default LoginModal;
+export default React.memo(LoginModal);

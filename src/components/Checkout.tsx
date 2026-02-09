@@ -35,6 +35,15 @@ interface CheckoutProps {
 
 const Checkout: React.FC<CheckoutProps> = ({ items, onBack, totalAmount, onOrderComplete, username, userEmail, userPhone, savedAddress, onUpdateQuantity, onRemoveItem }) => {
     const { requestPayment } = usePayment();
+
+    // Buyer Info State (Auto-filled from Naver/Session)
+    const [buyer, setBuyer] = useState({
+        name: username || '',
+        phone: userPhone || '',
+        email: userEmail || ''
+    });
+
+    // Shipping Info State
     const [shipping, setShipping] = useState<ShippingInfo>({
         name: username || '',
         phone: userPhone || '',
@@ -44,17 +53,50 @@ const Checkout: React.FC<CheckoutProps> = ({ items, onBack, totalAmount, onOrder
         addressDetail: savedAddress?.addressDetail || '',
         memo: '',
     });
+
+    const [isSameAsBuyer, setIsSameAsBuyer] = useState(true);
     const [isProcessing, setIsProcessing] = useState(false);
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    // Update shipping info when buyer info changes if "Same as Buyer" is checked
+    const handleBuyerChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const { name, value } = e.target;
+        setBuyer(prev => {
+            const newBuyer = { ...prev, [name]: value };
+            if (isSameAsBuyer) {
+                setShipping(prevShipping => ({ ...prevShipping, [name]: value }));
+            }
+            return newBuyer;
+        });
+    };
+
+    const handleShippingChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         setShipping({ ...shipping, [e.target.name]: e.target.value });
     };
 
+    const toggleSameAsBuyer = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const checked = e.target.checked;
+        setIsSameAsBuyer(checked);
+        if (checked) {
+            setShipping(prev => ({
+                ...prev,
+                name: buyer.name,
+                phone: buyer.phone,
+                email: buyer.email
+            }));
+        } else {
+            // Optional: Clear fields or keep them? Keeping them is usually better UX.
+            // setShipping(prev => ({ ...prev, name: '', phone: '', email: '' }));
+        }
+    };
+
     const validateForm = (): boolean => {
+        if (!buyer.name.trim()) { alert('주문자 이름을 입력해주세요.'); return false; }
+        if (!buyer.phone.trim()) { alert('주문자 연락처를 입력해주세요.'); return false; }
+        if (!buyer.email.trim()) { alert('주문자 이메일을 입력해주세요.'); return false; }
+
         if (!shipping.name.trim()) { alert('받으시는 분 이름을 입력해주세요.'); return false; }
-        if (!shipping.phone.trim()) { alert('연락처를 입력해주세요.'); return false; }
+        if (!shipping.phone.trim()) { alert('받으시는 분 연락처를 입력해주세요.'); return false; }
         if (!shipping.address.trim()) { alert('주소를 입력해주세요.'); return false; }
-        if (!shipping.email.trim()) { alert('이메일을 입력해주세요.'); return false; }
         return true;
     };
 
@@ -77,9 +119,9 @@ const Checkout: React.FC<CheckoutProps> = ({ items, onBack, totalAmount, onOrder
                 currency: "CURRENCY_KRW",
                 payMethod: "CARD",
                 buyer: {
-                    name: shipping.name,
-                    email: shipping.email,
-                    tel: shipping.phone,
+                    name: buyer.name,
+                    email: buyer.email,
+                    tel: buyer.phone,
                 },
                 shippingAddress: `${shipping.address} ${shipping.addressDetail}`.trim(),
                 shippingMemo: shipping.memo,
@@ -87,7 +129,7 @@ const Checkout: React.FC<CheckoutProps> = ({ items, onBack, totalAmount, onOrder
 
             const orderId = await requestPayment(paymentData);
             if (orderId) {
-                onOrderComplete(orderId, shipping.name, `${shipping.address} ${shipping.addressDetail}`.trim());
+                onOrderComplete(orderId, buyer.name, `${shipping.address} ${shipping.addressDetail}`.trim());
             }
         } catch (error) {
             console.error('Checkout error:', error);
@@ -103,9 +145,60 @@ const Checkout: React.FC<CheckoutProps> = ({ items, onBack, totalAmount, onOrder
 
             <div className="checkout-container">
                 <div className="checkout-left">
+
+                    {/* Buyer Info */}
+                    <div className="shipping-form" style={{ marginBottom: '20px' }}>
+                        <h2 className="section-heading">주문자 정보</h2>
+                        <div className="form-group">
+                            <label htmlFor="buyer_name">이름 <span className="required">*</span></label>
+                            <input
+                                id="buyer_name"
+                                name="name"
+                                type="text"
+                                placeholder="이름을 입력해주세요"
+                                value={buyer.name}
+                                onChange={handleBuyerChange}
+                            />
+                        </div>
+                        <div className="form-group">
+                            <label htmlFor="buyer_phone">연락처 <span className="required">*</span></label>
+                            <input
+                                id="buyer_phone"
+                                name="phone"
+                                type="tel"
+                                placeholder="010-0000-0000"
+                                value={buyer.phone}
+                                onChange={handleBuyerChange}
+                            />
+                        </div>
+                        <div className="form-group">
+                            <label htmlFor="buyer_email">이메일 <span className="required">*</span></label>
+                            <input
+                                id="buyer_email"
+                                name="email"
+                                type="email"
+                                placeholder="example@email.com"
+                                value={buyer.email}
+                                onChange={handleBuyerChange}
+                            />
+                        </div>
+                    </div>
+
                     {/* Shipping Form */}
                     <div className="shipping-form">
-                        <h2 className="section-heading">배송 정보</h2>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
+                            <h2 className="section-heading" style={{ marginBottom: 0 }}>배송 정보</h2>
+                            <label style={{ display: 'flex', alignItems: 'center', gap: '5px', cursor: 'pointer', fontSize: '0.9rem', color: '#ccc' }}>
+                                <input
+                                    type="checkbox"
+                                    checked={isSameAsBuyer}
+                                    onChange={toggleSameAsBuyer}
+                                    style={{ width: '16px', height: '16px', accentColor: '#fff' }}
+                                />
+                                주문자 정보와 동일
+                            </label>
+                        </div>
+
                         <div className="form-group">
                             <label htmlFor="name">받으시는 분 <span className="required">*</span></label>
                             <input
@@ -114,7 +207,8 @@ const Checkout: React.FC<CheckoutProps> = ({ items, onBack, totalAmount, onOrder
                                 type="text"
                                 placeholder="이름을 입력해주세요"
                                 value={shipping.name}
-                                onChange={handleChange}
+                                onChange={handleShippingChange}
+                                disabled={isSameAsBuyer}
                             />
                         </div>
                         <div className="form-group">
@@ -125,18 +219,8 @@ const Checkout: React.FC<CheckoutProps> = ({ items, onBack, totalAmount, onOrder
                                 type="tel"
                                 placeholder="010-0000-0000"
                                 value={shipping.phone}
-                                onChange={handleChange}
-                            />
-                        </div>
-                        <div className="form-group">
-                            <label htmlFor="email">이메일 <span className="required">*</span></label>
-                            <input
-                                id="email"
-                                name="email"
-                                type="email"
-                                placeholder="example@email.com"
-                                value={shipping.email}
-                                onChange={handleChange}
+                                onChange={handleShippingChange}
+                                disabled={isSameAsBuyer}
                             />
                         </div>
                         <div className="form-row">
@@ -149,7 +233,7 @@ const Checkout: React.FC<CheckoutProps> = ({ items, onBack, totalAmount, onOrder
                                         type="text"
                                         placeholder="우편번호"
                                         value={shipping.zipcode}
-                                        onChange={handleChange}
+                                        onChange={handleShippingChange}
                                         readOnly
                                     />
                                     <button
@@ -181,7 +265,7 @@ const Checkout: React.FC<CheckoutProps> = ({ items, onBack, totalAmount, onOrder
                                 type="text"
                                 placeholder="주소 검색을 눌러주세요"
                                 value={shipping.address}
-                                onChange={handleChange}
+                                onChange={handleShippingChange}
                                 readOnly
                             />
                         </div>
@@ -193,7 +277,7 @@ const Checkout: React.FC<CheckoutProps> = ({ items, onBack, totalAmount, onOrder
                                 type="text"
                                 placeholder="상세 주소를 입력해주세요 (동/호수 등)"
                                 value={shipping.addressDetail}
-                                onChange={handleChange}
+                                onChange={handleShippingChange}
                             />
                         </div>
                         <div className="form-group">
@@ -202,7 +286,7 @@ const Checkout: React.FC<CheckoutProps> = ({ items, onBack, totalAmount, onOrder
                                 id="memo"
                                 name="memo"
                                 value={shipping.memo}
-                                onChange={handleChange}
+                                onChange={handleShippingChange}
                             >
                                 <option value="">배송 메모를 선택해주세요</option>
                                 <option value="문 앞에 놓아주세요">문 앞에 놓아주세요</option>

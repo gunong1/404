@@ -15,14 +15,38 @@
 
 .login-modal-content {
     background-color: #111;
-    padding: 40px;
+    padding: 30px;
     border-radius: 20px;
     width: 90%;
     max-width: 400px;
+    max-height: 90vh;
+    /* Limit height to viewport height */
+    overflow-y: auto;
+    /* Enable scrolling if content exceeds height */
     border: 1px solid #333;
     position: relative;
     box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
     animation: slideUp 0.3s ease;
+}
+
+/* Custom Scrollbar for Modal Content */
+.login-modal-content::-webkit-scrollbar {
+    width: 6px;
+}
+
+.login-modal-content::-webkit-scrollbar-track {
+    background: #111;
+    border-radius: 3px;
+    margin: 10px 0;
+}
+
+.login-modal-content::-webkit-scrollbar-thumb {
+    background: #333;
+    border-radius: 3px;
+}
+
+.login-modal-content::-webkit-scrollbar-thumb:hover {
+    background: #555;
 }
 
 @keyframes slideUp {
@@ -185,6 +209,84 @@
     text-decoration: underline;
 }
 
-.toggle-mode-btn:hover {
+.agreement-section {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 15px;
+    background: #1a1a1a;
+    padding: 15px;
+    border-radius: 8px;
+    border: 1px solid #333;
+    max-height: 150px;
+    overflow-y: auto;
+}
+
+/* Custom Scrollbar for agreement section */
+.agreement-section::-webkit-scrollbar {
+    width: 6px;
+}
+
+.agreement-section::-webkit-scrollbar-track {
+    background: #111;
+    border-radius: 3px;
+}
+
+.agreement-section::-webkit-scrollbar-thumb {
+    background: #333;
+    border-radius: 3px;
+}
+
+.agreement-section::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+.agreement-total {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    color: #fff;
+    font-weight: 700;
+    cursor: pointer;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #333;
+    line-height: 1.4;
+}
+
+.agreement-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.agreement-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    color: #aaa;
+    font-size: 0.9rem;
+    cursor: pointer;
+    line-height: 1.4;
+}
+
+.agreement-item input[type="checkbox"],
+.agreement-total input[type="checkbox"] {
+    accent-color: #fff;
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+    margin-top: 2px;
+    /* Align check box with text top */
+    flex-shrink: 0;
+    /* Prevent checkbox shrinking */
+}
+
+.text-link {
+    color: #fff;
+    text-decoration: underline;
+    font-weight: 600;
+}
+
+.text-link:hover {
     color: #ccc;
 }
