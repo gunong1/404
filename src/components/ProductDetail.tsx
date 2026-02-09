@@ -45,8 +45,7 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ onBack, onAddToCart, onBu
                     <span className="detail-subtitle">신상품</span>
                     <h1 className="detail-title">Scent Not Found 바디워시</h1>
                     <p className="detail-description">
-                        The scent of void. Designed for system reboot.<br />
-                        완벽한 무의 향, 당신의 감각을 초기화합니다.
+                        향기로 냄새를 덮는 건, 진짜 해결책이 아니니까.
                     </p>
 
                     <div className="detail-specs">
