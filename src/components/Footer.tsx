@@ -1,0 +1,161 @@
+import React, { useState } from 'react';
+import './Footer.css';
+
+const Footer: React.FC = () => {
+    const [modalContent, setModalContent] = useState<string | null>(null);
+    const [modalTitle, setModalTitle] = useState<string | null>(null);
+
+    const openModal = (title: string, content: string) => {
+        setModalTitle(title);
+        setModalContent(content);
+        document.body.style.overflow = 'hidden';
+    };
+
+    const closeModal = () => {
+        setModalContent(null);
+        setModalTitle(null);
+        document.body.style.overflow = 'auto';
+    };
+
+    const termsContent = `제1조 (목적)
+이 약관은 404(이하 "몰"이라 한다)에서 제공하는 전자상거래 서비스 이용 조건 및 절차에 관한 사항을 규정함을 목적으로 합니다.
+
+제2조 (용어의 정의)
+1. "몰"이란 404가 재화 또는 용역을 이용자에게 제공하기 위하여 설정한 가상의 영업장을 말합니다.
+2. "이용자"란 "몰"에 접속하여 이 약관에 따라 "몰"이 제공하는 서비스를 받는 회원 및 비회원을 말합니다.
+3. "회원"이라 함은 "몰"에 개인정보를 제공하여 회원등록을 한 자로서, 서비스를 지속적으로 이용할 수 있는 자를 말합니다.
+
+제3조 (약관의 명시와 개정)
+1. "몰"은 이 약관의 내용과 상호 및 대표자 성명, 영업소 소재지 주소, 전화번호, 전자우편주소, 사업자등록번호 등을 이용자가 쉽게 알 수 있도록 초기 서비스 화면에 게시합니다.
+2. "몰"은 전자상거래 등에서의 소비자보호에 관한 법률 등 관련 법령을 위배하지 않는 범위에서 이 약관을 개정할 수 있습니다.
+
+제4조 (서비스의 제공 및 변경)
+1. "몰"은 다음과 같은 업무를 수행합니다.
+   - 바디워시 및 퍼스널케어 제품에 대한 정보 제공 및 구매 계약의 체결
+   - 구매 계약이 체결된 재화의 배송
+2. 품절 또는 사양의 변경 등의 경우에는 장차 체결되는 계약에 의해 제공할 재화의 내용을 변경할 수 있습니다.
+
+제5조 (회원가입)
+1. 이용자는 "몰"이 정한 가입 양식에 따라 회원정보를 기입한 후 이 약관에 동의한다는 의사표시를 함으로써 회원가입을 신청합니다.
+2. 소셜 로그인(카카오, 네이버)을 통한 간편 가입이 가능합니다.
+
+제6조 (결제방법)
+"몰"에서 구매한 재화에 대한 대금지급방법은 다음 각 호의 방법 중 가용한 방법으로 할 수 있습니다.
+1. 신용카드 결제
+2. 간편결제 (카카오페이, 네이버페이 등)
+
+제7조 (배송)
+1. "몰"은 이용자와 재화의 공급시기에 관하여 별도의 약정이 없는 이상, 이용자가 대금을 결제한 날부터 3영업일 이내에 배송을 시작합니다.
+2. 배송비는 무료를 원칙으로 합니다.
+
+제8조 (환불 및 반품)
+1. 이용자는 재화를 수령한 날로부터 7일 이내에 청약을 철회할 수 있습니다.
+2. 화장품의 특성상 개봉 후에는 단순 변심으로 인한 교환 및 환불이 제한될 수 있습니다.
+3. 제품에 하자가 있는 경우 수령 후 30일 이내에 교환/반품이 가능합니다.
+4. 반품 배송비는 단순 변심인 경우 이용자가 부담하며, 제품 하자의 경우 "몰"이 부담합니다.
+
+제9조 (분쟁해결)
+이 약관에 명시되지 않은 사항은 전자상거래 등에서의 소비자보호에 관한 법률, 약관의 규제에 관한 법률 등 관련 법령에 따릅니다.
+
+부칙
+이 약관은 2025년 1월 1일부터 적용됩니다.`;
+
+    const privacyContent = `주식회사 404(이하 "회사")는 개인정보보호법에 따라 이용자의 개인정보 보호 및 권익을 보호하고 개인정보와 관련한 이용자의 고충을 원활하게 처리할 수 있도록 다음과 같은 처리방침을 두고 있습니다.
+
+1. 개인정보의 수집 및 이용 목적
+회사는 다음의 목적을 위하여 개인정보를 처리합니다.
+- 회원 가입 및 관리: 회원제 서비스 이용에 따른 본인 확인, 회원자격 유지 및 관리
+- 재화 또는 서비스 제공: 물품 배송, 서비스 제공, 청구서 발송, 콘텐츠 제공, 본인인증
+- 고충 처리: 민원인의 신원 확인, 민원사항 확인, 처리결과 통보
+
+2. 수집하는 개인정보 항목
+- 필수항목: 성명, 휴대전화번호, 이메일 주소, 배송지 주소
+- 결제 시: 신용카드 정보(카드번호는 PG사에서 처리)
+- 자동 수집: 접속 IP, 쿠키, 접속 일시, 서비스 이용 기록
+
+3. 개인정보의 보유 및 이용 기간
+이용자의 개인정보는 원칙적으로 개인정보의 수집 및 이용 목적이 달성되면 지체 없이 파기합니다.
+단, 관계 법령에 의해 보존할 필요가 있는 경우:
+- 계약 또는 청약철회 등에 관한 기록: 5년 (전자상거래법)
+- 대금결제 및 재화 등의 공급에 관한 기록: 5년 (전자상거래법)
+- 소비자의 불만 또는 분쟁처리에 관한 기록: 3년 (전자상거래법)
+- 표시/광고에 관한 기록: 6개월 (전자상거래법)
+- 웹사이트 방문 기록: 3개월 (통신비밀보호법)
+
+4. 개인정보의 제3자 제공
+회사는 원칙적으로 이용자의 개인정보를 제3자에게 제공하지 않습니다.
+다만, 다음의 경우에는 예외로 합니다.
+- 이용자가 사전에 동의한 경우
+- 법령의 규정에 의하거나, 수사 목적으로 법령에 정해진 절차와 방법에 따라 수사기관의 요구가 있는 경우
+
+5. 개인정보의 파기 절차 및 방법
+- 전자적 파일 형태: 복구 및 재생이 불가능한 방법으로 영구 삭제
+- 종이 문서: 분쇄기로 분쇄하거나 소각
+
+6. 이용자의 권리
+이용자는 언제든지 개인정보의 조회, 수정, 삭제, 처리정지를 요청할 수 있습니다.
+- 이메일: support@404bodycare.com
+- 전화: 042-000-0000
+
+7. 개인정보 보호책임자
+- 성명: 송치호
+- 직위: 대표이사
+- 연락처: support@404bodycare.com
+
+본 방침은 2025년 1월 1일부터 시행됩니다.`;
+
+    return (
+        <footer className="site-footer">
+            <div className="footer-content">
+                <div className="footer-top">
+                    <div className="footer-brand">
+                        <h3 className="footer-logo">404</h3>
+                        <p className="footer-tagline">Scent Not Found — The scent of void.</p>
+                    </div>
+                    <div className="footer-contact">
+                        <h4>고객센터</h4>
+                        <p className="cs-phone">042-000-0000</p>
+                        <p className="cs-hours">평일 10:00 - 17:00 (점심 12:00 - 13:00)</p>
+                        <p className="cs-hours">토/일/공휴일 휴무</p>
+                        <p className="cs-email">support@404bodycare.com</p>
+                    </div>
+                </div>
+
+                <div className="footer-divider"></div>
+
+                <div className="footer-links">
+                    <button onClick={() => openModal('이용약관', termsContent)}>이용약관</button>
+                    <span className="separator">|</span>
+                    <button onClick={() => openModal('개인정보처리방침', privacyContent)} className="privacy-link">개인정보처리방침</button>
+                </div>
+
+                <div className="footer-business">
+                    <p>상호: 404 | 대표자: 송치호 | 사업자등록번호: 687-09-02870</p>
+                    <p>통신판매업신고: 제 2025-대전서구-1854호</p>
+                    <p>주소: 대전광역시 서구 도산로 79, 1106동 705호</p>
+                    <p>이메일: support@404bodycare.com | 전화: 042-000-0000</p>
+                </div>
+
+                <div className="copyright">
+                    &copy; 2025 404. All rights reserved.
+                </div>
+            </div>
+
+            {modalContent && (
+                <div className="modal-overlay" onClick={closeModal}>
+                    <div className="modal-box" onClick={(e) => e.stopPropagation()}>
+                        <div className="modal-header">
+                            <h3>{modalTitle}</h3>
+                            <button className="close-btn" onClick={closeModal}>&times;</button>
+                        </div>
+                        <div className="modal-body">
+                            <pre>{modalContent}</pre>
+                        </div>
+                    </div>
+                </div>
+            )}
+        </footer>
+    );
+};
+
+export default Footer;

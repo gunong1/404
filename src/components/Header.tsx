@@ -1,0 +1,61 @@
+import React, { useState, useEffect } from 'react';
+import './Header.css';
+
+interface HeaderProps {
+    cartCount?: number;
+    isLoggedIn?: boolean;
+    username?: string;
+    onLoginClick?: () => void;
+    onLogoutClick?: () => void;
+    onCartClick?: () => void;
+    onMyPageClick?: () => void;
+}
+
+const Header: React.FC<HeaderProps> = ({
+    cartCount = 0,
+    isLoggedIn = false,
+    username = '',
+    onLoginClick,
+    onLogoutClick,
+    onCartClick,
+    onMyPageClick
+}) => {
+    const [scrolled, setScrolled] = useState(false);
+
+    useEffect(() => {
+        const handleScroll = () => {
+            setScrolled(window.scrollY > 50);
+        };
+        window.addEventListener('scroll', handleScroll);
+        return () => window.removeEventListener('scroll', handleScroll);
+    }, []);
+
+    return (
+        <header className={`site-header ${scrolled ? 'scrolled' : ''}`}>
+            <div className="header-inner">
+                <a href="/" className="logo">404</a>
+                <nav className="nav-menu">
+                    {isLoggedIn ? (
+                        <>
+                            <a href="#" className="nav-link" onClick={(e) => { e.preventDefault(); onMyPageClick?.(); }}>
+                                마이페이지
+                            </a>
+                            <a href="#" className="nav-link" onClick={(e) => { e.preventDefault(); onLogoutClick?.(); }}>
+                                {username}님 (LOGOUT)
+                            </a>
+                        </>
+                    ) : (
+                        <a href="#" className="nav-link" onClick={(e) => { e.preventDefault(); onLoginClick?.(); }}>
+                            로그인
+                        </a>
+                    )}
+                    <a href="#" className="nav-link" onClick={(e) => { e.preventDefault(); onCartClick?.(); }}>
+                        장바구니({cartCount})
+                    </a>
+                </nav>
+            </div>
+        </header>
+    );
+};
+
+export default Header;

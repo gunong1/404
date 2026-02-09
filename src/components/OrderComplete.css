@@ -1,0 +1,170 @@
+.order-complete-section {
+    padding: 140px 20px 100px;
+    max-width: 650px;
+    margin: 0 auto;
+    min-height: 70vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: fadeIn 0.6s ease;
+}
+
+.order-complete-card {
+    width: 100%;
+    text-align: center;
+}
+
+.success-icon {
+    margin-bottom: 24px;
+    animation: scaleIn 0.5s ease 0.2s both;
+}
+
+@keyframes scaleIn {
+    from {
+        transform: scale(0);
+        opacity: 0;
+    }
+
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.complete-title {
+    font-size: 2rem;
+    font-weight: 800;
+    color: #fff;
+    margin: 0 0 10px;
+    animation: fadeUp 0.5s ease 0.3s both;
+}
+
+.complete-subtitle {
+    color: #888;
+    font-size: 0.95rem;
+    margin: 0 0 40px;
+    animation: fadeUp 0.5s ease 0.4s both;
+}
+
+@keyframes fadeUp {
+    from {
+        transform: translateY(15px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.order-detail-card {
+    background: #111;
+    border: 1px solid #282828;
+    border-radius: 16px;
+    padding: 28px;
+    text-align: left;
+    margin-bottom: 20px;
+    animation: fadeUp 0.5s ease 0.5s both;
+}
+
+.detail-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 10px 0;
+}
+
+.detail-label {
+    color: #777;
+    font-size: 0.88rem;
+    min-width: 80px;
+    flex-shrink: 0;
+}
+
+.detail-value {
+    color: #ddd;
+    font-size: 0.92rem;
+    text-align: right;
+    word-break: keep-all;
+}
+
+.detail-value.order-id {
+    font-family: 'Courier New', monospace;
+    color: #fff;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+
+.detail-value.address {
+    max-width: 300px;
+    line-height: 1.5;
+}
+
+.detail-divider {
+    height: 1px;
+    background: #222;
+    margin: 8px 0;
+}
+
+.total-row .detail-label {
+    font-weight: 600;
+    color: #aaa;
+    font-size: 0.95rem;
+}
+
+.total-amount {
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: #fff;
+}
+
+.order-info-box {
+    background: #0a0a0a;
+    border: 1px solid #1a1a1a;
+    border-radius: 12px;
+    padding: 18px 22px;
+    text-align: left;
+    margin-bottom: 30px;
+    animation: fadeUp 0.5s ease 0.6s both;
+}
+
+.order-info-box p {
+    color: #777;
+    font-size: 0.82rem;
+    margin: 6px 0;
+    line-height: 1.5;
+}
+
+.go-home-btn {
+    width: 100%;
+    padding: 18px;
+    background: #fff;
+    color: #000;
+    border: none;
+    border-radius: 12px;
+    font-weight: 800;
+    font-size: 1.05rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    animation: fadeUp 0.5s ease 0.7s both;
+}
+
+.go-home-btn:hover {
+    transform: scale(1.02);
+    background: #f0f0f0;
+}
+
+@media (max-width: 768px) {
+    .order-complete-section {
+        padding: 120px 16px 80px;
+    }
+
+    .complete-title {
+        font-size: 1.6rem;
+    }
+
+    .detail-value.address {
+        max-width: 200px;
+    }
+}
