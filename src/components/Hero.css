@@ -1,16 +1,16 @@
 .hero-section {
     width: 100%;
-    height: 85vh;
-    /* Reduced from 100vh to widen aspect ratio and show more text */
-    max-height: 800px;
-    /* Prevent it from getting too tall on large portrait screens */
-    min-height: 500px;
+    height: 100vh;
+    min-height: 600px;
     position: relative;
     background-color: var(--bg-main);
     display: flex;
-    align-items: center;
-    justify-content: center;
     overflow: hidden;
+}
+
+/* Desktop: Hide HTML text because Spline has it */
+.hero-content {
+    display: none;
 }
 
 .spline-container {
@@ -27,18 +27,6 @@
     height: 100%;
     border: none;
     display: block;
-}
-
-.hero-overlay {
-    position: relative;
-    z-index: 2;
-    pointer-events: none;
-    /* Let clicks pass through to the 3D scene */
-    text-align: center;
-}
-
-/* Fade in the iframe to avoid flickering */
-.spline-iframe {
     opacity: 0;
     animation: fadeIn 1.5s ease forwards;
 }
@@ -46,5 +34,64 @@
 @keyframes fadeIn {
     to {
         opacity: 1;
+    }
+}
+
+/* Mobile Optimization */
+@media (max-width: 768px) {
+    .hero-section {
+        flex-direction: column;
+        height: auto;
+        min-height: 100vh;
+        padding-top: 60px;
+        /* Header space */
+    }
+
+    /* Show HTML text on mobile */
+    .hero-content {
+        display: block;
+        position: relative;
+        top: auto;
+        left: auto;
+        transform: none;
+        width: 100%;
+        padding: 4rem 1.5rem 2rem;
+        text-align: center;
+        order: 1;
+        /* Text first */
+        z-index: 2;
+        color: var(--text-main);
+    }
+
+    .hero-title {
+        font-size: 3rem;
+        font-weight: 800;
+        line-height: 1.1;
+        margin-bottom: 1rem;
+        word-break: keep-all;
+    }
+
+    .hero-subtitle {
+        display: block;
+        color: var(--primary-color);
+        margin-top: 0.5rem;
+    }
+
+    .hero-description {
+        font-size: 1rem;
+        margin: 0 auto;
+        word-break: keep-all;
+        opacity: 0.8;
+    }
+
+    .spline-container {
+        position: relative;
+        height: 50vh;
+        /* Reduced height */
+        width: 100%;
+        order: 2;
+        /* 3D second */
+        pointer-events: none;
+        /* Prevent scroll hijacking */
     }
 }

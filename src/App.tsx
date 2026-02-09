@@ -274,10 +274,13 @@ function App() {
         onCartClick={() => setView('checkout')}
         onMyPageClick={() => setView('mypage')}
         onHomeClick={() => setView('home')}
+        transparent={view === 'home'}
       />
-      <Hero />
       {view === 'home' && (
-        <BentoGrid onProductClick={() => setView('detail')} />
+        <>
+          <Hero />
+          <BentoGrid onProductClick={() => setView('detail')} />
+        </>
       )}
       {view === 'detail' && (
         <ProductDetail
