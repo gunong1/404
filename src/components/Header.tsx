@@ -9,6 +9,7 @@ interface HeaderProps {
     onLogoutClick?: () => void;
     onCartClick?: () => void;
     onMyPageClick?: () => void;
+    onHomeClick?: () => void;
 }
 
 const Header: React.FC<HeaderProps> = ({
@@ -18,7 +19,8 @@ const Header: React.FC<HeaderProps> = ({
     onLoginClick,
     onLogoutClick,
     onCartClick,
-    onMyPageClick
+    onMyPageClick,
+    onHomeClick
 }) => {
     const [scrolled, setScrolled] = useState(false);
 
@@ -33,7 +35,7 @@ const Header: React.FC<HeaderProps> = ({
     return (
         <header className={`site-header ${scrolled ? 'scrolled' : ''}`}>
             <div className="header-inner">
-                <a href="/" className="logo">404</a>
+                <span className="logo" onClick={() => { onHomeClick?.(); window.scrollTo({ top: 0, behavior: 'smooth' }); }} style={{ cursor: 'pointer' }}>404</span>
                 <nav className="nav-menu">
                     {isLoggedIn ? (
                         <>

@@ -94,13 +94,12 @@ const Footer: React.FC = () => {
 
 6. 이용자의 권리
 이용자는 언제든지 개인정보의 조회, 수정, 삭제, 처리정지를 요청할 수 있습니다.
-- 이메일: support@404bodycare.com
-- 전화: 042-000-0000
+- 이메일: middlebigdog@naver.com
 
 7. 개인정보 보호책임자
 - 성명: 송치호
 - 직위: 대표이사
-- 연락처: support@404bodycare.com
+- 연락처: middlebigdog@naver.com
 
 본 방침은 2025년 1월 1일부터 시행됩니다.`;
 
@@ -114,10 +113,9 @@ const Footer: React.FC = () => {
                     </div>
                     <div className="footer-contact">
                         <h4>고객센터</h4>
-                        <p className="cs-phone">042-000-0000</p>
+                        <p className="cs-email-highlight">📧 middlebigdog@naver.com</p>
                         <p className="cs-hours">평일 10:00 - 17:00 (점심 12:00 - 13:00)</p>
                         <p className="cs-hours">토/일/공휴일 휴무</p>
-                        <p className="cs-email">support@404bodycare.com</p>
                     </div>
                 </div>
 
@@ -133,7 +131,7 @@ const Footer: React.FC = () => {
                     <p>상호: 404 | 대표자: 송치호 | 사업자등록번호: 687-09-02870</p>
                     <p>통신판매업신고: 제 2025-대전서구-1854호</p>
                     <p>주소: 대전광역시 서구 도산로 79, 1106동 705호</p>
-                    <p>이메일: support@404bodycare.com | 전화: 042-000-0000</p>
+                    <p>이메일: middlebigdog@naver.com</p>
                 </div>
 
                 <div className="copyright">

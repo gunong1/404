@@ -214,6 +214,7 @@ function App() {
         onLogoutClick={handleLogout}
         onCartClick={() => setView('checkout')}
         onMyPageClick={() => setView('mypage')}
+        onHomeClick={() => setView('home')}
       />
       <Hero />
       {view === 'home' && (

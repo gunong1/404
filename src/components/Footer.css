@@ -56,23 +56,18 @@
     letter-spacing: 1px;
 }
 
-.cs-phone {
-    font-size: 1.4rem;
+.cs-email-highlight {
+    font-size: 1.1rem;
     font-weight: 700;
     color: #fff;
-    margin: 0 0 6px;
+    margin: 0 0 10px;
+    letter-spacing: 0.3px;
 }
 
 .cs-hours {
     color: #666;
     font-size: 0.78rem;
     margin: 2px 0;
-}
-
-.cs-email {
-    color: #888;
-    font-size: 0.82rem;
-    margin: 6px 0 0;
 }
 
 /* Divider */
