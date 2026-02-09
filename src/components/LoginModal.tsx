@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useTransition } from 'react';
 import './LoginModal.css';
 
 interface LoginModalProps {
@@ -14,6 +14,7 @@ import { useNaverLogin } from '../hooks/useNaverLogin';
 
 const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onLogin, onSignup, onCheckDuplicate }) => {
     const [isSignup, setIsSignup] = useState(false);
+    const [isPending, startTransition] = useTransition(); // Optimization for INP
     const [isIdChecked, setIsIdChecked] = useState(false);
 
     // Password Validation State
@@ -95,20 +96,22 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onLogin, onSig
                 return;
             }
 
-            // Call onSignup prop
-            const success = onSignup({
-                username,
-                password,
-                name,
-                email,
-                phone,
-                marketingConsent: agreements.marketing
+            // Call onSignup prop with transition to prevent UI freeze
+            startTransition(() => {
+                const success = onSignup({
+                    username,
+                    password,
+                    name,
+                    email,
+                    phone,
+                    marketingConsent: agreements.marketing
+                });
+                if (success) {
+                    // If signup successful, switch to login view and reset fields
+                    setIsSignup(false);
+                    resetFields();
+                }
             });
-            if (success) {
-                // If signup successful, switch to login view and reset fields
-                setIsSignup(false);
-                resetFields();
-            }
         } else {
             // Login Logic
             if (username.trim() && password.trim()) {
@@ -335,8 +338,8 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onLogin, onSig
                         </div>
                     )}
 
-                    <button type="submit" className="login-submit-btn" disabled={isSignup && (!allRequiredChecked || !isPasswordValid)} style={{ opacity: (isSignup && (!allRequiredChecked || !isPasswordValid)) ? 0.5 : 1 }}>
-                        {isSignup ? '회원가입' : '로그인'}
+                    <button type="submit" className="login-submit-btn" disabled={isSignup && (!allRequiredChecked || !isPasswordValid) || (isPending)} style={{ opacity: (isSignup && (!allRequiredChecked || !isPasswordValid) || isPending) ? 0.5 : 1 }}>
+                        {isPending ? '처리 중...' : (isSignup ? '회원가입' : '로그인')}
                     </button>
 
                     {!isSignup && (

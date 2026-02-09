@@ -218,7 +218,10 @@ function App() {
     }
 
     setUsers([...users, userInfo]);
-    alert('회원가입이 완료되었습니다! 로그인해주세요.');
+    // Use setTimeout to prevent blocking the UI render (INP optimization)
+    setTimeout(() => {
+      alert('회원가입이 완료되었습니다! 로그인해주세요.');
+    }, 100);
     console.log('Registered Users:', [...users, userInfo]); // For debugging
     return true;
   };
