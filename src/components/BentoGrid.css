@@ -1,212 +1,155 @@
 .bento-section {
-    padding: 0 20px 100px;
+    padding: 0 20px 80px;
     background-color: transparent;
-    /* Background handled by App or global */
     max-width: 1400px;
     margin: 0 auto;
 }
 
-.bento-container-grid {
+.product-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    grid-template-rows: minmax(500px, auto);
-    /* Fixed single row height */
-    gap: 24px;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
     width: 100%;
 }
 
-/* Specific Card Styling */
-
-/* Product Highlight */
-.highlight-content {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-    position: relative;
-}
-
-.description {
-    font-size: 1.1rem;
-    color: #aaa;
-    max-width: 80%;
-    margin-bottom: 20px;
-}
-
-.product-visual-large {
-    flex-grow: 1;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    position: relative;
-}
-
-.bottle-silhouette {
-    width: 140px;
-    height: 320px;
-    background: #000;
-    border: 2px solid #333;
+/* Apple-Style Product Card */
+.product-card-apple {
+    background: #111;
+    border: 1px solid #1a1a1a;
     border-radius: 24px;
-    position: relative;
-    z-index: 2;
-    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.5);
-}
-
-.glow-effect {
-    position: absolute;
-    width: 300px;
-    height: 300px;
-    background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, rgba(0, 0, 0, 0) 70%);
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    z-index: 1;
-}
-
-/* Buy Box */
-.buy-box-inner {
+    padding: 48px 40px 0;
     display: flex;
     flex-direction: column;
-    justify-content: center;
-    height: 100%;
+    align-items: center;
     text-align: center;
+    overflow: hidden;
+    min-height: 520px;
 }
 
-.price-area {
-    margin-bottom: 24px;
-}
-
-.currency {
-    font-size: 1.5rem;
-    vertical-align: middle;
-    margin-right: 4px;
-    color: #888;
-    position: relative;
-    top: -4px;
-}
-
-.amount {
-    font-size: 3.5rem;
-    font-weight: 700;
-    letter-spacing: -2px;
-}
-
-.controls-area {
+.apple-card-text {
     display: flex;
     flex-direction: column;
-    gap: 12px;
-}
-
-.qty-control {
-    background: #222;
-    border-radius: 12px;
-    display: flex;
     align-items: center;
-    justify-content: space-between;
-    padding: 8px 16px;
+    gap: 10px;
+    margin-bottom: 32px;
 }
 
-.qty-control button {
-    color: #fff;
-    font-size: 1.2rem;
-    width: 30px;
-    height: 30px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.action-btn {
-    background: #fff;
-    color: #000;
-    padding: 16px;
-    border-radius: 12px;
+.apple-badge {
+    display: inline-block;
+    font-size: 0.7rem;
     font-weight: 700;
-    font-size: 1rem;
-    width: 100%;
-    transition: transform 0.2s;
+    color: #f5a623;
+    background: rgba(245, 166, 35, 0.1);
+    padding: 4px 14px;
+    border-radius: 20px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
 }
 
-.action-btn:hover {
-    transform: scale(1.02);
-}
-
-/* Feature Cards */
-.feature-content {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-    justify-content: center;
-}
-
-.icon-wrapper {
-    font-size: 2.5rem;
-    margin-bottom: 12px;
-}
-
-.feature-content h4 {
-    font-size: 1.4rem;
-    margin-bottom: 6px;
+.apple-card-title {
+    font-size: 2.4rem;
+    font-weight: 800;
     color: #fff;
-}
-
-.feature-content p {
-    font-size: 0.95rem;
-    color: #888;
-    line-height: 1.4;
-}
-
-/* Brand Card */
-.brand-card {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: linear-gradient(135deg, #111, #000);
-}
-
-.brand-content h3 {
-    font-size: 2.5rem;
-    line-height: 1;
-    font-weight: 900;
-    color: #333;
-    text-align: right;
+    line-height: 1.15;
+    margin: 0;
     letter-spacing: -1px;
 }
 
-/* Responsive */
-@media (max-width: 1024px) {
-    .bento-container-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
+.apple-card-desc {
+    font-size: 0.95rem;
+    color: #888;
+    margin: 4px 0 0;
+    line-height: 1.5;
 }
 
-@media (max-width: 768px) {
-    .bento-container-grid {
-        display: flex;
-    }
+.apple-card-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 8px;
 }
 
-.product-image-real {
+.apple-btn-outline {
+    padding: 10px 22px;
+    background: transparent;
+    color: #2997ff;
+    border: 1px solid #2997ff;
+    border-radius: 50px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.apple-btn-outline:hover {
+    background: #2997ff;
+    color: #fff;
+}
+
+.apple-btn-fill {
+    padding: 10px 22px;
+    background: #2997ff;
+    color: #fff;
+    border: none;
+    border-radius: 50px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.apple-btn-fill:hover {
+    background: #0077ed;
+}
+
+.apple-card-image {
+    flex: 1;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    width: 100%;
+}
+
+.apple-product-img {
     width: auto;
-    height: 80%;
-    max-height: 400px;
+    max-width: 80%;
+    max-height: 300px;
     object-fit: contain;
-    z-index: 2;
-    position: relative;
-    filter: drop-shadow(0 0 20px rgba(0, 0, 0, 0.5));
-    transition: transform 0.3s ease;
+    filter: drop-shadow(0 -10px 40px rgba(0, 0, 0, 0.4));
+    transition: transform 0.4s ease;
 }
 
-.product-image-real:hover {
+.apple-product-img:hover {
     transform: scale(1.05);
 }
 
+/* Clickable Card Hover */
 .clickable-card {
     cursor: pointer;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .clickable-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-    border-color: rgba(255, 255, 255, 0.2);
+    transform: translateY(-4px);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .product-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .product-card-apple {
+        padding: 36px 24px 0;
+        min-height: 420px;
+    }
+
+    .apple-card-title {
+        font-size: 1.8rem;
+    }
+
+    .apple-product-img {
+        max-height: 220px;
+    }
 }
