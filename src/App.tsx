@@ -196,13 +196,12 @@ function App() {
   const cartTotalPrice = cartItems.reduce((acc, item) => acc + (item.price * item.quantity), 0);
 
   const handleSignup = async (userInfo: any) => {
-    // Check if user already exists (ID or Email) - Supabase unique constraint will handle this, but explicit check is good for UI
-    // Or we can try insert and catch error
+    // Check if user already exists
     const { data: existingUser } = await supabase
       .from('users')
       .select('username')
       .eq('username', userInfo.username)
-      .single();
+      .maybeSingle();
 
     if (existingUser) {
       alert('이미 존재하는 아이디입니다.');
@@ -216,9 +215,17 @@ function App() {
       return false;
     }
 
+    // Explicitly map fields to match DB column names (PostgreSQL lowercases unquoted identifiers)
     const { error } = await supabase
       .from('users')
-      .insert([userInfo]);
+      .insert([{
+        username: userInfo.username,
+        password: userInfo.password,
+        name: userInfo.name,
+        email: userInfo.email,
+        phone: userInfo.phone,
+        marketingconsent: userInfo.marketingConsent || false,
+      }]);
 
     if (error) {
       console.error('Signup error:', error);
@@ -226,7 +233,6 @@ function App() {
       return false;
     }
 
-    // Use setTimeout to prevent blocking the UI render
     setTimeout(() => {
       alert('회원가입이 완료되었습니다! 로그인해주세요.');
     }, 100);
@@ -384,7 +390,7 @@ function App() {
             .from('users')
             .select('username')
             .eq('username', id)
-            .single();
+            .maybeSingle();
           // If data exists, it's a duplicate (return false for available).
           // Wait, logic: 'onCheckDuplicate' return true if available?
           // LoginModal: if (isAvailable) ... setIsIdChecked(true)

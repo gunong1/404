@@ -37,6 +37,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onLogin, onSig
     const emailRef = useRef<HTMLInputElement>(null);
     const phoneRef = useRef<HTMLInputElement>(null);
     const confirmPasswordRef = useRef<HTMLInputElement>(null);
+    const mouseDownTarget = useRef<EventTarget | null>(null);
 
     const { loginWithKakao } = useKakaoLogin();
     const { loginWithNaver } = useNaverLogin();
@@ -168,7 +169,17 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onLogin, onSig
     };
 
     return (
-        <div className="login-modal-overlay" onClick={onClose}>
+        <div
+            className="login-modal-overlay"
+            onMouseDown={(e) => { mouseDownTarget.current = e.target; }}
+            onClick={(e) => {
+                // Only close if both mousedown AND click happened on the overlay itself
+                if (e.target === e.currentTarget && mouseDownTarget.current === e.currentTarget) {
+                    onClose();
+                }
+                mouseDownTarget.current = null;
+            }}
+        >
             <div className="login-modal-content" onClick={(e) => e.stopPropagation()}>
                 <button className="login-close-btn" onClick={onClose}>&times;</button>
                 <h2>{isSignup ? 'SIGN UP' : 'LOGIN'}</h2>
