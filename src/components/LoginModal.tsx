@@ -4,9 +4,9 @@ import './LoginModal.css';
 interface LoginModalProps {
     isOpen: boolean;
     onClose: () => void;
-    onLogin: (id: string, pw: string) => boolean;
-    onSignup: (userInfo: any) => boolean;
-    onCheckDuplicate?: (id: string) => boolean;
+    onLogin: (id: string, pw: string) => Promise<boolean>;
+    onSignup: (userInfo: any) => Promise<boolean>;
+    onCheckDuplicate?: (id: string) => Promise<boolean>;
 }
 
 import { useKakaoLogin } from '../hooks/useKakaoLogin';
@@ -15,6 +15,7 @@ import { useNaverLogin } from '../hooks/useNaverLogin';
 const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onLogin, onSignup, onCheckDuplicate }) => {
     const [isSignup, setIsSignup] = useState(false);
     const [isPending, startTransition] = useTransition(); // Optimization for INP
+    const [isLoading, setIsLoading] = useState(false); // Network loading state
     const [isIdChecked, setIsIdChecked] = useState(false);
 
     // Password Validation State
@@ -62,7 +63,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onLogin, onSig
         }));
     };
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
         const username = usernameRef.current?.value || '';
@@ -96,9 +97,10 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onLogin, onSig
                 return;
             }
 
-            // Call onSignup prop with transition to prevent UI freeze
-            startTransition(() => {
-                const success = onSignup({
+            setIsLoading(true);
+            try {
+                // Await the async signup matching the Promise<boolean> return type
+                const success = await onSignup({
                     username,
                     password,
                     name,
@@ -106,19 +108,35 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onLogin, onSig
                     phone,
                     marketingConsent: agreements.marketing
                 });
+
                 if (success) {
-                    // If signup successful, switch to login view and reset fields
-                    setIsSignup(false);
-                    resetFields();
+                    // Update UI state in transition
+                    startTransition(() => {
+                        setIsSignup(false);
+                        resetFields();
+                    });
                 }
-            });
+            } catch (error) {
+                console.error("Signup failed", error);
+                alert("회원가입 중 오류가 발생했습니다.");
+            } finally {
+                setIsLoading(false);
+            }
         } else {
             // Login Logic
             if (username.trim() && password.trim()) {
-                const success = onLogin(username, password);
-                if (success) {
-                    onClose();
-                    resetFields();
+                setIsLoading(true);
+                try {
+                    const success = await onLogin(username, password);
+                    if (success) {
+                        onClose();
+                        resetFields();
+                    }
+                } catch (error) {
+                    console.error("Login failed", error);
+                    alert("로그인 중 오류가 발생했습니다.");
+                } finally {
+                    setIsLoading(false);
                 }
             } else {
                 alert('아이디와 비밀번호를 모두 입력해주세요.');
@@ -182,18 +200,21 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onLogin, onSig
                             {isSignup && (
                                 <button
                                     type="button"
-                                    onClick={() => {
+                                    onClick={async () => {
                                         const val = usernameRef.current?.value || '';
                                         if (!val.trim()) {
                                             alert('아이디를 입력해주세요.');
                                             return;
                                         }
-                                        if (onCheckDuplicate && onCheckDuplicate(val)) {
-                                            setIsIdChecked(true);
-                                            alert('사용 가능한 아이디입니다.');
-                                        } else {
-                                            setIsIdChecked(false);
-                                            alert('이미 사용 중인 아이디입니다.');
+                                        if (onCheckDuplicate) {
+                                            const isAvailable = await onCheckDuplicate(val);
+                                            if (isAvailable) {
+                                                setIsIdChecked(true);
+                                                alert('사용 가능한 아이디입니다.');
+                                            } else {
+                                                setIsIdChecked(false);
+                                                alert('이미 사용 중인 아이디입니다.');
+                                            }
                                         }
                                     }}
                                     style={{
@@ -338,8 +359,8 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onLogin, onSig
                         </div>
                     )}
 
-                    <button type="submit" className="login-submit-btn" disabled={isSignup && (!allRequiredChecked || !isPasswordValid) || (isPending)} style={{ opacity: (isSignup && (!allRequiredChecked || !isPasswordValid) || isPending) ? 0.5 : 1 }}>
-                        {isPending ? '처리 중...' : (isSignup ? '회원가입' : '로그인')}
+                    <button type="submit" className="login-submit-btn" disabled={isSignup && (!allRequiredChecked || !isPasswordValid) || (isPending || isLoading)} style={{ opacity: (isSignup && (!allRequiredChecked || !isPasswordValid) || isPending || isLoading) ? 0.5 : 1 }}>
+                        {isPending || isLoading ? '처리 중...' : (isSignup ? '회원가입' : '로그인')}
                     </button>
 
                     {!isSignup && (

@@ -11,6 +11,7 @@ import MyPage from './components/MyPage';
 
 import LegalPage from './components/LegalPage';
 import { TERMS_CONTENT, PRIVACY_CONTENT } from './data/legalText';
+import { supabase } from './lib/supabase';
 
 interface CartItem {
   id: string;
@@ -47,10 +48,7 @@ function App() {
   const [savedAddress, setSavedAddress] = useState<{ zipcode: string; address: string; addressDetail: string }>(
     { zipcode: '', address: '', addressDetail: '' }
   );
-  const [users, setUsers] = useState<any[]>(() => {
-    const saved = localStorage.getItem('users');
-    return saved ? JSON.parse(saved) : [];
-  }); // Simple user storage with persistence
+
 
   // Helper to update session
   const updateSession = (name: string, email: string, phone: string) => {
@@ -165,10 +163,7 @@ function App() {
     }
   }, []);
 
-  // Persist users list (not session)
-  useEffect(() => {
-    localStorage.setItem('users', JSON.stringify(users));
-  }, [users]);
+
 
   // Scroll to top
   useEffect(() => {
@@ -200,18 +195,37 @@ function App() {
   const cartTotalCount = cartItems.reduce((acc, item) => acc + item.quantity, 0);
   const cartTotalPrice = cartItems.reduce((acc, item) => acc + (item.price * item.quantity), 0);
 
-  const handleSignup = (userInfo: any) => {
-    if (users.some(u => u.username === userInfo.username)) {
+  const handleSignup = async (userInfo: any) => {
+    // Check if user already exists (ID or Email) - Supabase unique constraint will handle this, but explicit check is good for UI
+    // Or we can try insert and catch error
+    const { data: existingUser } = await supabase
+      .from('users')
+      .select('username')
+      .eq('username', userInfo.username)
+      .single();
+
+    if (existingUser) {
       alert('이미 존재하는 아이디입니다.');
       return false;
     }
+
+    // Check password strength locally
     const pwRegex = /^(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[!@#$%^&*?_~]).{8,}$/;
     if (!pwRegex.test(userInfo.password)) {
       alert('비밀번호는 영문, 숫자, 특수문자 포함 8자 이상이어야 합니다.');
       return false;
     }
 
-    setUsers([...users, userInfo]);
+    const { error } = await supabase
+      .from('users')
+      .insert([userInfo]);
+
+    if (error) {
+      console.error('Signup error:', error);
+      alert('회원가입 중 오류가 발생했습니다.');
+      return false;
+    }
+
     // Use setTimeout to prevent blocking the UI render
     setTimeout(() => {
       alert('회원가입이 완료되었습니다! 로그인해주세요.');
@@ -219,16 +233,25 @@ function App() {
     return true;
   };
 
-  const handleLogin = (id: string, pw: string) => {
-    const user = users.find(u => u.username === id && u.password === pw);
-    if (user) {
-      updateSession(user.name || id, user.email || '', user.phone || '');
-      alert(`${user.name || id}님 환영합니다!`);
-      return true;
-    } else {
+  const handleLogin = async (id: string, pw: string) => {
+    // Simple query matching username and password
+    // In production, password should be hashed.
+    const { data, error } = await supabase
+      .from('users')
+      .select('*')
+      .eq('username', id)
+      .eq('password', pw)
+      .single();
+
+    if (error || !data) {
       alert('아이디 또는 비밀번호가 일치하지 않습니다.');
       return false;
     }
+
+    const user = data;
+    updateSession(user.name || id, user.email || '', user.phone || '');
+    alert(`${user.name || id}님 환영합니다!`);
+    return true;
   };
 
   const handleLogout = () => {
@@ -353,7 +376,18 @@ function App() {
         onClose={() => setIsLoginModalOpen(false)}
         onLogin={handleLogin}
         onSignup={handleSignup}
-        onCheckDuplicate={(id) => !users.some(u => u.username === id)}
+        onCheckDuplicate={async (id) => {
+          const { data } = await supabase
+            .from('users')
+            .select('username')
+            .eq('username', id)
+            .single();
+          // If data exists, it's a duplicate (return false for available).
+          // Wait, logic: 'onCheckDuplicate' return true if available?
+          // LoginModal: if (isAvailable) ... setIsIdChecked(true)
+          // So return true if NO user found.
+          return !data;
+        }}
       />
     </div>
   );
