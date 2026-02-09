@@ -45,7 +45,7 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ onBack, onAddToCart, onBu
                     <span className="detail-subtitle">신상품</span>
                     <h1 className="detail-title">Scent Not Found 바디워시</h1>
                     <p className="detail-description">
-                        향기로 냄새를 덮는 건, 진짜 해결책이 아니니까.
+                        향을 입히지 않습니다. 원인을 삭제합니다.
                     </p>
 
                     <div className="detail-specs">
@@ -97,13 +97,50 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ onBack, onAddToCart, onBu
             </div>
 
             <div className="detail-content-more">
-                <h3>상품 상세 정보</h3>
-                <p>
-                    여기에 상세 페이지 이미지가 들어갑니다.<br />
-                    (고해상도 제품 상세 설명 이미지 영역)
-                </p>
-                <div className="detail-placeholder-box">
-                    Product Detail Image Area
+                <div className="detail-section">
+                    <h3>제품 상세 설명</h3>
+                    <p className="detail-text-highlight">Scent 404 Not Found : 감각의 초기화</p>
+                    <p className="detail-quote">"향을 덮지 않습니다. 냄새의 원인을 삭제합니다."</p>
+                    <p>404 바디워시는 불쾌한 체취의 주범인 '디아세틸(Diacetyl)'과 '노네날(Nonenal)'을 흡착하여 씻어내는 딥 클렌징 솔루션입니다. 인위적인 향료로 체취를 가리는 대신, 피부 본연의 무구한 상태로 되돌리세요.</p>
+                    <ul className="detail-specs-list">
+                        <li><strong>Effect:</strong> 체취 원인 물질 제거, 딥 클렌징</li>
+                        <li><strong>Skin Type:</strong> 모든 피부용</li>
+                        <li><strong>Volume:</strong> 500ml</li>
+                    </ul>
+                </div>
+
+                <div className="detail-divider-line"></div>
+
+                <div className="detail-section">
+                    <h3>배송 안내</h3>
+                    <ul className="detail-info-list">
+                        <li><strong>배송 방법:</strong> 택배 배송</li>
+                        <li><strong>배송 지역:</strong> 전국</li>
+                        <li><strong>배송 비용:</strong> 3,000원 (50,000원 이상 구매 시 무료배송 / 제주 및 도서산간 지역 별도 추가)</li>
+                        <li><strong>배송 기간:</strong> 결제일로부터 1~3일 (주말/공휴일 제외, 물류 사정에 따라 지연될 수 있음)</li>
+                    </ul>
+                </div>
+
+                <div className="detail-divider-line"></div>
+
+                <div className="detail-section">
+                    <h3>교환 및 반품 안내</h3>
+                    <ul className="detail-info-list">
+                        <li><strong>신청 기간:</strong> 상품 수령 후 7일 이내 교환 및 반품 가능</li>
+                        <li><strong>비용 부담:</strong>
+                            <ul className="sub-list">
+                                <li>고객 단순 변심: 왕복 배송비 6,000원 고객 부담</li>
+                                <li>상품 불량 및 오배송: 판매자 전액 부담</li>
+                            </ul>
+                        </li>
+                        <li><strong>반품 불가 사유:</strong>
+                            <ul className="sub-list">
+                                <li>포장을 개봉하였거나 포장이 훼손되어 상품 가치가 상실된 경우</li>
+                                <li>사용 또는 일부 소비에 의하여 상품의 가치가 현저히 감소한 경우</li>
+                                <li>시간의 경과에 의하여 재판매가 곤란할 정도로 상품 등의 가치가 현저히 감소한 경우</li>
+                            </ul>
+                        </li>
+                    </ul>
                 </div>
             </div>
         </section>

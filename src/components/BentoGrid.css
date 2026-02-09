@@ -134,6 +134,46 @@
     border-color: rgba(255, 255, 255, 0.1);
 }
 
+/* Coming Soon Card */
+.coming-soon-card {
+    border: 2px dashed #222;
+    background: rgba(255, 255, 255, 0.02);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: default;
+}
+
+.coming-soon-card:hover {
+    transform: none;
+    box-shadow: none;
+    border-color: #333;
+}
+
+.coming-soon-content {
+    text-align: center;
+}
+
+.coming-soon-icon {
+    font-size: 3rem;
+    display: block;
+    margin-bottom: 16px;
+    opacity: 0.4;
+}
+
+.coming-soon-title {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: #444;
+    margin: 0 0 8px;
+}
+
+.coming-soon-desc {
+    font-size: 0.85rem;
+    color: #333;
+    margin: 0;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
     .product-grid {

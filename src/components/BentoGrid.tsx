@@ -14,13 +14,22 @@ const BentoGrid: React.FC<BentoGridProps> = ({ onProductClick }) => {
                     <div className="apple-card-text">
                         <span className="apple-badge">신상품</span>
                         <h2 className="apple-card-title">Scent Not Found<br />바디워시</h2>
-                        <p className="apple-card-desc">향기로 냄새를 덮는 건, 진짜 해결책이 아니니까.</p>
+                        <p className="apple-card-desc">향을 입히지 않습니다. 원인을 삭제합니다.</p>
                         <div className="apple-card-actions">
                             <button className="apple-btn-fill" onClick={(e) => { e.stopPropagation(); onProductClick(); }}>구입하기</button>
                         </div>
                     </div>
                     <div className="apple-card-image">
                         <img src="/bottle_404.jpg" alt="Scent Not Found Bottle" className="apple-product-img" />
+                    </div>
+                </div>
+
+                {/* Coming Soon Placeholder */}
+                <div className="product-card-apple coming-soon-card">
+                    <div className="coming-soon-content">
+                        <span className="coming-soon-icon">🧴</span>
+                        <h3 className="coming-soon-title">상품 준비중</h3>
+                        <p className="coming-soon-desc">새로운 제품이 곧 출시됩니다.</p>
                     </div>
                 </div>
             </div>
