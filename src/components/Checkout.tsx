@@ -136,6 +136,8 @@ const Checkout: React.FC<CheckoutProps> = ({ items, onBack, totalAmount, onOrder
                 },
                 shippingAddress: `${shipping.address} ${shipping.addressDetail}`.trim(),
                 shippingMemo: shipping.memo,
+                items: items.map(item => ({ name: item.name, quantity: item.quantity, price: item.price })),
+                buyerPostcode: shipping.zipcode,
             };
 
             const orderId = await requestPayment(paymentData);

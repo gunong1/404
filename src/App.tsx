@@ -8,6 +8,7 @@ import LoginModal from './components/LoginModal';
 import Checkout from './components/Checkout';
 import OrderComplete from './components/OrderComplete';
 import MyPage from './components/MyPage';
+import AdminOrders from './components/AdminOrders';
 
 import LegalPage from './components/LegalPage';
 import { TERMS_CONTENT, PRIVACY_CONTENT } from './data/legalText';
@@ -22,7 +23,7 @@ interface CartItem {
 }
 
 function App() {
-  const [view, setView] = useState<'home' | 'detail' | 'checkout' | 'orderComplete' | 'mypage' | 'terms' | 'privacy'>('home');
+  const [view, setView] = useState<'home' | 'detail' | 'checkout' | 'orderComplete' | 'mypage' | 'terms' | 'privacy' | 'admin'>('home');
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [orderData, setOrderData] = useState<{ orderId: string; totalAmount: number; buyerName: string; shippingAddress: string } | null>(null);
   /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -44,6 +45,10 @@ function App() {
     const session = localStorage.getItem('session_user');
     return session ? JSON.parse(session).phone : '';
   });
+  const [userRole, setUserRole] = useState(() => {
+    const session = localStorage.getItem('session_user');
+    return session ? JSON.parse(session).role || 'user' : 'user';
+  });
 
   const [savedAddress, setSavedAddress] = useState<{ zipcode: string; address: string; addressDetail: string }>(
     { zipcode: '', address: '', addressDetail: '' }
@@ -51,12 +56,13 @@ function App() {
 
 
   // Helper to update session
-  const updateSession = (name: string, email: string, phone: string) => {
+  const updateSession = (name: string, email: string, phone: string, role: string = 'user') => {
     setIsLoggedIn(true);
     setUsername(name);
     setUserEmail(email);
     setUserPhone(phone);
-    localStorage.setItem('session_user', JSON.stringify({ name, email, phone }));
+    setUserRole(role);
+    localStorage.setItem('session_user', JSON.stringify({ name, email, phone, role }));
   };
 
   // OAuth Callback Handler & Simple Router
@@ -71,6 +77,10 @@ function App() {
     }
     if (currentPath === '/privacy-policy') {
       setView('privacy');
+      return;
+    }
+    if (currentPath === '/admin/orders') {
+      setView('admin');
       return;
     }
 
@@ -257,7 +267,7 @@ function App() {
     }
 
     const user = data;
-    updateSession(user.name || id, user.email || '', user.phone || '');
+    updateSession(user.name || id, user.email || '', user.phone || '', user.role || 'user');
     alert(`${user.name || id}님 환영합니다!`);
     return true;
   };
@@ -267,7 +277,9 @@ function App() {
     setUsername('');
     setUserEmail('');
     setUserPhone('');
+    setUserRole('user');
     localStorage.removeItem('session_user');
+    setView('home');
     alert('로그아웃 되었습니다.');
   }
 
@@ -351,6 +363,15 @@ function App() {
           username={username}
           savedAddress={savedAddress}
           onAddressChange={(addr) => setSavedAddress(addr)}
+        />
+      )}
+      {view === 'admin' && (
+        <AdminOrders
+          onBack={() => {
+            setView('home');
+            window.history.pushState({}, '', '/');
+          }}
+          userRole={userRole}
         />
       )}
       {view === 'terms' && (

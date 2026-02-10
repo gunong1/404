@@ -17,6 +17,8 @@ interface PaymentData {
     paymentId?: string;
     shippingAddress?: string;
     shippingMemo?: string;
+    items?: { name: string; quantity: number; price: number }[];
+    buyerPostcode?: string;
 }
 
 
@@ -76,6 +78,8 @@ export const usePayment = () => {
                         buyer_name: data.buyer?.name,
                         buyer_tel: data.buyer?.tel,
                         buyer_addr: data.shippingAddress || '',
+                        buyer_postcode: data.buyerPostcode || '',
+                        order_items: data.items || [],
                         status: 'paid',
                     },
                 ]);
