@@ -361,14 +361,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onLogin, onSig
                         </div>
                     )}
 
-                    {!isSignup && (
-                        <div className="login-actions">
-                            <label className="keep-login">
-                                <input type="checkbox" /> 로그인 상태 유지
-                            </label>
-                            <a href="#" className="find-pw">비밀번호 찾기</a>
-                        </div>
-                    )}
+
 
                     <button type="submit" className="login-submit-btn" disabled={isSignup && (!allRequiredChecked || !isPasswordValid) || (isPending || isLoading)} style={{ opacity: (isSignup && (!allRequiredChecked || !isPasswordValid) || isPending || isLoading) ? 0.5 : 1 }}>
                         {isPending || isLoading ? '처리 중...' : (isSignup ? '회원가입' : '로그인')}
