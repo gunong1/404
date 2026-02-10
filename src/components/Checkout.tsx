@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import './Checkout.css';
 import { usePayment } from '../hooks/usePayment';
 
@@ -56,6 +56,17 @@ const Checkout: React.FC<CheckoutProps> = ({ items, onBack, totalAmount, onOrder
 
     const [isSameAsBuyer, setIsSameAsBuyer] = useState(true);
     const [isProcessing, setIsProcessing] = useState(false);
+    const phoneInputRef = useRef<HTMLInputElement>(null);
+
+    // Re-consent: alert and focus phone input if phone is missing (SNS login without phone permission)
+    useEffect(() => {
+        if (!userPhone || userPhone.trim() === '') {
+            setTimeout(() => {
+                alert('연락처 정보가 없습니다. 연락처를 직접 입력해 주세요.');
+                phoneInputRef.current?.focus();
+            }, 300);
+        }
+    }, []);
 
     // Update shipping info when buyer info changes if "Same as Buyer" is checked
     const handleBuyerChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -166,7 +177,8 @@ const Checkout: React.FC<CheckoutProps> = ({ items, onBack, totalAmount, onOrder
                                 id="buyer_phone"
                                 name="phone"
                                 type="tel"
-                                placeholder="010-0000-0000"
+                                ref={phoneInputRef}
+                                placeholder="휴대폰 번호를 입력해주세요"
                                 value={buyer.phone}
                                 onChange={handleBuyerChange}
                             />

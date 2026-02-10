@@ -95,8 +95,8 @@ function App() {
                 const name = user.getName() || user.getNickName() || '네이버 사용자';
                 const email = user.getEmail() || '';
                 const mobile = user.getMobile() || '';
+                console.log('Naver user profile - name:', name, 'email:', email, 'mobile:', mobile);
                 updateSession(name, email, mobile);
-                console.log('Naver user profile:', user);
               }
             });
           } catch (e) {
@@ -144,12 +144,14 @@ function App() {
                 const email = account.email || '';
 
                 let mobile = account.phone_number || '';
-                if (mobile.startsWith('+82 ')) {
+                console.log('Kakao raw phone_number:', account.phone_number);
+                if (mobile && mobile.startsWith('+82 ')) {
                   mobile = '0' + mobile.slice(4).replace(/-/g, '').replace(/ /g, '');
                   if (mobile.length === 11) {
                     mobile = mobile.replace(/(\d{3})(\d{4})(\d{4})/, '$1-$2-$3');
                   }
                 }
+                console.log('Kakao parsed mobile:', mobile);
                 updateSession(name, email, mobile);
               }
             } catch (err) {
