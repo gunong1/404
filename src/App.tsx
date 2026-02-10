@@ -252,11 +252,10 @@ function App() {
   };
 
   const handleLogin = async (id: string, pw: string) => {
-    // Simple query matching username and password
-    // In production, password should be hashed.
+    // Explicitly select columns including role
     const { data, error } = await supabase
       .from('users')
-      .select('*')
+      .select('username, name, email, phone, role')
       .eq('username', id)
       .eq('password', pw)
       .single();
