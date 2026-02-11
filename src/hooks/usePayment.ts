@@ -82,7 +82,7 @@ export const usePayment = () => {
 
         try {
             // Start observing for SDK-injected elements
-            const observer = setupPaymentIframeObserver();
+            setupPaymentIframeObserver();
             const paymentId = `pay${Date.now()}`;
             const response = await PortOne.requestPayment({
                 storeId: STORE_ID,
