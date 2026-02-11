@@ -246,6 +246,18 @@ function App() {
       return false;
     }
 
+    // Check if email already exists
+    const { data: existingEmail } = await supabase
+      .from('users')
+      .select('email')
+      .eq('email', userInfo.email)
+      .maybeSingle();
+
+    if (existingEmail) {
+      alert('이미 사용 중인 이메일입니다.');
+      return false;
+    }
+
     // Explicitly map fields to match DB column names (PostgreSQL lowercases unquoted identifiers)
     const { error } = await supabase
       .from('users')
