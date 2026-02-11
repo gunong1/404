@@ -12,7 +12,7 @@ const Hero: React.FC = () => {
             </div>
             <div className="spline-container">
                 <iframe
-                    src='https://my.spline.design/distortingtypography-A7Aajh5JHTVBgulrZSWTBEZ2/?v=2'
+                    src='https://my.spline.design/distortingtypography-A7Aajh5JHTVBgulrZSWTBEZ2/'
                     frameBorder='0'
                     width='100%'
                     height='100%'
