@@ -22,6 +22,56 @@ interface PaymentData {
 }
 
 
+// Force full-viewport for any PortOne SDK injected elements
+const forceFullViewport = (el: HTMLElement) => {
+    el.style.cssText = `
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        width: 100vw !important;
+        height: 100vh !important;
+        max-width: 100vw !important;
+        z-index: 99999 !important;
+        overflow: auto !important;
+    `;
+    // Also fix any iframes inside
+    const iframes = el.querySelectorAll('iframe');
+    iframes.forEach(iframe => {
+        (iframe as HTMLElement).style.cssText = `
+            width: 100% !important;
+            height: 100% !important;
+            max-width: 100vw !important;
+            border: none !important;
+        `;
+    });
+};
+
+const setupPaymentIframeObserver = () => {
+    const observer = new MutationObserver((mutations) => {
+        mutations.forEach((mutation) => {
+            mutation.addedNodes.forEach((node) => {
+                if (node instanceof HTMLElement && node.parentElement === document.body && node.id !== 'root') {
+                    // This is a new top-level element injected by the SDK
+                    if (node.tagName === 'DIV' || node.tagName === 'IFRAME') {
+                        console.log('[Payment] Detected SDK element:', node.tagName, node.id, node.className);
+                        forceFullViewport(node);
+                        // Also observe for child iframe additions
+                        const childObserver = new MutationObserver(() => {
+                            forceFullViewport(node);
+                        });
+                        childObserver.observe(node, { childList: true, subtree: true });
+                        setTimeout(() => childObserver.disconnect(), 60000);
+                    }
+                }
+            });
+        });
+    });
+    observer.observe(document.body, { childList: true });
+    // Auto-disconnect after 60s
+    setTimeout(() => observer.disconnect(), 60000);
+    return observer;
+};
+
 export const usePayment = () => {
     const requestPayment = async (data: PaymentData): Promise<string | null> => {
         console.log('PortOne Config:', { STORE_ID, CHANNEL_KEY });
@@ -31,6 +81,8 @@ export const usePayment = () => {
         }
 
         try {
+            // Start observing for SDK-injected elements
+            const observer = setupPaymentIframeObserver();
             const paymentId = `pay${Date.now()}`;
             const response = await PortOne.requestPayment({
                 storeId: STORE_ID,
