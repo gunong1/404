@@ -77,6 +77,7 @@ export const usePayment = () => {
                         merchant_uid: paymentId,
                         amount: data.totalAmount,
                         buyer_name: data.buyer?.name,
+                        buyer_email: data.buyer?.email || '',
                         buyer_tel: data.buyer?.tel,
                         buyer_addr: data.shippingAddress || '',
                         buyer_postcode: data.buyerPostcode || '',

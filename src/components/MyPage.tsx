@@ -73,9 +73,9 @@ const MyPage: React.FC<MyPageProps> = ({ onBack, username, userEmail, savedAddre
                 .select('*')
                 .order('created_at', { ascending: false });
 
-            // Filter by buyer name to show only this user's orders
-            if (username) {
-                query = query.eq('buyer_name', username);
+            // Filter by buyer email to show only this user's orders
+            if (userEmail) {
+                query = query.eq('buyer_email', userEmail);
             }
 
             const { data, error } = await query;
