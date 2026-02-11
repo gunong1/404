@@ -37,7 +37,7 @@ const Header: React.FC<HeaderProps> = ({
     return (
         <header className={`site-header ${scrolled ? 'scrolled' : ''} ${transparent && !scrolled ? 'transparent' : ''}`}>
             <div className="header-inner">
-                <img src="/logo_404.png" alt="404" className="logo" onClick={() => { onHomeClick?.(); window.scrollTo({ top: 0, behavior: 'smooth' }); }} style={{ cursor: 'pointer', height: '32px' }} />
+                <img src="/logo_404.png" alt="404" className="logo" onClick={() => { onHomeClick?.(); window.scrollTo({ top: 0, behavior: 'smooth' }); }} style={{ cursor: 'pointer' }} />
                 <nav className="nav-menu">
                     {isLoggedIn ? (
                         <>

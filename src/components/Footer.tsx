@@ -25,10 +25,7 @@ const Footer: React.FC = () => {
         <footer className="site-footer">
             <div className="footer-content">
                 <div className="footer-top">
-                    <div className="footer-brand">
-                        <h3 className="footer-logo">404</h3>
-                        <p className="footer-tagline">Scent Not Found</p>
-                    </div>
+
                     <div className="footer-contact">
                         <h4>고객센터</h4>
                         <p className="cs-email-highlight">📧 middlebigdog@naver.com</p>

@@ -5,9 +5,8 @@
     width: 100%;
     z-index: 1000;
     transition: background-color 0.3s ease, padding 0.3s ease;
-    padding: 20px 0;
+    padding: 12px 0;
     background-color: var(--bg-main, #000);
-    /* Default solid background */
     backdrop-filter: blur(10px);
 }
 
@@ -32,10 +31,8 @@
 }
 
 .logo {
-    font-size: 1.5rem;
-    font-weight: 800;
-    color: var(--text-main);
-    letter-spacing: -1px;
+    height: 80px;
+    object-fit: contain;
 }
 
 .nav-menu {
