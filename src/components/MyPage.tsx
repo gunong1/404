@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './MyPage.css';
 import { supabase } from '../lib/supabase';
+import { getTrackingUrl } from '../utils/carrierTracking';
 
 interface Order {
     id: string;
@@ -10,6 +11,8 @@ interface Order {
     buyer_tel: string;
     buyer_addr: string;
     status: string;
+    carrier: string;
+    tracking_number: string;
     created_at: string;
 }
 
@@ -62,6 +65,7 @@ const MyPage: React.FC<MyPageProps> = ({ onBack, username, savedAddress, onAddre
             paid: { label: '결제완료', className: 'status-paid' },
             shipping: { label: '배송중', className: 'status-shipping' },
             delivered: { label: '배송완료', className: 'status-delivered' },
+            completed: { label: '구매확정', className: 'status-completed' },
             cancelled: { label: '취소됨', className: 'status-cancelled' },
         };
         return map[status] || { label: status, className: '' };
@@ -101,6 +105,25 @@ const MyPage: React.FC<MyPageProps> = ({ onBack, username, savedAddress, onAddre
     };
 
     const hasAddress = savedAddress && savedAddress.address;
+
+    const handleConfirmPurchase = async (orderId: string) => {
+        if (!confirm('구매를 확정하시겠습니까? 확정 후에는 반품/환불이 어려울 수 있습니다.')) return;
+
+        const { data, error } = await supabase
+            .from('orders')
+            .update({ status: 'completed' })
+            .eq('id', orderId)
+            .select();
+
+        if (error) {
+            alert('구매 확정 실패: ' + error.message);
+        } else if (!data || data.length === 0) {
+            alert('구매 확정 실패: 권한이 없습니다.');
+        } else {
+            setOrders(prev => prev.map(o => o.id === orderId ? { ...o, status: 'completed' } : o));
+            alert('구매가 확정되었습니다. 감사합니다!');
+        }
+    };
 
     return (
         <section className="mypage-section">
@@ -241,9 +264,39 @@ const MyPage: React.FC<MyPageProps> = ({ onBack, username, savedAddress, onAddre
                                             <span className="order-label">연락처</span>
                                             <span className="order-value">{order.buyer_tel || '-'}</span>
                                         </div>
+                                        {order.carrier && order.tracking_number && (
+                                            <div className="order-detail-row">
+                                                <span className="order-label">배송추적</span>
+                                                <span className="order-value">
+                                                    {(() => {
+                                                        const url = getTrackingUrl(order.carrier, order.tracking_number);
+                                                        return url ? (
+                                                            <a
+                                                                href={url}
+                                                                target="_blank"
+                                                                rel="noopener noreferrer"
+                                                                className="tracking-link"
+                                                            >
+                                                                {order.carrier} {order.tracking_number} 🔗
+                                                            </a>
+                                                        ) : (
+                                                            <span>{order.carrier} {order.tracking_number}</span>
+                                                        );
+                                                    })()}
+                                                </span>
+                                            </div>
+                                        )}
                                     </div>
                                     <div className="order-card-footer">
                                         <span className="order-amount">₩{order.amount.toLocaleString()}</span>
+                                        {(order.status === 'shipping' || order.status === 'delivered') && (
+                                            <button
+                                                className="confirm-purchase-btn"
+                                                onClick={() => handleConfirmPurchase(order.id)}
+                                            >
+                                                ✅ 구매 확정
+                                            </button>
+                                        )}
                                     </div>
                                 </div>
                             );

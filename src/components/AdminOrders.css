@@ -304,6 +304,18 @@
     color: #ccc;
 }
 
+.tracking-link {
+    color: #4a9eff;
+    text-decoration: none;
+    font-size: 0.8rem;
+    transition: color 0.2s;
+}
+
+.tracking-link:hover {
+    color: #7db8ff;
+    text-decoration: underline;
+}
+
 /* Bulk Upload Button */
 .admin-bulk-btn {
     background: #2c3e6e;

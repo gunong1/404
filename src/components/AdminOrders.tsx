@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import './AdminOrders.css';
 import { supabase } from '../lib/supabase';
 import * as XLSX from 'xlsx';
+import { getTrackingUrl } from '../utils/carrierTracking';
 
 interface Order {
     id: string;
@@ -28,6 +29,7 @@ const STATUS_MAP: Record<string, { label: string; color: string }> = {
     paid: { label: '결제완료', color: '#3498db' },
     shipping: { label: '배송중', color: '#f39c12' },
     delivered: { label: '배송완료', color: '#2ecc71' },
+    completed: { label: '구매확정', color: '#27ae60' },
     cancelled: { label: '취소', color: '#e74c3c' },
 };
 
@@ -95,6 +97,7 @@ const AdminOrders: React.FC<AdminOrdersProps> = ({ onBack, userRole }) => {
                 carrier: trackingInput.carrier,
                 tracking_number: trackingInput.tracking_number.trim(),
                 status: 'shipping',
+                shipped_at: new Date().toISOString(),
             })
             .eq('id', orderId)
             .select();
@@ -238,6 +241,7 @@ const AdminOrders: React.FC<AdminOrdersProps> = ({ onBack, userRole }) => {
                         carrier: carrier || 'CJ대한통운',
                         tracking_number: trackingNumber,
                         status: 'shipping',
+                        shipped_at: new Date().toISOString(),
                     })
                     .eq('merchant_uid', merchantUid)
                     .select();
@@ -442,7 +446,21 @@ const AdminOrders: React.FC<AdminOrdersProps> = ({ onBack, userRole }) => {
                                                 {order.carrier && order.tracking_number ? (
                                                     <>
                                                         <div>{order.carrier}</div>
-                                                        <div className="tracking-num">{order.tracking_number}</div>
+                                                        {(() => {
+                                                            const url = getTrackingUrl(order.carrier, order.tracking_number);
+                                                            return url ? (
+                                                                <a
+                                                                    href={url}
+                                                                    target="_blank"
+                                                                    rel="noopener noreferrer"
+                                                                    className="tracking-link"
+                                                                >
+                                                                    {order.tracking_number} 🔗
+                                                                </a>
+                                                            ) : (
+                                                                <div className="tracking-num">{order.tracking_number}</div>
+                                                            );
+                                                        })()}
                                                     </>
                                                 ) : (
                                                     <span className="no-tracking">미입력</span>
