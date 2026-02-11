@@ -171,14 +171,16 @@ const Checkout: React.FC<CheckoutProps> = ({ items, onBack, totalAmount, onOrder
             if (orderId) {
                 // Save default address if checked
                 if (saveAsDefault && userEmail) {
-                    await supabase
+                    const { error: addrError } = await supabase
                         .from('users')
-                        .update({
+                        .upsert({
+                            email: userEmail,
+                            name: buyer.name,
                             address: shipping.address,
                             detail_address: shipping.addressDetail,
                             zipcode: shipping.zipcode,
-                        })
-                        .eq('email', userEmail);
+                        }, { onConflict: 'email' });
+                    if (addrError) console.error('Address save error:', addrError);
                 }
                 onOrderComplete(orderId, buyer.name, `${shipping.address} ${shipping.addressDetail}`.trim());
             }
