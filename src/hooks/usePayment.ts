@@ -40,11 +40,6 @@ export const usePayment = () => {
                 totalAmount: data.totalAmount,
                 currency: "CURRENCY_KRW",
                 payMethod: "CARD",
-                windowType: {
-                    pc: "IFRAME",
-                    mobile: "REDIRECTION",
-                },
-                redirectUrl: window.location.origin,
                 customer: {
                     fullName: data.buyer?.name,
                     phoneNumber: data.buyer?.tel,
