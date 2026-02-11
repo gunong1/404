@@ -50,9 +50,10 @@ function App() {
     return session ? JSON.parse(session).role || 'user' : 'user';
   });
 
-  const [savedAddress, setSavedAddress] = useState<{ zipcode: string; address: string; addressDetail: string }>(
-    { zipcode: '', address: '', addressDetail: '' }
-  );
+  const [savedAddress, setSavedAddress] = useState<{ zipcode: string; address: string; addressDetail: string }>(() => {
+    const saved = localStorage.getItem('saved_address');
+    return saved ? JSON.parse(saved) : { zipcode: '', address: '', addressDetail: '' };
+  });
 
 
   // Helper to update session
@@ -361,7 +362,7 @@ function App() {
           onBack={() => setView('home')}
           username={username}
           savedAddress={savedAddress}
-          onAddressChange={(addr) => setSavedAddress(addr)}
+          onAddressChange={(addr) => { setSavedAddress(addr); localStorage.setItem('saved_address', JSON.stringify(addr)); }}
         />
       )}
       {view === 'admin' && (
