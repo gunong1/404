@@ -84,6 +84,21 @@ export const usePayment = () => {
             // Start observing for SDK-injected elements
             setupPaymentIframeObserver();
             const paymentId = `pay${Date.now()}`;
+
+            // Save pending order to sessionStorage (survives mobile REDIRECTION page reload)
+            sessionStorage.setItem('pending_order', JSON.stringify({
+                paymentId,
+                amount: data.totalAmount,
+                buyerName: data.buyer?.name || '',
+                buyerEmail: data.buyer?.email || '',
+                buyerTel: data.buyer?.tel || '',
+                shippingAddress: data.shippingAddress || '',
+                shippingMemo: data.shippingMemo || '',
+                buyerPostcode: data.buyerPostcode || '',
+                items: data.items || [],
+                orderName: data.orderName,
+            }));
+
             const response = await PortOne.requestPayment({
                 storeId: STORE_ID,
                 channelKey: CHANNEL_KEY,
@@ -105,12 +120,14 @@ export const usePayment = () => {
             });
 
             if (response?.code != null) {
-                // Error case (PortOne V2 returns code on error, or sometimes throws? Need to check SDK behavior carefully. 
-                // Actually PortOne.requestPayment returns a Promise that resolves to PaymentResponse.
-                // If the user closes the window or cancels, it might return an error code or status.)
+                // Payment failed or cancelled
+                sessionStorage.removeItem('pending_order');
                 alert(`결제 실패: ${response.message}`);
                 return null;
             }
+
+            // PC IFRAME payment succeeded - clean up pending order
+            sessionStorage.removeItem('pending_order');
 
 
             // PortOne V2 response handling

@@ -103,6 +103,81 @@ function App() {
       return;
     }
 
+    // --- Mobile Payment Redirect Handler ---
+    // After mobile REDIRECTION payment, PortOne appends ?paymentId=xxx to the redirectUrl
+    const pendingRaw = sessionStorage.getItem('pending_order');
+    if (pendingRaw) {
+      const params = new URLSearchParams(search);
+      const redirectPaymentId = params.get('paymentId');
+      const redirectCode = params.get('code');
+      // Only trigger when PortOne redirect params are present
+      if (redirectPaymentId || redirectCode !== null) {
+        const pending = JSON.parse(pendingRaw);
+        sessionStorage.removeItem('pending_order');
+        // Clean URL
+        window.history.replaceState({}, document.title, '/');
+
+        // Check if payment was cancelled or failed
+        if (redirectCode && redirectCode !== 'PAYMENT_PAID') {
+          const errorMsg = params.get('message') || '결제가 취소되었습니다.';
+          console.log('[Payment Redirect] Payment failed/cancelled:', redirectCode, errorMsg);
+          alert(errorMsg);
+          return;
+        }
+
+        // Save order to Supabase
+        const processRedirectPayment = async () => {
+          try {
+            const { error } = await supabase
+              .from('orders')
+              .insert([{
+                merchant_uid: pending.paymentId,
+                amount: pending.amount,
+                buyer_name: pending.buyerName,
+                buyer_email: pending.buyerEmail,
+                buyer_tel: pending.buyerTel,
+                buyer_addr: pending.shippingAddress,
+                buyer_postcode: pending.buyerPostcode,
+                order_items: pending.items,
+                shipping_memo: pending.shippingMemo,
+                status: 'paid',
+              }]);
+            if (error) {
+              console.error('Error saving redirected order:', error);
+            } else {
+              console.log('Redirected order saved to Supabase');
+            }
+            // Save default address if user email exists
+            if (userEmail && pending.shippingAddress) {
+              const { data: updated } = await supabase
+                .from('users')
+                .update({
+                  address: pending.shippingAddress,
+                  zipcode: pending.buyerPostcode || '',
+                })
+                .eq('email', userEmail)
+                .select();
+              if (!updated || updated.length === 0) {
+                console.log('[Redirect] No user row to update address');
+              }
+            }
+            // Show order complete
+            setOrderData({
+              orderId: pending.paymentId,
+              totalAmount: pending.amount,
+              buyerName: pending.buyerName,
+              shippingAddress: pending.shippingAddress,
+            });
+            setCartItems([]);
+            setView('orderComplete');
+          } catch (err) {
+            console.error('Redirect payment processing error:', err);
+          }
+        };
+        processRedirectPayment();
+        return;
+      }
+    }
     if (currentPath === '/oauth/callback') {
       // --- Naver Login Callback ---
       if (hash && hash.includes('access_token')) {
