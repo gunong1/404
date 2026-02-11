@@ -70,7 +70,7 @@ const Checkout: React.FC<CheckoutProps> = ({ items, onBack, totalAmount, onOrder
                 .from('users')
                 .select('address, detail_address, zipcode')
                 .eq('email', userEmail)
-                .single();
+                .maybeSingle();
 
             if (data && data.address) {
                 setShipping(prev => ({

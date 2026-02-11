@@ -57,13 +57,31 @@ function App() {
 
 
   // Helper to update session
-  const updateSession = (name: string, email: string, phone: string, role: string = 'user') => {
+  const updateSession = async (name: string, email: string, phone: string, role: string = 'user') => {
     setIsLoggedIn(true);
     setUsername(name);
     setUserEmail(email);
     setUserPhone(phone);
     setUserRole(role);
     localStorage.setItem('session_user', JSON.stringify({ name, email, phone, role }));
+
+    // Load saved address from DB
+    if (email) {
+      const { data } = await supabase
+        .from('users')
+        .select('address, detail_address, zipcode')
+        .eq('email', email)
+        .maybeSingle();
+      if (data && data.address) {
+        const addr = {
+          zipcode: data.zipcode || '',
+          address: data.address || '',
+          addressDetail: data.detail_address || '',
+        };
+        setSavedAddress(addr);
+        localStorage.setItem('saved_address', JSON.stringify(addr));
+      }
+    }
   };
 
   // OAuth Callback Handler & Simple Router
@@ -351,6 +369,25 @@ function App() {
             setOrderData({ orderId, totalAmount: cartTotalPrice, buyerName, shippingAddress });
             setCartItems([]);
             setView('orderComplete');
+            // Reload saved address from DB
+            if (userEmail) {
+              supabase
+                .from('users')
+                .select('address, detail_address, zipcode')
+                .eq('email', userEmail)
+                .single()
+                .then(({ data }) => {
+                  if (data && data.address) {
+                    const addr = {
+                      zipcode: data.zipcode || '',
+                      address: data.address || '',
+                      addressDetail: data.detail_address || '',
+                    };
+                    setSavedAddress(addr);
+                    localStorage.setItem('saved_address', JSON.stringify(addr));
+                  }
+                });
+            }
           }}
         />
       )}
