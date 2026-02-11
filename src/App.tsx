@@ -62,26 +62,33 @@ function App() {
     setUsername(name);
     setUserEmail(email);
     setUserPhone(phone);
-    setUserRole(role);
-    localStorage.setItem('session_user', JSON.stringify({ name, email, phone, role }));
 
-    // Load saved address from DB
+    // Load saved address and role from DB
+    let resolvedRole = role;
     if (email) {
       const { data } = await supabase
         .from('users')
-        .select('address, detail_address, zipcode')
+        .select('address, detail_address, zipcode, role')
         .eq('email', email)
         .maybeSingle();
-      if (data && data.address) {
-        const addr = {
-          zipcode: data.zipcode || '',
-          address: data.address || '',
-          addressDetail: data.detail_address || '',
-        };
-        setSavedAddress(addr);
-        localStorage.setItem('saved_address', JSON.stringify(addr));
+      if (data) {
+        // Use DB role if available (for OAuth users who have admin role in DB)
+        if (data.role) {
+          resolvedRole = data.role;
+        }
+        if (data.address) {
+          const addr = {
+            zipcode: data.zipcode || '',
+            address: data.address || '',
+            addressDetail: data.detail_address || '',
+          };
+          setSavedAddress(addr);
+          localStorage.setItem('saved_address', JSON.stringify(addr));
+        }
       }
     }
+    setUserRole(resolvedRole);
+    localStorage.setItem('session_user', JSON.stringify({ name, email, phone, role: resolvedRole }));
   };
 
   // OAuth Callback Handler & Simple Router
