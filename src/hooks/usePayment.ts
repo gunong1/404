@@ -24,6 +24,7 @@ interface PaymentData {
 
 export const usePayment = () => {
     const requestPayment = async (data: PaymentData): Promise<string | null> => {
+        console.log('PortOne Config:', { STORE_ID, CHANNEL_KEY });
         if (!STORE_ID || !CHANNEL_KEY) {
             alert('PortOne 설정이 올바르지 않습니다.');
             return null;
@@ -80,6 +81,7 @@ export const usePayment = () => {
                         buyer_addr: data.shippingAddress || '',
                         buyer_postcode: data.buyerPostcode || '',
                         order_items: data.items || [],
+                        shipping_memo: data.shippingMemo || '',
                         status: 'paid',
                     },
                 ]);

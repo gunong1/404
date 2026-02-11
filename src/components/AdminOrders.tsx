@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './AdminOrders.css';
 import { supabase } from '../lib/supabase';
+import * as XLSX from 'xlsx';
 
 interface Order {
     id: string;
@@ -14,6 +15,7 @@ interface Order {
     status: string;
     tracking_number: string;
     carrier: string;
+    shipping_memo: string;
     created_at: string;
 }
 
@@ -113,6 +115,61 @@ const AdminOrders: React.FC<AdminOrdersProps> = ({ onBack, userRole }) => {
         return new Intl.NumberFormat('ko-KR').format(amount) + '원';
     };
 
+    // Excel Download: 결제완료 & 배송준비 주문만 추출
+    const downloadExcel = () => {
+        const targetOrders = orders.filter(o => o.status === 'paid' || o.status === 'shipping');
+
+        if (targetOrders.length === 0) {
+            alert('다운로드할 주문 건이 없습니다. (결제완료/배송중 상태만 추출됩니다)');
+            return;
+        }
+
+        const rows: any[] = [];
+        targetOrders.forEach(order => {
+            if (order.order_items && Array.isArray(order.order_items)) {
+                order.order_items.forEach((item: any) => {
+                    rows.push({
+                        '수령자명': order.buyer_name || '',
+                        '수령자 연락처': order.buyer_tel || '',
+                        '우편번호': order.buyer_postcode || '',
+                        '배송지 주소': order.buyer_addr || '',
+                        '주문 상품명': item.name || '',
+                        '수량': item.quantity || 1,
+                        '배송메세지': order.shipping_memo || '',
+                    });
+                });
+            } else {
+                rows.push({
+                    '수령자명': order.buyer_name || '',
+                    '수령자 연락처': order.buyer_tel || '',
+                    '우편번호': order.buyer_postcode || '',
+                    '배송지 주소': order.buyer_addr || '',
+                    '주문 상품명': '-',
+                    '수량': 1,
+                    '배송메세지': order.shipping_memo || '',
+                });
+            }
+        });
+
+        const ws = XLSX.utils.json_to_sheet(rows);
+        // 컬럼 너비 자동 조정
+        ws['!cols'] = [
+            { wch: 12 }, // 수령자명
+            { wch: 16 }, // 연락처
+            { wch: 8 },  // 우편번호
+            { wch: 40 }, // 주소
+            { wch: 30 }, // 상품명
+            { wch: 6 },  // 수량
+            { wch: 25 }, // 배송메세지
+        ];
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, '주문내역');
+
+        const today = new Date();
+        const dateStr = `${today.getFullYear()}${String(today.getMonth() + 1).padStart(2, '0')}${String(today.getDate()).padStart(2, '0')}`;
+        XLSX.writeFile(wb, `404_주문내역_${dateStr}.xlsx`);
+    };
+
     // Access Control
     if (userRole !== 'admin') {
         return (
@@ -131,7 +188,10 @@ const AdminOrders: React.FC<AdminOrdersProps> = ({ onBack, userRole }) => {
             <div className="admin-header">
                 <button className="admin-back-btn" onClick={onBack}>← 돌아가기</button>
                 <h1>📦 주문 관리</h1>
-                <button className="admin-refresh-btn" onClick={fetchOrders}>🔄 새로고침</button>
+                <div className="admin-header-actions">
+                    <button className="admin-excel-btn" onClick={downloadExcel}>📥 Excel 다운로드</button>
+                    <button className="admin-refresh-btn" onClick={fetchOrders}>🔄 새로고침</button>
+                </div>
             </div>
 
             <div className="admin-stats">
