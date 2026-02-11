@@ -299,7 +299,16 @@ function App() {
       {view === 'home' && (
         <>
           <Hero />
-          <BentoGrid onProductClick={() => setView('detail')} />
+          <BentoGrid
+            onProductClick={() => setView('detail')}
+            onQuickBuy={() => buyNow({
+              id: 'bodywash-01',
+              name: 'Scent Not Found 바디워시',
+              price: 18000,
+              quantity: 1,
+              image: '/bottle_404.jpg'
+            })}
+          />
         </>
       )}
       {view === 'detail' && (

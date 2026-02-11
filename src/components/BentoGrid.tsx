@@ -3,9 +3,10 @@ import './BentoGrid.css';
 
 interface BentoGridProps {
     onProductClick: () => void;
+    onQuickBuy: () => void;
 }
 
-const BentoGrid: React.FC<BentoGridProps> = ({ onProductClick }) => {
+const BentoGrid: React.FC<BentoGridProps> = ({ onProductClick, onQuickBuy }) => {
     return (
         <section className="bento-section">
             <div className="product-grid">
@@ -16,7 +17,7 @@ const BentoGrid: React.FC<BentoGridProps> = ({ onProductClick }) => {
                         <h2 className="apple-card-title">Scent Not Found<br />바디워시</h2>
                         <p className="apple-card-desc">향을 입히지 않습니다. 원인을 제거합니다.</p>
                         <div className="apple-card-actions">
-                            <button className="apple-btn-fill" onClick={(e) => { e.stopPropagation(); onProductClick(); }}>구입하기</button>
+                            <button className="apple-btn-fill" onClick={(e) => { e.stopPropagation(); onQuickBuy(); }}>구입하기</button>
                         </div>
                     </div>
                     <div className="apple-card-image">
