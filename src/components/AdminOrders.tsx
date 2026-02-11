@@ -41,6 +41,9 @@ const AdminOrders: React.FC<AdminOrdersProps> = ({ onBack, userRole }) => {
     const [loading, setLoading] = useState(true);
     const [editingId, setEditingId] = useState<string | null>(null);
     const [trackingInput, setTrackingInput] = useState({ carrier: '', tracking_number: '' });
+    const [showBulkModal, setShowBulkModal] = useState(false);
+    const [bulkUploading, setBulkUploading] = useState(false);
+    const [bulkResult, setBulkResult] = useState<{ total: number; success: number; failed: number; errors: string[] } | null>(null);
 
     useEffect(() => {
         if (userRole === 'admin') {
@@ -64,13 +67,17 @@ const AdminOrders: React.FC<AdminOrdersProps> = ({ onBack, userRole }) => {
     };
 
     const updateStatus = async (orderId: string, newStatus: string) => {
-        const { error } = await supabase
+        const { data, error } = await supabase
             .from('orders')
             .update({ status: newStatus })
-            .eq('id', orderId);
+            .eq('id', orderId)
+            .select();
 
         if (error) {
             alert('상태 변경 실패: ' + error.message);
+        } else if (!data || data.length === 0) {
+            alert('상태 변경 실패: 권한이 없거나 해당 주문을 찾을 수 없습니다. Supabase RLS 정책을 확인해주세요.');
+            console.error('Update returned 0 rows. Check RLS policies on orders table.');
         } else {
             setOrders(prev => prev.map(o => o.id === orderId ? { ...o, status: newStatus } : o));
         }
@@ -82,17 +89,21 @@ const AdminOrders: React.FC<AdminOrdersProps> = ({ onBack, userRole }) => {
             return;
         }
 
-        const { error } = await supabase
+        const { data, error } = await supabase
             .from('orders')
             .update({
                 carrier: trackingInput.carrier,
                 tracking_number: trackingInput.tracking_number.trim(),
                 status: 'shipping',
             })
-            .eq('id', orderId);
+            .eq('id', orderId)
+            .select();
 
         if (error) {
             alert('송장 저장 실패: ' + error.message);
+        } else if (!data || data.length === 0) {
+            alert('송장 저장 실패: 권한이 없거나 해당 주문을 찾을 수 없습니다. Supabase RLS 정책을 확인해주세요.');
+            console.error('Update returned 0 rows. Check RLS policies on orders table.');
         } else {
             setOrders(prev => prev.map(o => o.id === orderId ? {
                 ...o,
@@ -170,6 +181,89 @@ const AdminOrders: React.FC<AdminOrdersProps> = ({ onBack, userRole }) => {
         XLSX.writeFile(wb, `404_주문내역_${dateStr}.xlsx`);
     };
 
+    // 송장 양식 다운로드
+    const downloadTrackingTemplate = () => {
+        const templateRows = [
+            { '주문번호': '', '택배사': 'CJ대한통운', '송장번호': '' },
+        ];
+        const ws = XLSX.utils.json_to_sheet(templateRows);
+        ws['!cols'] = [
+            { wch: 30 }, // 주문번호
+            { wch: 15 }, // 택배사
+            { wch: 20 }, // 송장번호
+        ];
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, '송장등록양식');
+        XLSX.writeFile(wb, '404_송장등록_양식.xlsx');
+    };
+
+    // 송장 일괄 업로드
+    const handleBulkUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        setBulkUploading(true);
+        setBulkResult(null);
+
+        try {
+            const buffer = await file.arrayBuffer();
+            const workbook = XLSX.read(buffer, { type: 'array' });
+            const sheet = workbook.Sheets[workbook.SheetNames[0]];
+            const rows: any[] = XLSX.utils.sheet_to_json(sheet);
+
+            if (rows.length === 0) {
+                alert('엑셀 파일에 데이터가 없습니다.');
+                setBulkUploading(false);
+                return;
+            }
+
+            let success = 0;
+            let failed = 0;
+            const errors: string[] = [];
+
+            for (const row of rows) {
+                const merchantUid = String(row['주문번호'] || '').trim();
+                const carrier = String(row['택배사'] || '').trim();
+                const trackingNumber = String(row['송장번호'] || '').trim();
+
+                if (!merchantUid || !trackingNumber) {
+                    failed++;
+                    errors.push(`빈 값: 주문번호="${merchantUid}", 송장번호="${trackingNumber}"`);
+                    continue;
+                }
+
+                const { data, error } = await supabase
+                    .from('orders')
+                    .update({
+                        carrier: carrier || 'CJ대한통운',
+                        tracking_number: trackingNumber,
+                        status: 'shipping',
+                    })
+                    .eq('merchant_uid', merchantUid)
+                    .select();
+
+                if (error) {
+                    failed++;
+                    errors.push(`${merchantUid}: ${error.message}`);
+                } else if (!data || data.length === 0) {
+                    failed++;
+                    errors.push(`${merchantUid}: 주문을 찾을 수 없음`);
+                } else {
+                    success++;
+                }
+            }
+
+            setBulkResult({ total: rows.length, success, failed, errors });
+            fetchOrders(); // 목록 새로고침
+        } catch (err: any) {
+            alert('파일 처리 중 오류: ' + err.message);
+        } finally {
+            setBulkUploading(false);
+            // reset file input
+            e.target.value = '';
+        }
+    };
+
     // Access Control
     if (userRole !== 'admin') {
         return (
@@ -190,9 +284,65 @@ const AdminOrders: React.FC<AdminOrdersProps> = ({ onBack, userRole }) => {
                 <h1>📦 주문 관리</h1>
                 <div className="admin-header-actions">
                     <button className="admin-excel-btn" onClick={downloadExcel}>📥 Excel 다운로드</button>
+                    <button className="admin-bulk-btn" onClick={() => setShowBulkModal(true)}>📤 송장 일괄 등록</button>
                     <button className="admin-refresh-btn" onClick={fetchOrders}>🔄 새로고침</button>
                 </div>
             </div>
+
+            {/* 송장 일괄 등록 모달 */}
+            {showBulkModal && (
+                <div className="bulk-modal-overlay" onClick={() => { setShowBulkModal(false); setBulkResult(null); }}>
+                    <div className="bulk-modal" onClick={e => e.stopPropagation()}>
+                        <h2>📤 송장 일괄 등록</h2>
+                        <p className="bulk-desc">택배사에서 발급받은 송장 엑셀을 업로드하면<br />주문 상태가 자동으로 '배송중'으로 변경됩니다.</p>
+
+                        <button className="bulk-template-btn" onClick={downloadTrackingTemplate}>
+                            📋 양식 다운로드 (.xlsx)
+                        </button>
+                        <p className="bulk-hint">필수 컬럼: <strong>주문번호</strong>, <strong>택배사</strong>, <strong>송장번호</strong></p>
+
+                        <label className="bulk-upload-area">
+                            {bulkUploading ? (
+                                <span>⏳ 처리 중...</span>
+                            ) : (
+                                <>
+                                    <span className="bulk-upload-icon">📂</span>
+                                    <span>.xlsx 또는 .csv 파일을 선택하세요</span>
+                                </>
+                            )}
+                            <input
+                                type="file"
+                                accept=".xlsx,.csv"
+                                onChange={handleBulkUpload}
+                                disabled={bulkUploading}
+                                style={{ display: 'none' }}
+                            />
+                        </label>
+
+                        {bulkResult && (
+                            <div className="bulk-result">
+                                <h3>처리 결과</h3>
+                                <div className="bulk-result-stats">
+                                    <span>총 <strong>{bulkResult.total}</strong>건</span>
+                                    <span className="result-success">성공 <strong>{bulkResult.success}</strong>건</span>
+                                    <span className="result-failed">실패 <strong>{bulkResult.failed}</strong>건</span>
+                                </div>
+                                {bulkResult.errors.length > 0 && (
+                                    <div className="bulk-errors">
+                                        {bulkResult.errors.map((err, i) => (
+                                            <div key={i} className="bulk-error-line">⚠️ {err}</div>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+                        )}
+
+                        <button className="bulk-close-btn" onClick={() => { setShowBulkModal(false); setBulkResult(null); }}>
+                            닫기
+                        </button>
+                    </div>
+                </div>
+            )}
 
             <div className="admin-stats">
                 <div className="stat-card">
