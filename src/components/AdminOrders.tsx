@@ -17,6 +17,7 @@ interface Order {
     tracking_number: string;
     carrier: string;
     shipping_memo: string;
+    shipped_at: string;
     created_at: string;
 }
 
@@ -49,7 +50,7 @@ const AdminOrders: React.FC<AdminOrdersProps> = ({ onBack, userRole }) => {
 
     useEffect(() => {
         if (userRole === 'admin') {
-            fetchOrders();
+            fetchOrders().then(() => autoConfirmOldOrders());
         }
     }, [userRole]);
 
@@ -66,6 +67,26 @@ const AdminOrders: React.FC<AdminOrdersProps> = ({ onBack, userRole }) => {
             setOrders(data || []);
         }
         setLoading(false);
+    };
+
+    // Auto-confirm orders shipped 7+ days ago
+    const autoConfirmOldOrders = async () => {
+        const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
+        const { data, error } = await supabase
+            .from('orders')
+            .update({ status: 'completed' })
+            .eq('status', 'shipping')
+            .not('shipped_at', 'is', null)
+            .lt('shipped_at', sevenDaysAgo)
+            .select();
+
+        if (!error && data && data.length > 0) {
+            console.log(`자동 구매확정: ${data.length}건`);
+            setOrders(prev => prev.map(o => {
+                const confirmed = data.find((d: any) => d.id === o.id);
+                return confirmed ? { ...o, status: 'completed' } : o;
+            }));
+        }
     };
 
     const updateStatus = async (orderId: string, newStatus: string) => {
