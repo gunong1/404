@@ -14,7 +14,7 @@ const BentoGrid: React.FC<BentoGridProps> = ({ onProductClick }) => {
                     <div className="apple-card-text">
                         <span className="apple-badge">신상품</span>
                         <h2 className="apple-card-title">Scent Not Found<br />바디워시</h2>
-                        <p className="apple-card-desc">향을 입히지 않습니다. 원인을 삭제합니다.</p>
+                        <p className="apple-card-desc">향을 입히지 않습니다. 원인을 제거합니다.</p>
                         <div className="apple-card-actions">
                             <button className="apple-btn-fill" onClick={(e) => { e.stopPropagation(); onProductClick(); }}>구입하기</button>
                         </div>

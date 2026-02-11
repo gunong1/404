@@ -45,7 +45,7 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ onBack, onAddToCart, onBu
                     <span className="detail-subtitle">신상품</span>
                     <h1 className="detail-title">Scent Not Found 바디워시</h1>
                     <p className="detail-description">
-                        향을 입히지 않습니다. 원인을 삭제합니다.
+                        향을 입히지 않습니다. 원인을 제거합니다.
                     </p>
 
                     <div className="detail-specs">
@@ -100,7 +100,7 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ onBack, onAddToCart, onBu
                 <div className="detail-section">
                     <h3>제품 상세 설명</h3>
                     <p className="detail-text-highlight">Scent 404 Not Found : 감각의 초기화</p>
-                    <p className="detail-quote">"향을 덮지 않습니다. 냄새의 원인을 삭제합니다."</p>
+                    <p className="detail-quote">"향을 입히지 않습니다. 원인을 제거합니다."</p>
                     <p>404 바디워시는 불쾌한 체취의 주범인 '디아세틸(Diacetyl)'과 '노네날(Nonenal)'을 흡착하여 씻어내는 딥 클렌징 솔루션입니다. 인위적인 향료로 체취를 가리는 대신, 피부 본연의 무구한 상태로 되돌리세요.</p>
                     <ul className="detail-specs-list">
                         <li><strong>Effect:</strong> 체취 원인 물질 제거, 딥 클렌징</li>
