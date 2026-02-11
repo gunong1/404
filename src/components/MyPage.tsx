@@ -68,10 +68,17 @@ const MyPage: React.FC<MyPageProps> = ({ onBack, username, userEmail, savedAddre
 
     const fetchOrders = async () => {
         try {
-            const { data, error } = await supabase
+            let query = supabase
                 .from('orders')
                 .select('*')
                 .order('created_at', { ascending: false });
+
+            // Filter by buyer name to show only this user's orders
+            if (username) {
+                query = query.eq('buyer_name', username);
+            }
+
+            const { data, error } = await query;
 
             if (error) {
                 console.error('Error fetching orders:', error);
