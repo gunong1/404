@@ -42,13 +42,15 @@ const MyPage: React.FC<MyPageProps> = ({ onBack, username, userEmail, savedAddre
     // Load address from DB on mount
     useEffect(() => {
         fetchOrders();
+        console.log('[MyPage] userEmail:', userEmail);
         if (userEmail) {
             supabase
                 .from('users')
                 .select('address, detail_address, zipcode')
                 .eq('email', userEmail)
                 .maybeSingle()
-                .then(({ data }) => {
+                .then(({ data, error }) => {
+                    console.log('[MyPage] Address query result:', data, 'error:', error);
                     if (data && data.address) {
                         const addr = {
                             zipcode: data.zipcode || '',
@@ -59,6 +61,8 @@ const MyPage: React.FC<MyPageProps> = ({ onBack, username, userEmail, savedAddre
                         setAddrForm(addr);
                     }
                 });
+        } else {
+            console.log('[MyPage] No userEmail - skipping address load');
         }
     }, [userEmail]);
 
@@ -120,16 +124,38 @@ const MyPage: React.FC<MyPageProps> = ({ onBack, username, userEmail, savedAddre
         }
         // Save to DB directly
         if (userEmail) {
-            const { error } = await supabase
+            // Try update first
+            const { data: updated, error: updateErr } = await supabase
                 .from('users')
-                .upsert({
-                    email: userEmail,
+                .update({
                     address: addrForm.address,
                     detail_address: addrForm.addressDetail,
                     zipcode: addrForm.zipcode,
-                }, { onConflict: 'email' });
-            if (error) {
-                console.error('Address save error:', error);
+                })
+                .eq('email', userEmail)
+                .select();
+
+            // If no row was updated, insert new (OAuth users)
+            if (!updateErr && (!updated || updated.length === 0)) {
+                const { error: insertErr } = await supabase
+                    .from('users')
+                    .insert({
+                        username: userEmail.split('@')[0] + '_' + Date.now(),
+                        password: 'oauth_user',
+                        name: username,
+                        email: userEmail,
+                        phone: '',
+                        address: addrForm.address,
+                        detail_address: addrForm.addressDetail,
+                        zipcode: addrForm.zipcode,
+                    });
+                if (insertErr) {
+                    console.error('Address insert error:', insertErr);
+                    alert('주소 저장 중 오류가 발생했습니다.');
+                    return;
+                }
+            } else if (updateErr) {
+                console.error('Address update error:', updateErr);
                 alert('주소 저장 중 오류가 발생했습니다.');
                 return;
             }

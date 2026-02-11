@@ -171,16 +171,38 @@ const Checkout: React.FC<CheckoutProps> = ({ items, onBack, totalAmount, onOrder
             if (orderId) {
                 // Save default address if checked
                 if (saveAsDefault && userEmail) {
-                    const { error: addrError } = await supabase
+                    console.log('[Checkout] Saving address for email:', userEmail);
+                    // Try update first (for existing users)
+                    const { data: updated, error: updateErr } = await supabase
                         .from('users')
-                        .upsert({
-                            email: userEmail,
-                            name: buyer.name,
+                        .update({
                             address: shipping.address,
                             detail_address: shipping.addressDetail,
                             zipcode: shipping.zipcode,
-                        }, { onConflict: 'email' });
-                    if (addrError) console.error('Address save error:', addrError);
+                        })
+                        .eq('email', userEmail)
+                        .select();
+
+                    console.log('[Checkout] Update result:', updated, 'error:', updateErr);
+
+                    // If no row was updated, insert a new one (OAuth users)
+                    if (!updateErr && (!updated || updated.length === 0)) {
+                        console.log('[Checkout] No existing row, inserting new user');
+                        const { error: insertErr } = await supabase
+                            .from('users')
+                            .insert({
+                                username: userEmail.split('@')[0] + '_' + Date.now(),
+                                password: 'oauth_user',
+                                name: buyer.name,
+                                email: userEmail,
+                                phone: buyer.phone || '',
+                                address: shipping.address,
+                                detail_address: shipping.addressDetail,
+                                zipcode: shipping.zipcode,
+                            });
+                        if (insertErr) console.error('[Checkout] Insert error:', insertErr);
+                        else console.log('[Checkout] Address inserted successfully');
+                    }
                 }
                 onOrderComplete(orderId, buyer.name, `${shipping.address} ${shipping.addressDetail}`.trim());
             }
