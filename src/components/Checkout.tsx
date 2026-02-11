@@ -18,6 +18,7 @@ interface ShippingInfo {
     address: string;
     addressDetail: string;
     memo: string;
+    customMemo: string;
 }
 
 interface CheckoutProps {
@@ -52,6 +53,7 @@ const Checkout: React.FC<CheckoutProps> = ({ items, onBack, totalAmount, onOrder
         address: savedAddress?.address || '',
         addressDetail: savedAddress?.addressDetail || '',
         memo: '',
+        customMemo: '',
     });
 
     const [isSameAsBuyer, setIsSameAsBuyer] = useState(true);
@@ -81,7 +83,8 @@ const Checkout: React.FC<CheckoutProps> = ({ items, onBack, totalAmount, onOrder
     };
 
     const handleShippingChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-        setShipping({ ...shipping, [e.target.name]: e.target.value });
+        const { name, value } = e.target;
+        setShipping(prev => ({ ...prev, [name]: value }));
     };
 
     const toggleSameAsBuyer = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -135,7 +138,7 @@ const Checkout: React.FC<CheckoutProps> = ({ items, onBack, totalAmount, onOrder
                     tel: buyer.phone,
                 },
                 shippingAddress: `${shipping.address} ${shipping.addressDetail}`.trim(),
-                shippingMemo: shipping.memo,
+                shippingMemo: shipping.memo === '__custom__' ? shipping.customMemo : shipping.memo,
                 items: items.map(item => ({ name: item.name, quantity: item.quantity, price: item.price })),
                 buyerPostcode: shipping.zipcode,
             };
@@ -299,8 +302,14 @@ const Checkout: React.FC<CheckoutProps> = ({ items, onBack, totalAmount, onOrder
                             <select
                                 id="memo"
                                 name="memo"
-                                value={shipping.memo}
-                                onChange={handleShippingChange}
+                                value={shipping.memo === '__custom__' ? '__custom__' : shipping.memo}
+                                onChange={(e) => {
+                                    if (e.target.value === '__custom__') {
+                                        handleShippingChange({ target: { name: 'memo', value: '__custom__' } } as any);
+                                    } else {
+                                        handleShippingChange(e);
+                                    }
+                                }}
                             >
                                 <option value="">배송 메모를 선택해주세요</option>
                                 <option value="문 앞에 놓아주세요">문 앞에 놓아주세요</option>
@@ -308,7 +317,19 @@ const Checkout: React.FC<CheckoutProps> = ({ items, onBack, totalAmount, onOrder
                                 <option value="택배함에 넣어주세요">택배함에 넣어주세요</option>
                                 <option value="배송 전 연락 바랍니다">배송 전 연락 바랍니다</option>
                                 <option value="부재 시 휴대폰으로 연락 바랍니다">부재 시 휴대폰으로 연락 바랍니다</option>
+                                <option value="__custom__">직접 입력</option>
                             </select>
+                            {shipping.memo === '__custom__' && (
+                                <input
+                                    type="text"
+                                    name="customMemo"
+                                    placeholder="배송 메모를 직접 입력해주세요"
+                                    onChange={(e) => {
+                                        handleShippingChange({ target: { name: 'customMemo', value: e.target.value } } as any);
+                                    }}
+                                    style={{ marginTop: '8px' }}
+                                />
+                            )}
                         </div>
                     </div>
 
