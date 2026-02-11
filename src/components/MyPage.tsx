@@ -25,21 +25,42 @@ interface SavedAddress {
 interface MyPageProps {
     onBack: () => void;
     username: string;
+    userEmail?: string;
     savedAddress?: SavedAddress;
     onAddressChange?: (addr: SavedAddress) => void;
 }
 
-const MyPage: React.FC<MyPageProps> = ({ onBack, username, savedAddress, onAddressChange }) => {
+const MyPage: React.FC<MyPageProps> = ({ onBack, username, userEmail, savedAddress, onAddressChange }) => {
     const [orders, setOrders] = useState<Order[]>([]);
     const [loading, setLoading] = useState(true);
     const [isEditingAddr, setIsEditingAddr] = useState(false);
     const [addrForm, setAddrForm] = useState<SavedAddress>(
         savedAddress || { zipcode: '', address: '', addressDetail: '' }
     );
+    const [localAddress, setLocalAddress] = useState<SavedAddress | undefined>(savedAddress);
 
+    // Load address from DB on mount
     useEffect(() => {
         fetchOrders();
-    }, []);
+        if (userEmail) {
+            supabase
+                .from('users')
+                .select('address, detail_address, zipcode')
+                .eq('email', userEmail)
+                .maybeSingle()
+                .then(({ data }) => {
+                    if (data && data.address) {
+                        const addr = {
+                            zipcode: data.zipcode || '',
+                            address: data.address || '',
+                            addressDetail: data.detail_address || '',
+                        };
+                        setLocalAddress(addr);
+                        setAddrForm(addr);
+                    }
+                });
+        }
+    }, [userEmail]);
 
     const fetchOrders = async () => {
         try {
@@ -92,11 +113,28 @@ const MyPage: React.FC<MyPageProps> = ({ onBack, username, savedAddress, onAddre
         }).open();
     };
 
-    const handleSaveAddress = () => {
+    const handleSaveAddress = async () => {
         if (!addrForm.address.trim()) {
             alert('주소를 검색해주세요.');
             return;
         }
+        // Save to DB directly
+        if (userEmail) {
+            const { error } = await supabase
+                .from('users')
+                .upsert({
+                    email: userEmail,
+                    address: addrForm.address,
+                    detail_address: addrForm.addressDetail,
+                    zipcode: addrForm.zipcode,
+                }, { onConflict: 'email' });
+            if (error) {
+                console.error('Address save error:', error);
+                alert('주소 저장 중 오류가 발생했습니다.');
+                return;
+            }
+        }
+        setLocalAddress(addrForm);
         if (onAddressChange) {
             onAddressChange(addrForm);
         }
@@ -104,7 +142,7 @@ const MyPage: React.FC<MyPageProps> = ({ onBack, username, savedAddress, onAddre
         alert('배송지가 저장되었습니다.');
     };
 
-    const hasAddress = savedAddress && savedAddress.address;
+    const hasAddress = localAddress && localAddress.address;
 
     const handleConfirmPurchase = async (orderId: string) => {
         if (!confirm('구매를 확정하시겠습니까? 확정 후에는 반품/환불이 어려울 수 있습니다.')) return;
@@ -151,14 +189,14 @@ const MyPage: React.FC<MyPageProps> = ({ onBack, username, savedAddress, onAddre
                                 <div className="address-info">
                                     <span className="address-badge">기본 배송지</span>
                                     <p className="address-text">
-                                        [{savedAddress!.zipcode}] {savedAddress!.address}
+                                        [{localAddress!.zipcode}] {localAddress!.address}
                                     </p>
-                                    {savedAddress!.addressDetail && (
-                                        <p className="address-detail-text">{savedAddress!.addressDetail}</p>
+                                    {localAddress!.addressDetail && (
+                                        <p className="address-detail-text">{localAddress!.addressDetail}</p>
                                     )}
                                 </div>
                                 <button className="address-edit-btn" onClick={() => {
-                                    setAddrForm(savedAddress!);
+                                    setAddrForm(localAddress!);
                                     setIsEditingAddr(true);
                                 }}>
                                     수정

@@ -407,6 +407,7 @@ function App() {
         <MyPage
           onBack={() => setView('home')}
           username={username}
+          userEmail={userEmail}
           savedAddress={savedAddress}
           onAddressChange={(addr) => { setSavedAddress(addr); localStorage.setItem('saved_address', JSON.stringify(addr)); }}
         />
