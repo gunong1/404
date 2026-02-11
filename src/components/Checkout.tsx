@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import './Checkout.css';
 import { usePayment } from '../hooks/usePayment';
+import { supabase } from '../lib/supabase';
 
 interface CartItem {
     id: string;
@@ -58,7 +59,30 @@ const Checkout: React.FC<CheckoutProps> = ({ items, onBack, totalAmount, onOrder
 
     const [isSameAsBuyer, setIsSameAsBuyer] = useState(true);
     const [isProcessing, setIsProcessing] = useState(false);
+    const [saveAsDefault, setSaveAsDefault] = useState(false);
     const phoneInputRef = useRef<HTMLInputElement>(null);
+
+    // Load default address from DB
+    useEffect(() => {
+        const loadDefaultAddress = async () => {
+            if (!userEmail) return;
+            const { data } = await supabase
+                .from('users')
+                .select('address, detail_address, zipcode')
+                .eq('email', userEmail)
+                .single();
+
+            if (data && data.address) {
+                setShipping(prev => ({
+                    ...prev,
+                    zipcode: prev.zipcode || data.zipcode || '',
+                    address: prev.address || data.address || '',
+                    addressDetail: prev.addressDetail || data.detail_address || '',
+                }));
+            }
+        };
+        loadDefaultAddress();
+    }, [userEmail]);
 
     // Re-consent: alert and focus phone input if phone is missing (SNS login without phone permission)
     useEffect(() => {
@@ -145,6 +169,17 @@ const Checkout: React.FC<CheckoutProps> = ({ items, onBack, totalAmount, onOrder
 
             const orderId = await requestPayment(paymentData);
             if (orderId) {
+                // Save default address if checked
+                if (saveAsDefault && userEmail) {
+                    await supabase
+                        .from('users')
+                        .update({
+                            address: shipping.address,
+                            detail_address: shipping.addressDetail,
+                            zipcode: shipping.zipcode,
+                        })
+                        .eq('email', userEmail);
+                }
                 onOrderComplete(orderId, buyer.name, `${shipping.address} ${shipping.addressDetail}`.trim());
             }
         } catch (error) {
@@ -296,6 +331,16 @@ const Checkout: React.FC<CheckoutProps> = ({ items, onBack, totalAmount, onOrder
                                 value={shipping.addressDetail}
                                 onChange={handleShippingChange}
                             />
+                        </div>
+                        <div className="form-group-checkbox">
+                            <label className="save-address-label">
+                                <input
+                                    type="checkbox"
+                                    checked={saveAsDefault}
+                                    onChange={(e) => setSaveAsDefault(e.target.checked)}
+                                />
+                                <span>기본 배송지로 저장</span>
+                            </label>
                         </div>
                         <div className="form-group">
                             <label htmlFor="memo">배송 메모</label>
