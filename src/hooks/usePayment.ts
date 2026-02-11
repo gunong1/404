@@ -42,8 +42,9 @@ export const usePayment = () => {
                 payMethod: "CARD",
                 windowType: {
                     pc: "IFRAME",
-                    mobile: "POPUP",
+                    mobile: "REDIRECTION",
                 },
+                redirectUrl: window.location.origin,
                 customer: {
                     fullName: data.buyer?.name,
                     phoneNumber: data.buyer?.tel,
