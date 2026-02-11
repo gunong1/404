@@ -309,6 +309,8 @@ function App() {
     setUserPhone('');
     setUserRole('user');
     localStorage.removeItem('session_user');
+    localStorage.removeItem('saved_address');
+    setSavedAddress({ zipcode: '', address: '', addressDetail: '' });
     setView('home');
     alert('로그아웃 되었습니다.');
   }
