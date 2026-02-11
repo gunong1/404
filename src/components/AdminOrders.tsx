@@ -164,6 +164,7 @@ const AdminOrders: React.FC<AdminOrdersProps> = ({ onBack, userRole }) => {
             if (order.order_items && Array.isArray(order.order_items)) {
                 order.order_items.forEach((item: any) => {
                     rows.push({
+                        '주문번호': order.merchant_uid || '',
                         '수령자명': order.buyer_name || '',
                         '수령자 연락처': order.buyer_tel || '',
                         '우편번호': order.buyer_postcode || '',
@@ -175,6 +176,7 @@ const AdminOrders: React.FC<AdminOrdersProps> = ({ onBack, userRole }) => {
                 });
             } else {
                 rows.push({
+                    '주문번호': order.merchant_uid || '',
                     '수령자명': order.buyer_name || '',
                     '수령자 연락처': order.buyer_tel || '',
                     '우편번호': order.buyer_postcode || '',
@@ -189,6 +191,7 @@ const AdminOrders: React.FC<AdminOrdersProps> = ({ onBack, userRole }) => {
         const ws = XLSX.utils.json_to_sheet(rows);
         // 컬럼 너비 자동 조정
         ws['!cols'] = [
+            { wch: 18 }, // 주문번호
             { wch: 12 }, // 수령자명
             { wch: 16 }, // 연락처
             { wch: 8 },  // 우편번호
@@ -414,7 +417,7 @@ const AdminOrders: React.FC<AdminOrdersProps> = ({ onBack, userRole }) => {
                                     <td className="td-date">{formatDate(order.created_at)}</td>
                                     <td className="td-uid">
                                         <span className="uid-text" title={order.merchant_uid}>
-                                            {order.merchant_uid?.slice(0, 16)}...
+                                            {order.merchant_uid}
                                         </span>
                                     </td>
                                     <td className="td-buyer">

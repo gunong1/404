@@ -83,7 +83,10 @@ export const usePayment = () => {
         try {
             // Start observing for SDK-injected elements
             setupPaymentIframeObserver();
-            const paymentId = `pay${Date.now()}`;
+            const now = new Date();
+            const datePrefix = `${String(now.getFullYear()).slice(2)}${String(now.getMonth() + 1).padStart(2, '0')}${String(now.getDate()).padStart(2, '0')}`;
+            const randomSuffix = Math.random().toString(36).substring(2, 6).toUpperCase();
+            const paymentId = `ORD-${datePrefix}-${randomSuffix}`;
 
             // Save pending order to sessionStorage (survives mobile REDIRECTION page reload)
             sessionStorage.setItem('pending_order', JSON.stringify({
