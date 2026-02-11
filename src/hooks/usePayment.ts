@@ -40,6 +40,10 @@ export const usePayment = () => {
                 totalAmount: data.totalAmount,
                 currency: "CURRENCY_KRW",
                 payMethod: "CARD",
+                windowType: {
+                    pc: "IFRAME",
+                    mobile: "POPUP",
+                },
                 customer: {
                     fullName: data.buyer?.name,
                     phoneNumber: data.buyer?.tel,
