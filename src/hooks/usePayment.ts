@@ -109,7 +109,6 @@ export const usePayment = () => {
                 orderName: data.orderName,
                 totalAmount: data.totalAmount,
                 currency: "CURRENCY_KRW",
-                pg: "kcp.IP5RQ",
                 payMethod: "CARD",
                 windowType: {
                     pc: "IFRAME",
