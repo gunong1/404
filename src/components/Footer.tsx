@@ -28,7 +28,7 @@ const Footer: React.FC = () => {
 
                     <div className="footer-contact">
                         <h4>고객센터</h4>
-                        <p className="cs-email-highlight">📧 middlebigdog@naver.com</p>
+                        <p className="cs-email-highlight">📧 cs@404notfound.co.kr</p>
                         <p className="cs-hours">평일 10:00 - 17:00 (점심 12:00 - 13:00)</p>
                         <p className="cs-hours">토/일/공휴일 휴무</p>
                     </div>
