@@ -66,6 +66,8 @@ serve(async (req) => {
                     buyer_postcode: orderData.buyer_postcode,
                     order_items: orderData.order_items,
                     shipping_memo: orderData.shipping_memo,
+                    receiver_name: orderData.receiver_name || '',
+                    receiver_tel: orderData.receiver_tel || '',
                     status: "paid", // 검증 완료된 상태
                 },
             ])

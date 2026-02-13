@@ -19,6 +19,8 @@ interface PaymentData {
     shippingMemo?: string;
     items?: { name: string; quantity: number; price: number }[];
     buyerPostcode?: string;
+    receiverName?: string;
+    receiverTel?: string;
 }
 
 
@@ -171,6 +173,8 @@ export const usePayment = () => {
                         buyer_postcode: data.buyerPostcode || '',
                         order_items: data.items || [],
                         shipping_memo: data.shippingMemo || '',
+                        receiver_name: data.receiverName || '',
+                        receiver_tel: data.receiverTel || '',
                     }
                 }
             });

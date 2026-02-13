@@ -75,7 +75,8 @@ const Checkout: React.FC<CheckoutProps> = ({ items, onBack, totalAmount, onOrder
     const [selectedCouponId, setSelectedCouponId] = useState<number | null>(null);
     const selectedCoupon = coupons.find(c => c.id === selectedCouponId);
     const couponDiscount = selectedCoupon ? selectedCoupon.discount_amount : 0;
-    const finalAmount = Math.max(0, totalAmount - couponDiscount);
+    const shippingFee = totalAmount >= 50000 ? 0 : 3000;
+    const finalAmount = Math.max(0, totalAmount - couponDiscount + shippingFee);
 
     // Load default address from DB
     useEffect(() => {
@@ -195,6 +196,8 @@ const Checkout: React.FC<CheckoutProps> = ({ items, onBack, totalAmount, onOrder
                 shippingMemo: shipping.memo === '__custom__' ? shipping.customMemo : shipping.memo,
                 items: items.map(item => ({ name: item.name, quantity: item.quantity, price: item.price })),
                 buyerPostcode: shipping.zipcode,
+                receiverName: shipping.name,
+                receiverTel: shipping.phone,
                 couponDiscount,
             };
 
@@ -496,9 +499,9 @@ const Checkout: React.FC<CheckoutProps> = ({ items, onBack, totalAmount, onOrder
                         <span>상품 금액</span>
                         <span>₩{totalAmount.toLocaleString()}</span>
                     </div>
-                    {coupons.length > 0 && (
-                        <div className="coupon-section">
-                            <label className="coupon-label">🎟️ 쿠폰 적용</label>
+                    <div className="coupon-section">
+                        <label className="coupon-label">🎟️ 쿠폰 적용</label>
+                        {coupons.length > 0 ? (
                             <select
                                 className="coupon-select"
                                 value={selectedCouponId || ''}
@@ -511,8 +514,10 @@ const Checkout: React.FC<CheckoutProps> = ({ items, onBack, totalAmount, onOrder
                                     </option>
                                 ))}
                             </select>
-                        </div>
-                    )}
+                        ) : (
+                            <p className="no-coupon-text">사용 가능한 쿠폰이 없습니다</p>
+                        )}
+                    </div>
                     {couponDiscount > 0 && (
                         <div className="summary-row coupon-discount-row">
                             <span>쿠폰 할인</span>
@@ -521,8 +526,15 @@ const Checkout: React.FC<CheckoutProps> = ({ items, onBack, totalAmount, onOrder
                     )}
                     <div className="summary-row">
                         <span>배송비</span>
-                        <span>무료</span>
+                        {shippingFee === 0 ? (
+                            <span className="free-shipping">무료</span>
+                        ) : (
+                            <span>₩{shippingFee.toLocaleString()}</span>
+                        )}
                     </div>
+                    {totalAmount < 50000 && (
+                        <p className="shipping-notice">₩{(50000 - totalAmount).toLocaleString()} 더 구매 시 무료배송!</p>
+                    )}
                     <div className="summary-divider"></div>
                     <div className="summary-total">
                         <span>최종 결제 금액</span>

@@ -12,6 +12,8 @@ interface Order {
     buyer_tel: string;
     buyer_addr: string;
     buyer_postcode: string;
+    receiver_name: string;
+    receiver_tel: string;
     order_items: any[];
     status: string;
     tracking_number: string;
@@ -165,8 +167,10 @@ const AdminOrders: React.FC<AdminOrdersProps> = ({ onBack, userRole }) => {
                 order.order_items.forEach((item: any) => {
                     rows.push({
                         '주문번호': order.merchant_uid || '',
-                        '수령자명': order.buyer_name || '',
-                        '수령자 연락처': order.buyer_tel || '',
+                        '주문자명': order.buyer_name || '',
+                        '주문자 연락처': order.buyer_tel || '',
+                        '수령자명': order.receiver_name || order.buyer_name || '',
+                        '수령자 연락처': order.receiver_tel || order.buyer_tel || '',
                         '우편번호': order.buyer_postcode || '',
                         '배송지 주소': order.buyer_addr || '',
                         '주문 상품명': item.name || '',
@@ -177,8 +181,10 @@ const AdminOrders: React.FC<AdminOrdersProps> = ({ onBack, userRole }) => {
             } else {
                 rows.push({
                     '주문번호': order.merchant_uid || '',
-                    '수령자명': order.buyer_name || '',
-                    '수령자 연락처': order.buyer_tel || '',
+                    '주문자명': order.buyer_name || '',
+                    '주문자 연락처': order.buyer_tel || '',
+                    '수령자명': order.receiver_name || order.buyer_name || '',
+                    '수령자 연락처': order.receiver_tel || order.buyer_tel || '',
                     '우편번호': order.buyer_postcode || '',
                     '배송지 주소': order.buyer_addr || '',
                     '주문 상품명': '-',
@@ -192,8 +198,10 @@ const AdminOrders: React.FC<AdminOrdersProps> = ({ onBack, userRole }) => {
         // 컬럼 너비 자동 조정
         ws['!cols'] = [
             { wch: 18 }, // 주문번호
+            { wch: 12 }, // 주문자명
+            { wch: 16 }, // 주문자 연락처
             { wch: 12 }, // 수령자명
-            { wch: 16 }, // 연락처
+            { wch: 16 }, // 수령자 연락처
             { wch: 8 },  // 우편번호
             { wch: 40 }, // 주소
             { wch: 30 }, // 상품명
@@ -403,6 +411,7 @@ const AdminOrders: React.FC<AdminOrdersProps> = ({ onBack, userRole }) => {
                                 <th>주문일시</th>
                                 <th>주문번호</th>
                                 <th>주문자</th>
+                                <th>수령자</th>
                                 <th>배송지</th>
                                 <th>상품</th>
                                 <th>결제금액</th>
@@ -423,6 +432,10 @@ const AdminOrders: React.FC<AdminOrdersProps> = ({ onBack, userRole }) => {
                                     <td className="td-buyer">
                                         <div className="buyer-name">{order.buyer_name || '-'}</div>
                                         <div className="buyer-tel">{order.buyer_tel || '-'}</div>
+                                    </td>
+                                    <td className="td-receiver">
+                                        <div className="buyer-name">{order.receiver_name || order.buyer_name || '-'}</div>
+                                        <div className="buyer-tel">{order.receiver_tel || order.buyer_tel || '-'}</div>
                                     </td>
                                     <td className="td-addr">
                                         {order.buyer_postcode && <span className="postcode">[{order.buyer_postcode}]</span>}

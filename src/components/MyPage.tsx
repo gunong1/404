@@ -73,11 +73,12 @@ const MyPage: React.FC<MyPageProps> = ({ onBack, username, userEmail, savedAddre
                     }
                 });
 
-            // Load coupons
+            // Load coupons (only unused)
             supabase
                 .from('user_coupons')
                 .select('*')
                 .eq('user_email', userEmail)
+                .eq('is_used', false)
                 .order('created_at', { ascending: false })
                 .then(({ data }) => {
                     if (data) setCoupons(data);

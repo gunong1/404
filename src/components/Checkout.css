@@ -446,6 +446,25 @@
     font-weight: 700;
 }
 
+.no-coupon-text {
+    color: #666;
+    font-size: 0.85rem;
+    margin: 0;
+    padding: 8px 0;
+}
+
+.free-shipping {
+    color: #4CAF50;
+    font-weight: 600;
+}
+
+.shipping-notice {
+    color: #ff9800;
+    font-size: 0.78rem;
+    margin: -8px 0 10px;
+    text-align: right;
+}
+
 @media (max-width: 900px) {
     .checkout-container {
         grid-template-columns: 1fr;
