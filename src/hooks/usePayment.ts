@@ -106,9 +106,9 @@ export const usePayment = () => {
                 storeId: STORE_ID,
                 channelKey: CHANNEL_KEY,
                 paymentId: paymentId,
-                orderName: data.orderName,
                 totalAmount: data.totalAmount,
                 currency: "CURRENCY_KRW",
+                pg: "kcp.IP5RQ",
                 payMethod: "CARD",
                 windowType: {
                     pc: "IFRAME",
@@ -120,7 +120,7 @@ export const usePayment = () => {
                     phoneNumber: data.buyer?.tel,
                     email: data.buyer?.email,
                 }
-            });
+            } as any);
 
             if (response?.code != null) {
                 // Payment failed or cancelled
@@ -147,11 +147,11 @@ export const usePayment = () => {
             // For this MVP, we save to Supabase if we have a paymentId (and implicitly success/pending).
 
             // Save order to Supabase
-            const { error } = await supabase
-                .from('orders')
-                .insert([
-                    {
-                        merchant_uid: paymentId,
+            // 2. Supabase Edge Function 호출 (결제 검증 및 주문 생성)
+            const { data: result, error: functionError } = await supabase.functions.invoke('verify-payment', {
+                body: {
+                    paymentId,
+                    orderData: {
                         amount: data.totalAmount,
                         buyer_name: data.buyer?.name,
                         buyer_email: data.buyer?.email || '',
@@ -160,18 +160,20 @@ export const usePayment = () => {
                         buyer_postcode: data.buyerPostcode || '',
                         order_items: data.items || [],
                         shipping_memo: data.shippingMemo || '',
-                        status: 'paid',
-                    },
-                ]);
+                    }
+                }
+            });
 
-            if (error) {
-                console.error('Error saving order:', error);
-                alert('결제는 성공했으나 주문 저장에 실패했습니다. 관리자에게 문의해주세요.');
+            if (functionError) {
+                console.error('Edge Function Error:', functionError);
+                // 결제는 성공했으나 검증/저장 실패 시 처리 (사용자에게 알림 등)
+                // 검증 실패 시 결제 취소 API를 호출해야 할 수도 있음 (현재 범위 외)
+                alert('결제 검증에 실패했습니다. 관리자에게 문의해주세요.');
                 return null;
-            } else {
-                console.log('Order saved to Supabase');
-                return paymentId;
             }
+
+            console.log('Payment verified and order saved:', result);
+            return paymentId;
 
         } catch (error) {
             console.error('Payment Error:', error);
