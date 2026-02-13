@@ -19,7 +19,7 @@
 /* Top Section: Brand + Customer Service */
 .footer-top {
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
     align-items: flex-start;
     gap: 40px;
 }
