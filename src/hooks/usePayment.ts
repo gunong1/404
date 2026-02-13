@@ -128,7 +128,7 @@ export const usePayment = () => {
                 })),
                 bypass: {
                     kcp_v2: {
-                        tier_cd: "90404",
+                        tier_cd: "N404",
                     }
                 },
             } as any);
