@@ -57,6 +57,33 @@ function App() {
 
 
   // Helper to update session
+  // Issue welcome coupon (3,000원) - checks for duplicates
+  const issueWelcomeCoupon = async (email: string) => {
+    if (!email) return;
+    try {
+      // Check if welcome coupon already issued
+      const { data: existing } = await supabase
+        .from('user_coupons')
+        .select('id')
+        .eq('user_email', email)
+        .eq('coupon_name', '회원가입 환영 쿠폰')
+        .maybeSingle();
+      if (existing) return; // Already issued
+
+      await supabase.from('user_coupons').insert({
+        user_email: email,
+        coupon_name: '회원가입 환영 쿠폰',
+        discount_amount: 3000,
+        min_order_amount: 0,
+        is_used: false,
+        expires_at: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(), // 30 days
+      });
+      console.log('[Coupon] Welcome coupon issued for', email);
+    } catch (err) {
+      console.error('[Coupon] Failed to issue:', err);
+    }
+  };
+
   const updateSession = async (name: string, email: string, phone: string, role: string = 'user') => {
     setIsLoggedIn(true);
     setUsername(name);
@@ -86,6 +113,8 @@ function App() {
           localStorage.setItem('saved_address', JSON.stringify(addr));
         }
       }
+      // Issue welcome coupon for OAuth users on first login
+      issueWelcomeCoupon(email);
     }
     setUserRole(resolvedRole);
     localStorage.setItem('session_user', JSON.stringify({ name, email, phone, role: resolvedRole }));
@@ -358,8 +387,13 @@ function App() {
       return false;
     }
 
+    // Issue welcome coupon
+    if (userInfo.email) {
+      await issueWelcomeCoupon(userInfo.email);
+    }
+
     setTimeout(() => {
-      alert('회원가입이 완료되었습니다! 로그인해주세요.');
+      alert('회원가입이 완료되었습니다! 🎉 3,000원 환영 쿠폰이 발급되었습니다. 로그인해주세요.');
     }, 100);
     return true;
   };

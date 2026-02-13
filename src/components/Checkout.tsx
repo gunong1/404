@@ -11,6 +11,14 @@ interface CartItem {
     image: string;
 }
 
+interface Coupon {
+    id: number;
+    coupon_name: string;
+    discount_amount: number;
+    min_order_amount: number;
+    expires_at: string;
+}
+
 interface ShippingInfo {
     name: string;
     phone: string;
@@ -62,6 +70,13 @@ const Checkout: React.FC<CheckoutProps> = ({ items, onBack, totalAmount, onOrder
     const [saveAsDefault, setSaveAsDefault] = useState(false);
     const phoneInputRef = useRef<HTMLInputElement>(null);
 
+    // Coupon state
+    const [coupons, setCoupons] = useState<Coupon[]>([]);
+    const [selectedCouponId, setSelectedCouponId] = useState<number | null>(null);
+    const selectedCoupon = coupons.find(c => c.id === selectedCouponId);
+    const couponDiscount = selectedCoupon ? selectedCoupon.discount_amount : 0;
+    const finalAmount = Math.max(0, totalAmount - couponDiscount);
+
     // Load default address from DB
     useEffect(() => {
         const loadDefaultAddress = async () => {
@@ -82,6 +97,21 @@ const Checkout: React.FC<CheckoutProps> = ({ items, onBack, totalAmount, onOrder
             }
         };
         loadDefaultAddress();
+    }, [userEmail]);
+
+    // Load user coupons
+    useEffect(() => {
+        const loadCoupons = async () => {
+            if (!userEmail) return;
+            const { data } = await supabase
+                .from('user_coupons')
+                .select('id, coupon_name, discount_amount, min_order_amount, expires_at')
+                .eq('user_email', userEmail)
+                .eq('is_used', false)
+                .gte('expires_at', new Date().toISOString());
+            if (data) setCoupons(data);
+        };
+        loadCoupons();
     }, [userEmail]);
 
     // Re-consent: alert and focus phone input if phone is missing (SNS login without phone permission)
@@ -153,7 +183,7 @@ const Checkout: React.FC<CheckoutProps> = ({ items, onBack, totalAmount, onOrder
 
             const paymentData = {
                 orderName,
-                totalAmount,
+                totalAmount: finalAmount,
                 currency: "CURRENCY_KRW",
                 payMethod: "CARD",
                 buyer: {
@@ -165,10 +195,18 @@ const Checkout: React.FC<CheckoutProps> = ({ items, onBack, totalAmount, onOrder
                 shippingMemo: shipping.memo === '__custom__' ? shipping.customMemo : shipping.memo,
                 items: items.map(item => ({ name: item.name, quantity: item.quantity, price: item.price })),
                 buyerPostcode: shipping.zipcode,
+                couponDiscount,
             };
 
             const orderId = await requestPayment(paymentData);
             if (orderId) {
+                // Mark coupon as used
+                if (selectedCouponId) {
+                    await supabase
+                        .from('user_coupons')
+                        .update({ is_used: true })
+                        .eq('id', selectedCouponId);
+                }
                 // Save default address if checked
                 if (saveAsDefault && userEmail) {
                     console.log('[Checkout] Saving address for email:', userEmail);
@@ -458,6 +496,29 @@ const Checkout: React.FC<CheckoutProps> = ({ items, onBack, totalAmount, onOrder
                         <span>상품 금액</span>
                         <span>₩{totalAmount.toLocaleString()}</span>
                     </div>
+                    {coupons.length > 0 && (
+                        <div className="coupon-section">
+                            <label className="coupon-label">🎟️ 쿠폰 적용</label>
+                            <select
+                                className="coupon-select"
+                                value={selectedCouponId || ''}
+                                onChange={(e) => setSelectedCouponId(e.target.value ? Number(e.target.value) : null)}
+                            >
+                                <option value="">쿠폰을 선택해주세요</option>
+                                {coupons.filter(c => c.min_order_amount <= totalAmount).map(c => (
+                                    <option key={c.id} value={c.id}>
+                                        {c.coupon_name} (-₩{c.discount_amount.toLocaleString()})
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+                    )}
+                    {couponDiscount > 0 && (
+                        <div className="summary-row coupon-discount-row">
+                            <span>쿠폰 할인</span>
+                            <span className="coupon-discount-amount">-₩{couponDiscount.toLocaleString()}</span>
+                        </div>
+                    )}
                     <div className="summary-row">
                         <span>배송비</span>
                         <span>무료</span>
@@ -465,14 +526,14 @@ const Checkout: React.FC<CheckoutProps> = ({ items, onBack, totalAmount, onOrder
                     <div className="summary-divider"></div>
                     <div className="summary-total">
                         <span>최종 결제 금액</span>
-                        <span className="total-price">₩{totalAmount.toLocaleString()}</span>
+                        <span className="total-price">₩{finalAmount.toLocaleString()}</span>
                     </div>
                     <button
                         className="checkout-btn"
                         onClick={handleCheckout}
                         disabled={isProcessing || items.length === 0}
                     >
-                        {isProcessing ? '결제 진행 중...' : `₩${totalAmount.toLocaleString()} 결제하기`}
+                        {isProcessing ? '결제 진행 중...' : `₩${finalAmount.toLocaleString()} 결제하기`}
                     </button>
                 </div>
             </div>
