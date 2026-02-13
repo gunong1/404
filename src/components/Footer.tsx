@@ -43,10 +43,8 @@ const Footer: React.FC = () => {
                 </div>
 
                 <div className="footer-business">
-                    <p>상호: 코픽 (Kopick) | 대표자: 송치호 | 사업자등록번호: 687-09-02870</p>
-                    <p>통신판매업신고: 제 2025-대전서구-1854호 | 전화: 010-9156-8438</p>
-                    <p>주소: 대전광역시 서구 도산로 79, 1106동 705호</p>
-                    <p>이메일: middlebigdog@naver.com</p>
+                    <p>상호: 코픽 (Kopick) | 대표자: 송치호 | 사업자등록번호: 687-09-02870 | 통신판매업신고: 제 2025-대전서구-1854호</p>
+                    <p>주소: 대전광역시 서구 도산로 79, 1106동 705호 | 전화: 010-9156-8438 | 이메일: cs@404notfound.co.kr</p>
                 </div>
 
                 <div className="copyright">
