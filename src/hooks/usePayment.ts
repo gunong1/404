@@ -126,6 +126,12 @@ export const usePayment = () => {
                     amount: item.price,
                     quantity: item.quantity,
                 })),
+                bypass: {
+                    kcp_v2: {
+                        site_cd: "IP5RQ",
+                        shop_user_id: "90404",
+                    }
+                },
             } as any);
 
             if (response?.code != null) {
