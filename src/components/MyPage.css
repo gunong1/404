@@ -468,6 +468,120 @@
     color: #fff;
 }
 
+/* Coupon Box Section */
+.coupon-box-section {
+    margin-bottom: 40px;
+}
+
+.coupon-empty {
+    text-align: center;
+    padding: 40px 20px;
+    background: #111;
+    border: 1px dashed #333;
+    border-radius: 16px;
+    color: #666;
+    font-size: 0.95rem;
+}
+
+.coupon-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.coupon-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #111;
+    border: 1px solid #333;
+    border-radius: 16px;
+    padding: 20px 24px;
+    transition: border-color 0.2s;
+    position: relative;
+    overflow: hidden;
+}
+
+.coupon-card::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 5px;
+    background: #ff6b6b;
+}
+
+.coupon-card:hover {
+    border-color: #555;
+}
+
+.coupon-disabled {
+    opacity: 0.45;
+}
+
+.coupon-disabled::before {
+    background: #555;
+}
+
+.coupon-card-left {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.coupon-amount {
+    font-size: 1.6rem;
+    font-weight: 800;
+    color: #ff6b6b;
+    letter-spacing: -1px;
+}
+
+.coupon-disabled .coupon-amount {
+    color: #888;
+}
+
+.coupon-name-tag {
+    font-size: 0.85rem;
+    color: #aaa;
+    font-weight: 500;
+}
+
+.coupon-card-right {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 6px;
+}
+
+.coupon-condition {
+    font-size: 0.78rem;
+    color: #888;
+}
+
+.coupon-expiry {
+    font-size: 0.78rem;
+    color: #666;
+}
+
+.coupon-active-badge {
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: #4CAF50;
+    background: rgba(76, 175, 80, 0.15);
+    padding: 3px 10px;
+    border-radius: 20px;
+}
+
+.coupon-used-badge {
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: #999;
+    background: rgba(153, 153, 153, 0.15);
+    padding: 3px 10px;
+    border-radius: 20px;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
     .mypage-section {

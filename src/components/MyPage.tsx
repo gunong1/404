@@ -22,6 +22,16 @@ interface SavedAddress {
     addressDetail: string;
 }
 
+interface Coupon {
+    id: number;
+    coupon_name: string;
+    discount_amount: number;
+    min_order_amount: number;
+    is_used: boolean;
+    expires_at: string;
+    created_at: string;
+}
+
 interface MyPageProps {
     onBack: () => void;
     username: string;
@@ -38,6 +48,7 @@ const MyPage: React.FC<MyPageProps> = ({ onBack, username, userEmail, savedAddre
         savedAddress || { zipcode: '', address: '', addressDetail: '' }
     );
     const [localAddress, setLocalAddress] = useState<SavedAddress | undefined>(savedAddress);
+    const [coupons, setCoupons] = useState<Coupon[]>([]);
 
     // Load address from DB on mount
     useEffect(() => {
@@ -60,6 +71,16 @@ const MyPage: React.FC<MyPageProps> = ({ onBack, username, userEmail, savedAddre
                         setLocalAddress(addr);
                         setAddrForm(addr);
                     }
+                });
+
+            // Load coupons
+            supabase
+                .from('user_coupons')
+                .select('*')
+                .eq('user_email', userEmail)
+                .order('created_at', { ascending: false })
+                .then(({ data }) => {
+                    if (data) setCoupons(data);
                 });
         } else {
             console.log('[MyPage] No userEmail - skipping address load');
@@ -282,6 +303,44 @@ const MyPage: React.FC<MyPageProps> = ({ onBack, username, userEmail, savedAddre
                             <button className="addr-cancel-btn" onClick={() => setIsEditingAddr(false)}>취소</button>
                             <button className="addr-save-btn" onClick={handleSaveAddress}>저장</button>
                         </div>
+                    </div>
+                )}
+            </div>
+
+            {/* 나의 쿠폰함 */}
+            <div className="coupon-box-section">
+                <h2 className="section-title">
+                    🎟️ 나의 쿠폰함
+                    <span className="order-count">{coupons.filter(c => !c.is_used && new Date(c.expires_at) > new Date()).length}장</span>
+                </h2>
+                {coupons.length === 0 ? (
+                    <div className="coupon-empty">
+                        <p>보유 중인 쿠폰이 없습니다</p>
+                    </div>
+                ) : (
+                    <div className="coupon-list">
+                        {coupons.map((coupon) => {
+                            const isExpired = new Date(coupon.expires_at) <= new Date();
+                            const isUsable = !coupon.is_used && !isExpired;
+                            return (
+                                <div key={coupon.id} className={`coupon-card ${!isUsable ? 'coupon-disabled' : ''}`}>
+                                    <div className="coupon-card-left">
+                                        <span className="coupon-amount">₩{coupon.discount_amount.toLocaleString()}</span>
+                                        <span className="coupon-name-tag">{coupon.coupon_name}</span>
+                                    </div>
+                                    <div className="coupon-card-right">
+                                        {coupon.min_order_amount > 0 && (
+                                            <span className="coupon-condition">₩{coupon.min_order_amount.toLocaleString()} 이상 구매 시</span>
+                                        )}
+                                        <span className="coupon-expiry">
+                                            {isExpired ? '기간 만료' : `~ ${new Date(coupon.expires_at).toLocaleDateString('ko-KR')}`}
+                                        </span>
+                                        {coupon.is_used && <span className="coupon-used-badge">사용 완료</span>}
+                                        {isUsable && <span className="coupon-active-badge">사용 가능</span>}
+                                    </div>
+                                </div>
+                            );
+                        })}
                     </div>
                 )}
             </div>
