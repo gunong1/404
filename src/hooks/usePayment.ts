@@ -128,8 +128,7 @@ export const usePayment = () => {
                 })),
                 bypass: {
                     kcp_v2: {
-                        site_cd: "IP5RQ",
-                        shop_user_id: "90404",
+                        tier_cd: "90404",
                     }
                 },
             } as any);
