@@ -12,7 +12,9 @@ interface ProductDetailProps {
 
 const ProductDetail: React.FC<ProductDetailProps> = ({ onBack, onAddToCart, onBuyNow, isLoggedIn, onLoginClick }) => {
     const [quantity, setQuantity] = useState(1);
-    const basePrice = 18000;
+    const originalPrice = 32000;
+    const basePrice = 19800;
+    const discountRate = 38;
     const totalPrice = basePrice * quantity;
 
     const handleBuyNow = () => {
@@ -62,8 +64,12 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ onBack, onAddToCart, onBu
                     <div className="detail-divider"></div>
 
                     <div className="detail-price-area">
-                        <span className="detail-currency">₩</span>
-                        <span className="detail-amount">{totalPrice.toLocaleString()}</span>
+                        <span className="discount-badge">{discountRate}%</span>
+                        <span className="original-price">₩{(originalPrice * quantity).toLocaleString()}</span>
+                        <div className="sale-price">
+                            <span className="detail-currency">₩</span>
+                            <span className="detail-amount">{totalPrice.toLocaleString()}</span>
+                        </div>
                     </div>
 
                     <div className="detail-controls">
