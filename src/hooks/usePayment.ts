@@ -108,7 +108,7 @@ export const usePayment = () => {
                 paymentId: paymentId,
                 orderName: data.orderName,
                 totalAmount: data.totalAmount,
-                currency: "CURRENCY_KRW",
+                currency: "KRW",
                 payMethod: "CARD",
                 windowType: {
                     pc: "IFRAME",
@@ -119,7 +119,13 @@ export const usePayment = () => {
                     fullName: data.buyer?.name,
                     phoneNumber: data.buyer?.tel,
                     email: data.buyer?.email,
-                }
+                },
+                products: (data.items || []).map(item => ({
+                    id: item.name,
+                    name: item.name,
+                    amount: item.price,
+                    quantity: item.quantity,
+                })),
             } as any);
 
             if (response?.code != null) {
