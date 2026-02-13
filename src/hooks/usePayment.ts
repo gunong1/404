@@ -106,6 +106,7 @@ export const usePayment = () => {
                 storeId: STORE_ID,
                 channelKey: CHANNEL_KEY,
                 paymentId: paymentId,
+                orderName: data.orderName,
                 totalAmount: data.totalAmount,
                 currency: "CURRENCY_KRW",
                 pg: "kcp.IP5RQ",
