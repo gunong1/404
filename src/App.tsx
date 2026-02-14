@@ -234,7 +234,7 @@ function App() {
                 const user = naverLogin.user;
                 const name = user.getName() || user.getNickName() || '네이버 사용자';
                 const email = user.getEmail() || '';
-                const mobile = user.getMobile() || '';
+                const mobile = (user.getMobile() || '').replace(/-/g, '');
                 console.log('Naver user profile - name:', name, 'email:', email, 'mobile:', mobile);
                 updateSession(name, email, mobile);
               }
@@ -535,8 +535,18 @@ function App() {
           onBack={() => setView('home')}
           username={username}
           userEmail={userEmail}
+          userPhone={userPhone}
           savedAddress={savedAddress}
           onAddressChange={(addr) => { setSavedAddress(addr); localStorage.setItem('saved_address', JSON.stringify(addr)); }}
+          onPhoneChange={(phone) => {
+            setUserPhone(phone);
+            const session = localStorage.getItem('session_user');
+            if (session) {
+              const parsed = JSON.parse(session);
+              parsed.phone = phone;
+              localStorage.setItem('session_user', JSON.stringify(parsed));
+            }
+          }}
         />
       )}
       {view === 'admin' && (

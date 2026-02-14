@@ -36,11 +36,13 @@ interface MyPageProps {
     onBack: () => void;
     username: string;
     userEmail?: string;
+    userPhone?: string;
     savedAddress?: SavedAddress;
     onAddressChange?: (addr: SavedAddress) => void;
+    onPhoneChange?: (phone: string) => void;
 }
 
-const MyPage: React.FC<MyPageProps> = ({ onBack, username, userEmail, savedAddress, onAddressChange }) => {
+const MyPage: React.FC<MyPageProps> = ({ onBack, username, userEmail, userPhone, savedAddress, onAddressChange, onPhoneChange }) => {
     const [orders, setOrders] = useState<Order[]>([]);
     const [loading, setLoading] = useState(true);
     const [isEditingAddr, setIsEditingAddr] = useState(false);
@@ -50,26 +52,41 @@ const MyPage: React.FC<MyPageProps> = ({ onBack, username, userEmail, savedAddre
     const [localAddress, setLocalAddress] = useState<SavedAddress | undefined>(savedAddress);
     const [coupons, setCoupons] = useState<Coupon[]>([]);
 
+    // Profile edit states
+    const [isEditingPhone, setIsEditingPhone] = useState(false);
+    const [phoneForm, setPhoneForm] = useState(userPhone || '');
+    const [isEditingPassword, setIsEditingPassword] = useState(false);
+    const [passwordForm, setPasswordForm] = useState({ current: '', newPw: '', confirm: '' });
+    const [passwordMsg, setPasswordMsg] = useState('');
+    const [isOAuthUser, setIsOAuthUser] = useState(false);
+
     // Load address from DB on mount
     useEffect(() => {
         fetchOrders();
-        console.log('[MyPage] userEmail:', userEmail);
         if (userEmail) {
             supabase
                 .from('users')
-                .select('address, detail_address, zipcode')
+                .select('address, detail_address, zipcode, phone, password')
                 .eq('email', userEmail)
                 .maybeSingle()
-                .then(({ data, error }) => {
-                    console.log('[MyPage] Address query result:', data, 'error:', error);
-                    if (data && data.address) {
-                        const addr = {
-                            zipcode: data.zipcode || '',
-                            address: data.address || '',
-                            addressDetail: data.detail_address || '',
-                        };
-                        setLocalAddress(addr);
-                        setAddrForm(addr);
+                .then(({ data }) => {
+                    if (data) {
+                        if (data.address) {
+                            const addr = {
+                                zipcode: data.zipcode || '',
+                                address: data.address || '',
+                                addressDetail: data.detail_address || '',
+                            };
+                            setLocalAddress(addr);
+                            setAddrForm(addr);
+                        }
+                        if (data.phone) {
+                            setPhoneForm(data.phone);
+                        }
+                        // OAuth users have 'oauth_user' as password
+                        if (data.password === 'oauth_user') {
+                            setIsOAuthUser(true);
+                        }
                     }
                 });
 
@@ -83,8 +100,6 @@ const MyPage: React.FC<MyPageProps> = ({ onBack, username, userEmail, savedAddre
                 .then(({ data }) => {
                     if (data) setCoupons(data);
                 });
-        } else {
-            console.log('[MyPage] No userEmail - skipping address load');
         }
     }, [userEmail]);
 
@@ -95,7 +110,6 @@ const MyPage: React.FC<MyPageProps> = ({ onBack, username, userEmail, savedAddre
                 .select('*')
                 .order('created_at', { ascending: false });
 
-            // Filter by buyer email to show only this user's orders
             if (userEmail) {
                 query = query.eq('buyer_email', userEmail);
             }
@@ -151,9 +165,7 @@ const MyPage: React.FC<MyPageProps> = ({ onBack, username, userEmail, savedAddre
             alert('주소를 검색해주세요.');
             return;
         }
-        // Save to DB directly
         if (userEmail) {
-            // Try update first
             const { data: updated, error: updateErr } = await supabase
                 .from('users')
                 .update({
@@ -164,7 +176,6 @@ const MyPage: React.FC<MyPageProps> = ({ onBack, username, userEmail, savedAddre
                 .eq('email', userEmail)
                 .select();
 
-            // If no row was updated, insert new (OAuth users)
             if (!updateErr && (!updated || updated.length === 0)) {
                 const { error: insertErr } = await supabase
                     .from('users')
@@ -195,6 +206,77 @@ const MyPage: React.FC<MyPageProps> = ({ onBack, username, userEmail, savedAddre
         }
         setIsEditingAddr(false);
         alert('배송지가 저장되었습니다.');
+    };
+
+    const handleSavePhone = async () => {
+        const cleaned = phoneForm.replace(/[^0-9]/g, '');
+        if (!cleaned || cleaned.length < 10) {
+            alert('올바른 전화번호를 입력해주세요.');
+            return;
+        }
+        if (userEmail) {
+            const { error } = await supabase
+                .from('users')
+                .update({ phone: cleaned })
+                .eq('email', userEmail);
+            if (error) {
+                alert('전화번호 저장 중 오류가 발생했습니다.');
+                return;
+            }
+        }
+        setPhoneForm(cleaned);
+        if (onPhoneChange) onPhoneChange(cleaned);
+        setIsEditingPhone(false);
+        alert('전화번호가 변경되었습니다.');
+    };
+
+    const handleChangePassword = async () => {
+        if (!passwordForm.current) {
+            alert('현재 비밀번호를 입력해주세요.');
+            return;
+        }
+        if (!passwordForm.newPw || !passwordForm.confirm) {
+            alert('새 비밀번호를 입력해주세요.');
+            return;
+        }
+        if (passwordForm.newPw !== passwordForm.confirm) {
+            alert('새 비밀번호가 일치하지 않습니다.');
+            return;
+        }
+        const isValid = /^(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[!@#$%^&*?_~]).{8,}$/.test(passwordForm.newPw);
+        if (!isValid) {
+            alert('비밀번호는 영문+숫자+특수문자 포함 8자 이상이어야 합니다.');
+            return;
+        }
+
+        // Verify current password
+        if (userEmail) {
+            const { data: user } = await supabase
+                .from('users')
+                .select('password')
+                .eq('email', userEmail)
+                .maybeSingle();
+
+            if (!user || user.password !== passwordForm.current) {
+                alert('현재 비밀번호가 일치하지 않습니다.');
+                return;
+            }
+
+            const { error } = await supabase
+                .from('users')
+                .update({ password: passwordForm.newPw })
+                .eq('email', userEmail);
+
+            if (error) {
+                alert('비밀번호 변경 중 오류가 발생했습니다.');
+                return;
+            }
+        }
+
+        setPasswordForm({ current: '', newPw: '', confirm: '' });
+        setPasswordMsg('');
+        setIsEditingPassword(false);
+        alert('비밀번호가 변경되었습니다.');
     };
 
     const hasAddress = localAddress && localAddress.address;
@@ -232,80 +314,166 @@ const MyPage: React.FC<MyPageProps> = ({ onBack, username, userEmail, savedAddre
                 </div>
             </div>
 
-            {/* 배송지 관리 */}
-            <div className="address-section">
-                <h2 className="section-title">
-                    🏠 배송지 관리
-                </h2>
-                {!isEditingAddr ? (
-                    <div className="address-card">
-                        {hasAddress ? (
-                            <>
-                                <div className="address-info">
-                                    <span className="address-badge">기본 배송지</span>
-                                    <p className="address-text">
-                                        [{localAddress!.zipcode}] {localAddress!.address}
-                                    </p>
-                                    {localAddress!.addressDetail && (
-                                        <p className="address-detail-text">{localAddress!.addressDetail}</p>
-                                    )}
-                                </div>
-                                <button className="address-edit-btn" onClick={() => {
-                                    setAddrForm(localAddress!);
-                                    setIsEditingAddr(true);
-                                }}>
+            {/* 개인정보 수정 */}
+            <div className="profile-section">
+                <h2 className="section-title">⚙️ 개인정보 수정</h2>
+
+                {/* 전화번호 수정 */}
+                <div className="profile-card">
+                    <div className="profile-row">
+                        <span className="profile-label">📱 전화번호</span>
+                        {!isEditingPhone ? (
+                            <div className="profile-value-row">
+                                <span className="profile-value">{phoneForm || '등록된 전화번호가 없습니다'}</span>
+                                <button className="profile-edit-btn" onClick={() => setIsEditingPhone(true)}>
                                     수정
                                 </button>
-                            </>
+                            </div>
                         ) : (
-                            <div className="address-empty">
-                                <p>등록된 배송지가 없습니다</p>
-                                <button className="address-add-btn" onClick={() => setIsEditingAddr(true)}>
-                                    + 배송지 등록
-                                </button>
+                            <div className="profile-edit-form">
+                                <input
+                                    type="tel"
+                                    value={phoneForm}
+                                    onChange={(e) => setPhoneForm(e.target.value.replace(/[^0-9]/g, ''))}
+                                    placeholder="01012345678"
+                                    className="profile-input"
+                                />
+                                <div className="profile-edit-actions">
+                                    <button className="addr-cancel-btn" onClick={() => {
+                                        setPhoneForm(userPhone || '');
+                                        setIsEditingPhone(false);
+                                    }}>취소</button>
+                                    <button className="addr-save-btn" onClick={handleSavePhone}>저장</button>
+                                </div>
                             </div>
                         )}
                     </div>
-                ) : (
-                    <div className="address-form-card">
-                        <div className="addr-form-group">
-                            <label>우편번호</label>
-                            <div className="addr-zipcode-row">
-                                <input
-                                    type="text"
-                                    value={addrForm.zipcode}
-                                    readOnly
-                                    placeholder="우편번호"
-                                />
-                                <button type="button" onClick={handleSearchAddress}>
-                                    주소 검색
+                </div>
+
+                {/* 비밀번호 변경 */}
+                <div className="profile-card">
+                    <div className="profile-row">
+                        <span className="profile-label">🔒 비밀번호</span>
+                        {isOAuthUser ? (
+                            <div className="profile-value-row">
+                                <span className="profile-value oauth-note">소셜 로그인 계정은 비밀번호 변경이 불가합니다</span>
+                            </div>
+                        ) : !isEditingPassword ? (
+                            <div className="profile-value-row">
+                                <span className="profile-value">••••••••</span>
+                                <button className="profile-edit-btn" onClick={() => setIsEditingPassword(true)}>
+                                    변경
                                 </button>
                             </div>
-                        </div>
-                        <div className="addr-form-group">
-                            <label>주소</label>
-                            <input
-                                type="text"
-                                value={addrForm.address}
-                                readOnly
-                                placeholder="주소 검색을 눌러주세요"
-                            />
-                        </div>
-                        <div className="addr-form-group">
-                            <label>상세주소</label>
-                            <input
-                                type="text"
-                                value={addrForm.addressDetail}
-                                onChange={(e) => setAddrForm(prev => ({ ...prev, addressDetail: e.target.value }))}
-                                placeholder="상세주소를 입력하세요"
-                            />
-                        </div>
-                        <div className="addr-form-actions">
-                            <button className="addr-cancel-btn" onClick={() => setIsEditingAddr(false)}>취소</button>
-                            <button className="addr-save-btn" onClick={handleSaveAddress}>저장</button>
-                        </div>
+                        ) : (
+                            <div className="profile-edit-form">
+                                <input
+                                    type="password"
+                                    value={passwordForm.current}
+                                    onChange={(e) => setPasswordForm(prev => ({ ...prev, current: e.target.value }))}
+                                    placeholder="현재 비밀번호"
+                                    className="profile-input"
+                                />
+                                <input
+                                    type="password"
+                                    value={passwordForm.newPw}
+                                    onChange={(e) => {
+                                        const val = e.target.value;
+                                        setPasswordForm(prev => ({ ...prev, newPw: val }));
+                                        const isValid = /^(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[!@#$%^&*?_~]).{8,}$/.test(val);
+                                        setPasswordMsg(val ? (isValid ? '사용 가능한 안전한 비밀번호입니다.' : '영문+숫자+특수문자 포함 8자 이상') : '');
+                                    }}
+                                    placeholder="새 비밀번호"
+                                    className="profile-input"
+                                />
+                                {passwordMsg && (
+                                    <span className={`password-hint ${/^(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[!@#$%^&*?_~]).{8,}$/.test(passwordForm.newPw) ? 'valid' : 'invalid'}`}>
+                                        {passwordMsg}
+                                    </span>
+                                )}
+                                <input
+                                    type="password"
+                                    value={passwordForm.confirm}
+                                    onChange={(e) => setPasswordForm(prev => ({ ...prev, confirm: e.target.value }))}
+                                    placeholder="새 비밀번호 확인"
+                                    className="profile-input"
+                                />
+                                <div className="profile-edit-actions">
+                                    <button className="addr-cancel-btn" onClick={() => {
+                                        setPasswordForm({ current: '', newPw: '', confirm: '' });
+                                        setPasswordMsg('');
+                                        setIsEditingPassword(false);
+                                    }}>취소</button>
+                                    <button className="addr-save-btn" onClick={handleChangePassword}>변경</button>
+                                </div>
+                            </div>
+                        )}
                     </div>
-                )}
+                </div>
+
+                {/* 배송지 관리 */}
+                <div className="profile-card">
+                    <div className="profile-row">
+                        <span className="profile-label">🏠 배송지</span>
+                        {!isEditingAddr ? (
+                            <div className="profile-value-row">
+                                {hasAddress ? (
+                                    <>
+                                        <div className="address-info-compact">
+                                            <span className="address-badge">기본 배송지</span>
+                                            <p className="profile-value">
+                                                [{localAddress!.zipcode}] {localAddress!.address}
+                                                {localAddress!.addressDetail && ` ${localAddress!.addressDetail}`}
+                                            </p>
+                                        </div>
+                                        <button className="profile-edit-btn" onClick={() => {
+                                            setAddrForm(localAddress!);
+                                            setIsEditingAddr(true);
+                                        }}>수정</button>
+                                    </>
+                                ) : (
+                                    <>
+                                        <span className="profile-value">등록된 배송지가 없습니다</span>
+                                        <button className="profile-edit-btn" onClick={() => setIsEditingAddr(true)}>등록</button>
+                                    </>
+                                )}
+                            </div>
+                        ) : (
+                            <div className="profile-edit-form">
+                                <div className="addr-zipcode-row">
+                                    <input
+                                        type="text"
+                                        value={addrForm.zipcode}
+                                        readOnly
+                                        placeholder="우편번호"
+                                        className="profile-input"
+                                    />
+                                    <button type="button" className="addr-search-btn" onClick={handleSearchAddress}>
+                                        주소 검색
+                                    </button>
+                                </div>
+                                <input
+                                    type="text"
+                                    value={addrForm.address}
+                                    readOnly
+                                    placeholder="주소 검색을 눌러주세요"
+                                    className="profile-input"
+                                />
+                                <input
+                                    type="text"
+                                    value={addrForm.addressDetail}
+                                    onChange={(e) => setAddrForm(prev => ({ ...prev, addressDetail: e.target.value }))}
+                                    placeholder="상세주소를 입력하세요"
+                                    className="profile-input"
+                                />
+                                <div className="profile-edit-actions">
+                                    <button className="addr-cancel-btn" onClick={() => setIsEditingAddr(false)}>취소</button>
+                                    <button className="addr-save-btn" onClick={handleSaveAddress}>저장</button>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                </div>
             </div>
 
             {/* 나의 쿠폰함 */}
