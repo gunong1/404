@@ -84,9 +84,12 @@ const MyPage: React.FC<MyPageProps> = ({ onBack, username, userEmail, userPhone,
                             setPhoneForm(data.phone);
                         }
                         // OAuth users have 'oauth_user' as password
-                        if (data.password === 'oauth_user') {
+                        if (!data.password || data.password === 'oauth_user') {
                             setIsOAuthUser(true);
                         }
+                    } else {
+                        // No user row in DB = OAuth user who hasn't saved any info yet
+                        setIsOAuthUser(true);
                     }
                 });
 
