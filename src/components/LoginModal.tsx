@@ -266,7 +266,11 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onLogin, onSig
                                 type="tel"
                                 id="phone"
                                 ref={phoneRef}
-                                placeholder="010-0000-0000"
+                                placeholder="01012345678"
+                                onInput={(e) => {
+                                    const input = e.target as HTMLInputElement;
+                                    input.value = input.value.replace(/[^0-9]/g, '');
+                                }}
                             />
                         </div>
                     )}

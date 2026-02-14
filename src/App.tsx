@@ -287,9 +287,6 @@ function App() {
                 console.log('Kakao raw phone_number:', account.phone_number);
                 if (mobile && mobile.startsWith('+82 ')) {
                   mobile = '0' + mobile.slice(4).replace(/-/g, '').replace(/ /g, '');
-                  if (mobile.length === 11) {
-                    mobile = mobile.replace(/(\d{3})(\d{4})(\d{4})/, '$1-$2-$3');
-                  }
                 }
                 console.log('Kakao parsed mobile:', mobile);
                 updateSession(name, email, mobile);
