@@ -63,7 +63,7 @@ export const useKakaoLogin = () => {
             await waitForKakao();
             window.Kakao.Auth.authorize({
                 redirectUri: window.location.origin + '/oauth/callback',
-                scope: 'profile_nickname,account_email',
+                scope: 'profile_nickname,account_email,phone_number',
             });
         } catch {
             alert('카카오 SDK를 불러오지 못했습니다. 페이지를 새로고침 해주세요.');
