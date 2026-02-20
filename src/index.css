@@ -9,7 +9,6 @@
 
 html {
   overflow-x: hidden;
-  max-width: 100%;
 }
 
 * {
@@ -25,7 +24,6 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
-  max-width: 100%;
   /* Prevent horizontal scroll from full-width hero */
 }
 

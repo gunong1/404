@@ -24,44 +24,56 @@
 .header-inner {
     max-width: 1200px;
     margin: 0 auto;
-    padding: 0 20px;
+    padding: 0 16px;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    gap: 8px;
 }
 
 .logo {
-    height: 80px;
+    height: 48px;
+    flex-shrink: 0;
     object-fit: contain;
 }
 
 .nav-menu {
     display: flex;
-    gap: 20px;
+    align-items: center;
+    gap: 14px;
+    flex-shrink: 1;
+    min-width: 0;
 }
 
 .nav-link {
-    font-size: 0.8rem;
+    font-size: 0.78rem;
     font-weight: 500;
     color: var(--text-sub);
     text-decoration: none;
     transition: color 0.2s ease;
+    white-space: nowrap;
 }
 
 .nav-link:hover {
     color: var(--text-main);
 }
 
+/* ── 모바일 (480px 이하) ── */
 @media (max-width: 480px) {
+    .header-inner {
+        padding: 0 10px;
+        gap: 6px;
+    }
+
     .logo {
-        height: 40px;
+        height: 32px;
     }
 
     .nav-menu {
-        gap: 10px;
+        gap: 8px;
     }
 
     .nav-link {
-        font-size: 0.72rem;
+        font-size: 0.68rem;
     }
 }
