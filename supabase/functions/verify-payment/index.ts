@@ -68,6 +68,8 @@ serve(async (req) => {
                     shipping_memo: orderData.shipping_memo,
                     receiver_name: orderData.receiver_name || '',
                     receiver_tel: orderData.receiver_tel || '',
+                    points_used: orderData.points_used || 0,
+                    coupon_id: orderData.coupon_id || null,
                     status: "paid", // 검증 완료된 상태
                 },
             ])

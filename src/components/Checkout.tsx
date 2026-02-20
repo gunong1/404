@@ -231,6 +231,7 @@ const Checkout: React.FC<CheckoutProps> = ({ items, onBack, totalAmount, onOrder
                 receiverTel: shipping.phone,
                 couponDiscount,
                 pointsUsed,
+                couponId: selectedCouponId,
             };
 
             const orderId = await requestPayment(paymentData);

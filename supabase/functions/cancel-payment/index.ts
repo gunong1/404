@@ -19,6 +19,10 @@ serve(async (req) => {
             throw new Error("Missing paymentId, orderId, or PORTONE_API_SECRET");
         }
 
+        const supabaseUrl = Deno.env.get("SUPABASE_URL") ?? "";
+        const supabaseServiceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
+        const supabaseAdmin = createClient(supabaseUrl, supabaseServiceRoleKey);
+
         // 1. PortOne V2 API로 결제 취소 요청
         const cancelRes = await fetch(`https://api.portone.io/payments/${paymentId}/cancel`, {
             method: "POST",
@@ -37,18 +41,20 @@ serve(async (req) => {
             throw new Error(`PortOne 취소 실패: ${cancelData.message || cancelRes.status}`);
         }
 
-        // 2. Supabase에서 주문 상태를 cancelled로 업데이트
-        const supabaseUrl = Deno.env.get("SUPABASE_URL") ?? "";
-        const supabaseServiceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
-        const supabaseAdmin = createClient(supabaseUrl, supabaseServiceRoleKey);
+        // 2. 주문 정보 조회 (포인트/쿠폰 복구를 위해)
+        const { data: orderData, error: orderFetchError } = await supabaseAdmin
+            .from("orders")
+            .select("buyer_email, points_used, coupon_id")
+            .eq("id", orderId)
+            .maybeSingle();
 
+        // 3. Supabase에서 주문 상태를 cancelled로 업데이트
         const { error: dbError } = await supabaseAdmin
             .from("orders")
             .update({ status: "cancelled" })
             .eq("id", orderId);
 
         if (dbError) {
-            // PortOne은 취소됐으나 DB 실패 - 로그 남기고 경고 반환
             console.error("DB 업데이트 실패:", dbError.message);
             return new Response(
                 JSON.stringify({
@@ -58,6 +64,33 @@ serve(async (req) => {
                 }),
                 { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 200 }
             );
+        }
+
+        // 4. 포인트 복구
+        if (!orderFetchError && orderData?.points_used > 0 && orderData?.buyer_email) {
+            const { data: userData } = await supabaseAdmin
+                .from("users")
+                .select("points")
+                .eq("email", orderData.buyer_email)
+                .maybeSingle();
+
+            if (userData && typeof userData.points === "number") {
+                const restoredPoints = userData.points + orderData.points_used;
+                await supabaseAdmin
+                    .from("users")
+                    .update({ points: restoredPoints })
+                    .eq("email", orderData.buyer_email);
+                console.log(`포인트 복구: ${orderData.buyer_email} +${orderData.points_used}P`);
+            }
+        }
+
+        // 5. 쿠폰 복구 (is_used = false로 되돌림)
+        if (!orderFetchError && orderData?.coupon_id) {
+            await supabaseAdmin
+                .from("user_coupons")
+                .update({ is_used: false })
+                .eq("id", orderData.coupon_id);
+            console.log(`쿠폰 복구: coupon_id=${orderData.coupon_id}`);
         }
 
         return new Response(

@@ -23,6 +23,7 @@ interface PaymentData {
     receiverTel?: string;
     pointsUsed?: number;
     couponDiscount?: number;
+    couponId?: number | null;
 }
 
 
@@ -105,6 +106,7 @@ export const usePayment = () => {
                 items: data.items || [],
                 orderName: data.orderName,
                 pointsUsed: data.pointsUsed || 0,
+                couponId: data.couponId || null,
             }));
 
             const response = await PortOne.requestPayment({
@@ -178,6 +180,8 @@ export const usePayment = () => {
                         shipping_memo: data.shippingMemo || '',
                         receiver_name: data.receiverName || '',
                         receiver_tel: data.receiverTel || '',
+                        points_used: data.pointsUsed || 0,
+                        coupon_id: data.couponId || null,
                     }
                 }
             });

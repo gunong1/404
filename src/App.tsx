@@ -177,6 +177,8 @@ function App() {
                 buyer_postcode: pending.buyerPostcode,
                 order_items: pending.items,
                 shipping_memo: pending.shippingMemo,
+                points_used: pending.pointsUsed || 0,
+                coupon_id: pending.couponId || null,
                 status: 'paid',
               }]);
             if (error) {
