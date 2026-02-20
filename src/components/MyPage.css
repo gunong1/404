@@ -755,3 +755,70 @@
 .addr-search-btn:hover {
     background: #555;
 }
+
+/* Points Badge */
+.mypage-subtitle-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.points-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: #f5c518;
+    background: rgba(245, 197, 24, 0.12);
+    border: 1px solid rgba(245, 197, 24, 0.25);
+    padding: 4px 12px;
+    border-radius: 20px;
+    white-space: nowrap;
+}
+
+/* Order Card Actions */
+.order-card-actions {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+/* Write Review Button */
+.write-review-btn {
+    background: linear-gradient(135deg, rgba(245, 197, 24, 0.15), rgba(245, 197, 24, 0.08));
+    color: #f5c518;
+    border: 1px solid rgba(245, 197, 24, 0.35);
+    padding: 8px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.82rem;
+    font-weight: 600;
+    transition: all 0.2s;
+}
+
+.write-review-btn:hover {
+    background: rgba(245, 197, 24, 0.25);
+    border-color: rgba(245, 197, 24, 0.6);
+}
+
+/* Review Done Badge */
+.review-done-badge {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #68d391;
+    background: rgba(104, 211, 145, 0.1);
+    border: 1px solid rgba(104, 211, 145, 0.2);
+    padding: 6px 12px;
+    border-radius: 8px;
+}
+
+@media (max-width: 768px) {
+    .order-card-actions {
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 6px;
+    }
+}

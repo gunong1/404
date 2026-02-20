@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './ProductDetail.css';
 import SocialLoginButtons from './SocialLoginButtons';
+import { supabase } from '../lib/supabase';
 
 interface ProductDetailProps {
     onBack: () => void;
@@ -8,14 +9,43 @@ interface ProductDetailProps {
     onBuyNow: (quantity: number) => void;
     isLoggedIn: boolean;
     onLoginClick: () => void;
+    userEmail?: string;
 }
 
-const ProductDetail: React.FC<ProductDetailProps> = ({ onBack, onAddToCart, onBuyNow, isLoggedIn, onLoginClick }) => {
+const ProductDetail: React.FC<ProductDetailProps> = ({ onBack, onAddToCart, onBuyNow, isLoggedIn, onLoginClick, userEmail }) => {
     const [quantity, setQuantity] = useState(1);
     const originalPrice = 32000;
     const basePrice = 19800;
     const discountRate = 38;
     const totalPrice = basePrice * quantity;
+
+    // Review states
+    interface Review {
+        id: string;
+        user_id: string;
+        rating: number;
+        content: string;
+        image_url: string | null;
+        created_at: string;
+        source: string;           // 'internal' | 'naver_pay' | 'kakao_pay' ...
+        external_review_id: string | null;
+        author_name: string | null; // 외부 채널 작성자명 (ex: '송**')
+    }
+    const [reviews, setReviews] = useState<Review[]>([]);
+    const [reviewTab, setReviewTab] = useState<'all' | 'photo'>('all');
+    const [reviewsLoading, setReviewsLoading] = useState(true);
+
+    useEffect(() => {
+        supabase
+            .from('reviews')
+            .select('id, user_id, rating, content, image_url, created_at, source, external_review_id, author_name')
+            .eq('product_id', 'bodywash-01')
+            .order('created_at', { ascending: false })
+            .then(({ data }) => {
+                setReviews((data || []).map((r: any) => ({ ...r, source: r.source || 'internal' })));
+                setReviewsLoading(false);
+            });
+    }, []);
 
     const handleBuyNow = () => {
         if (!isLoggedIn) {
@@ -103,6 +133,15 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ onBack, onAddToCart, onBu
             </div>
 
             <div className="detail-content-more">
+                {/* 상세 이미지 */}
+                <div className="detail-info-image-wrap">
+                    <img
+                        src="/detail_info.png"
+                        alt="404 바디워시 상세 정보"
+                        className="detail-info-image"
+                    />
+                </div>
+
                 <div className="detail-section">
                     <h3>제품 상세 설명</h3>
                     <p className="detail-text-highlight">Scent 404 Not Found : 감각의 초기화</p>
@@ -147,6 +186,97 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ onBack, onAddToCart, onBu
                             </ul>
                         </li>
                     </ul>
+                </div>
+
+                {/* ===== 리뷰 섹션 ===== */}
+                <div className="detail-divider-line"></div>
+
+                <div className="detail-section reviews-section">
+                    {/* 리뷰 요약 헤더 */}
+                    <div className="reviews-header">
+                        <h3>고객 리뷰</h3>
+                        {reviews.length > 0 && (
+                            <div className="reviews-summary">
+                                <span className="avg-star">★</span>
+                                <span className="avg-score">
+                                    {(reviews.reduce((s, r) => s + r.rating, 0) / reviews.length).toFixed(1)}
+                                </span>
+                                <span className="review-total-cnt">({reviews.length}개 리뷰)</span>
+                            </div>
+                        )}
+                    </div>
+
+                    {/* 탭 */}
+                    <div className="review-tabs">
+                        <button
+                            className={`review-tab-btn ${reviewTab === 'all' ? 'active' : ''}`}
+                            onClick={() => setReviewTab('all')}
+                        >
+                            전체 리뷰 ({reviews.length})
+                        </button>
+                        <button
+                            className={`review-tab-btn ${reviewTab === 'photo' ? 'active' : ''}`}
+                            onClick={() => setReviewTab('photo')}
+                        >
+                            📸 포토 리뷰 ({reviews.filter(r => r.image_url).length})
+                        </button>
+                    </div>
+
+                    {/* 리뷰 목록 */}
+                    {reviewsLoading ? (
+                        <div className="reviews-loading">리뷰를 불러오는 중...</div>
+                    ) : (() => {
+                        const filtered = reviewTab === 'photo' ? reviews.filter(r => r.image_url) : reviews;
+                        return filtered.length === 0 ? (
+                            <div className="reviews-empty">
+                                {reviewTab === 'photo' ? '포토 리뷰가 없습니다.' : '아직 리뷰가 없습니다. 첫 번째 리뷰를 남겨보세요!'}
+                            </div>
+                        ) : (
+                            <div className="review-list">
+                                {filtered.map(review => (
+                                    <div key={review.id} className="review-card">
+                                        <div className="review-card-header">
+                                            <div className="review-user-info">
+                                                <span className="review-user-avatar">
+                                                    {(review.author_name || review.user_id).charAt(0).toUpperCase()}
+                                                </span>
+                                                <span className="review-user-email">
+                                                    {review.author_name
+                                                        ? review.author_name
+                                                        : review.user_id.replace(/(.{2}).*(@.*)/, '$1***$2')
+                                                    }
+                                                </span>
+                                                {/* 채널 배지 */}
+                                                {review.source === 'naver_pay' && (
+                                                    <span className="channel-badge naver-badge">N페이 구매</span>
+                                                )}
+                                                {review.source === 'kakao_pay' && (
+                                                    <span className="channel-badge kakao-badge">카카오페이</span>
+                                                )}
+                                                {userEmail && review.source === 'internal' && review.user_id === userEmail && (
+                                                    <span className="my-review-badge">내 리뷰</span>
+                                                )}
+                                            </div>
+                                            <div className="review-meta">
+                                                <span className="review-stars">
+                                                    {'★'.repeat(review.rating)}{'☆'.repeat(5 - review.rating)}
+                                                </span>
+                                                <span className="review-date">
+                                                    {new Date(review.created_at).toLocaleDateString('ko-KR')}
+                                                </span>
+                                            </div>
+                                        </div>
+                                        {review.image_url && (
+                                            <div className="review-image-area">
+                                                <img src={review.image_url} alt="리뷰 이미지" className="review-list-image" />
+                                            </div>
+                                        )}
+                                        <p className="review-content-text">{review.content}</p>
+                                    </div>
+                                ))}
+                            </div>
+                        );
+                    })()}
                 </div>
             </div>
         </section>

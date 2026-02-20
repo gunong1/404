@@ -2,12 +2,14 @@ import React, { useState, useEffect } from 'react';
 import './MyPage.css';
 import { supabase } from '../lib/supabase';
 import { getTrackingUrl } from '../utils/carrierTracking';
+import ReviewModal from './ReviewModal';
 
 interface Order {
     id: string;
     merchant_uid: string;
     amount: number;
     buyer_name: string;
+    buyer_email: string;
     buyer_tel: string;
     buyer_addr: string;
     status: string;
@@ -52,6 +54,11 @@ const MyPage: React.FC<MyPageProps> = ({ onBack, username, userEmail, userPhone,
     const [localAddress, setLocalAddress] = useState<SavedAddress | undefined>(savedAddress);
     const [coupons, setCoupons] = useState<Coupon[]>([]);
 
+    // Points & Review states
+    const [userPoints, setUserPoints] = useState(0);
+    const [reviewedOrderIds, setReviewedOrderIds] = useState<Set<string>>(new Set());
+    const [reviewModalOrder, setReviewModalOrder] = useState<{ orderId: string } | null>(null);
+
     // Profile edit states
     const [isEditingPhone, setIsEditingPhone] = useState(false);
     const [phoneForm, setPhoneForm] = useState(userPhone || '');
@@ -66,7 +73,7 @@ const MyPage: React.FC<MyPageProps> = ({ onBack, username, userEmail, userPhone,
         if (userEmail) {
             supabase
                 .from('users')
-                .select('address, detail_address, zipcode, phone, password')
+                .select('address, detail_address, zipcode, phone, password, points')
                 .eq('email', userEmail)
                 .maybeSingle()
                 .then(({ data }) => {
@@ -83,13 +90,15 @@ const MyPage: React.FC<MyPageProps> = ({ onBack, username, userEmail, userPhone,
                         if (data.phone) {
                             setPhoneForm(data.phone);
                         }
-                        // OAuth users have 'oauth_user' as password
-                        if (!data.password || data.password === 'oauth_user') {
-                            setIsOAuthUser(true);
+                        if (typeof data.points === 'number') {
+                            setUserPoints(data.points);
                         }
+                        // OAuth users have 'oauth_user' as password
+                        // null이나 빈 문자열은 일반 유저로 취급 (비밀번호 미설정 상태일 수 있음)
+                        setIsOAuthUser(data.password === 'oauth_user');
                     } else {
-                        // No user row in DB = OAuth user who hasn't saved any info yet
-                        setIsOAuthUser(true);
+                        // No user row in DB — treat as regular user (they can set a password)
+                        setIsOAuthUser(false);
                     }
                 });
 
@@ -102,6 +111,15 @@ const MyPage: React.FC<MyPageProps> = ({ onBack, username, userEmail, userPhone,
                 .order('created_at', { ascending: false })
                 .then(({ data }) => {
                     if (data) setCoupons(data);
+                });
+
+            // Load review ids written by this user
+            supabase
+                .from('reviews')
+                .select('order_id')
+                .eq('user_id', userEmail)
+                .then(({ data }) => {
+                    if (data) setReviewedOrderIds(new Set(data.map((r: any) => r.order_id)));
                 });
         }
     }, [userEmail]);
@@ -303,6 +321,15 @@ const MyPage: React.FC<MyPageProps> = ({ onBack, username, userEmail, userPhone,
         }
     };
 
+    const handleReviewSuccess = (pointsEarned: number) => {
+        if (reviewModalOrder) {
+            setReviewedOrderIds(prev => new Set(prev).add(reviewModalOrder.orderId));
+        }
+        setUserPoints(prev => prev + pointsEarned);
+        setReviewModalOrder(null);
+        alert(`리뷰가 등록되었습니다! 🎉 ${pointsEarned.toLocaleString()}P가 적립되었습니다.`);
+    };
+
     return (
         <section className="mypage-section">
             <button className="back-btn" onClick={onBack}>&larr; 홈으로</button>
@@ -313,7 +340,10 @@ const MyPage: React.FC<MyPageProps> = ({ onBack, username, userEmail, userPhone,
                 </div>
                 <div className="user-info">
                     <h1 className="mypage-title">{username}님</h1>
-                    <p className="mypage-subtitle">주문 내역을 확인하세요</p>
+                    <div className="mypage-subtitle-row">
+                        <p className="mypage-subtitle">주문 내역을 확인하세요</p>
+                        <span className="points-badge">⭐ {userPoints.toLocaleString()}P</span>
+                    </div>
                 </div>
             </div>
 
@@ -591,14 +621,28 @@ const MyPage: React.FC<MyPageProps> = ({ onBack, username, userEmail, userPhone,
                                     </div>
                                     <div className="order-card-footer">
                                         <span className="order-amount">₩{order.amount.toLocaleString()}</span>
-                                        {(order.status === 'shipping' || order.status === 'delivered') && (
-                                            <button
-                                                className="confirm-purchase-btn"
-                                                onClick={() => handleConfirmPurchase(order.id)}
-                                            >
-                                                ✅ 구매 확정
-                                            </button>
-                                        )}
+                                        <div className="order-card-actions">
+                                            {(order.status === 'shipping' || order.status === 'delivered') && (
+                                                <button
+                                                    className="confirm-purchase-btn"
+                                                    onClick={() => handleConfirmPurchase(order.id)}
+                                                >
+                                                    ✅ 구매 확정
+                                                </button>
+                                            )}
+                                            {(order.status === 'delivered' || order.status === 'completed') && (
+                                                reviewedOrderIds.has(order.id) ? (
+                                                    <span className="review-done-badge">✓ 리뷰 작성 완료</span>
+                                                ) : (
+                                                    <button
+                                                        className="write-review-btn"
+                                                        onClick={() => setReviewModalOrder({ orderId: order.id })}
+                                                    >
+                                                        ✍ 리뷰 작성하기
+                                                    </button>
+                                                )
+                                            )}
+                                        </div>
                                     </div>
                                 </div>
                             );
@@ -606,6 +650,17 @@ const MyPage: React.FC<MyPageProps> = ({ onBack, username, userEmail, userPhone,
                     </div>
                 )}
             </div>
+
+            {/* ReviewModal */}
+            {reviewModalOrder && userEmail && (
+                <ReviewModal
+                    orderId={reviewModalOrder.orderId}
+                    productId="bodywash-01"
+                    userEmail={userEmail}
+                    onClose={() => setReviewModalOrder(null)}
+                    onSuccess={handleReviewSuccess}
+                />
+            )}
         </section>
     );
 };

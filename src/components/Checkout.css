@@ -465,6 +465,125 @@
     text-align: right;
 }
 
+/* ===== Point Section ===== */
+.point-section {
+    margin: 15px 0;
+    padding: 15px;
+    background: #1a1a1a;
+    border-radius: 12px;
+    border: 1px solid rgba(245, 197, 24, 0.2);
+}
+
+.point-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.point-label {
+    font-size: 0.9rem;
+    color: #fff;
+    font-weight: 600;
+}
+
+.point-balance {
+    font-size: 0.82rem;
+    color: #f5c518;
+    font-weight: 700;
+}
+
+.point-input-row {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+}
+
+.point-input {
+    flex: 1;
+    padding: 10px 12px;
+    background: #222;
+    border: 1px solid #444;
+    border-radius: 8px;
+    color: #fff;
+    font-size: 0.9rem;
+    min-width: 0;
+}
+
+.point-input:focus {
+    outline: none;
+    border-color: rgba(245, 197, 24, 0.5);
+}
+
+/* hide number input arrows */
+.point-input::-webkit-outer-spin-button,
+.point-input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.point-input[type=number] {
+    -moz-appearance: textfield;
+}
+
+.point-all-btn {
+    padding: 10px 12px;
+    background: rgba(245, 197, 24, 0.15);
+    color: #f5c518;
+    border: 1px solid rgba(245, 197, 24, 0.35);
+    border-radius: 8px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.2s;
+}
+
+.point-all-btn:hover {
+    background: rgba(245, 197, 24, 0.3);
+}
+
+.point-reset-btn {
+    padding: 10px 12px;
+    background: #2a2a2a;
+    color: #888;
+    border: 1px solid #444;
+    border-radius: 8px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.2s;
+}
+
+.point-reset-btn:hover {
+    background: #333;
+    color: #ccc;
+}
+
+.point-notice {
+    font-size: 0.75rem;
+    color: #777;
+    margin: 8px 0 0;
+}
+
+.no-point-text {
+    color: #666;
+    font-size: 0.85rem;
+    margin: 0;
+    padding: 4px 0;
+}
+
+.point-discount-row {
+    color: #f5c518;
+}
+
+.point-discount-amount {
+    color: #f5c518;
+    font-weight: 700;
+}
+
+
 @media (max-width: 900px) {
     .checkout-container {
         grid-template-columns: 1fr;

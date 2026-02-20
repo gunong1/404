@@ -75,8 +75,24 @@ const Checkout: React.FC<CheckoutProps> = ({ items, onBack, totalAmount, onOrder
     const [selectedCouponId, setSelectedCouponId] = useState<number | null>(null);
     const selectedCoupon = coupons.find(c => c.id === selectedCouponId);
     const couponDiscount = selectedCoupon ? selectedCoupon.discount_amount : 0;
+
+    // Points state
+    const [userPoints, setUserPoints] = useState(0);
+    const [pointsInput, setPointsInput] = useState('');
+    const pointsUsed = Math.min(
+        Math.max(0, parseInt(pointsInput || '0', 10) || 0),
+        userPoints
+    );
+
     const shippingFee = totalAmount >= 50000 ? 0 : 3000;
-    const finalAmount = Math.max(0, totalAmount - couponDiscount + shippingFee);
+    const MIN_PAYMENT = 15000;
+    // 최종금액 = 상품 - 쿠폰할인 + 배송비 - 포인트, 최소 15,000원
+    const finalAmount = Math.max(MIN_PAYMENT, totalAmount - couponDiscount + shippingFee - pointsUsed);
+    // 실제 적용 가능한 포인트 (최종금액이 15,000원 미만이 되지 않도록 제한)
+    const maxUsablePoints = Math.min(
+        userPoints,
+        Math.max(0, totalAmount - couponDiscount + shippingFee - MIN_PAYMENT)
+    );
 
     // Load default address from DB
     useEffect(() => {
@@ -113,6 +129,22 @@ const Checkout: React.FC<CheckoutProps> = ({ items, onBack, totalAmount, onOrder
             if (data) setCoupons(data);
         };
         loadCoupons();
+    }, [userEmail]);
+
+    // Load user points
+    useEffect(() => {
+        const loadPoints = async () => {
+            if (!userEmail) return;
+            const { data } = await supabase
+                .from('users')
+                .select('points')
+                .eq('email', userEmail)
+                .maybeSingle();
+            if (data && typeof data.points === 'number') {
+                setUserPoints(data.points);
+            }
+        };
+        loadPoints();
     }, [userEmail]);
 
     // Re-consent: alert and focus phone input if phone is missing (SNS login without phone permission)
@@ -209,6 +241,13 @@ const Checkout: React.FC<CheckoutProps> = ({ items, onBack, totalAmount, onOrder
                         .from('user_coupons')
                         .update({ is_used: true })
                         .eq('id', selectedCouponId);
+                }
+                // Deduct points if used
+                if (pointsUsed > 0 && userEmail) {
+                    await supabase.rpc('increment_user_points', {
+                        user_email: userEmail,
+                        points_to_add: -pointsUsed,
+                    });
                 }
                 // Save default address if checked
                 if (saveAsDefault && userEmail) {
@@ -522,6 +561,64 @@ const Checkout: React.FC<CheckoutProps> = ({ items, onBack, totalAmount, onOrder
                         <div className="summary-row coupon-discount-row">
                             <span>쿠폰 할인</span>
                             <span className="coupon-discount-amount">-₩{couponDiscount.toLocaleString()}</span>
+                        </div>
+                    )}
+
+                    {/* Points Section */}
+                    <div className="point-section">
+                        <div className="point-header">
+                            <label className="point-label">⭐ 포인트 사용</label>
+                            <span className="point-balance">잔액: {userPoints.toLocaleString()}P</span>
+                        </div>
+                        {userPoints > 0 && maxUsablePoints > 0 ? (
+                            <>
+                                <div className="point-input-row">
+                                    <input
+                                        type="number"
+                                        className="point-input"
+                                        value={pointsInput}
+                                        min={0}
+                                        max={maxUsablePoints}
+                                        placeholder="0"
+                                        onChange={(e) => {
+                                            const val = parseInt(e.target.value || '0', 10) || 0;
+                                            const clamped = Math.min(Math.max(0, val), maxUsablePoints);
+                                            setPointsInput(clamped === 0 ? '' : String(clamped));
+                                        }}
+                                    />
+                                    <button
+                                        type="button"
+                                        className="point-all-btn"
+                                        onClick={() => setPointsInput(String(maxUsablePoints))}
+                                    >
+                                        전액 사용
+                                    </button>
+                                    <button
+                                        type="button"
+                                        className="point-reset-btn"
+                                        onClick={() => setPointsInput('')}
+                                    >
+                                        취소
+                                    </button>
+                                </div>
+                                <p className="point-notice">
+                                    최소 결제 15,000원 &middot; 최대 {maxUsablePoints.toLocaleString()}P 사용 가능
+                                </p>
+                            </>
+                        ) : (
+                            <p className="no-point-text">
+                                {userPoints === 0
+                                    ? '사용 가능한 포인트가 없습니다'
+                                    : `최소 결제 ${MIN_PAYMENT.toLocaleString()}원 조건으로 포인트를 사용할 수 없습니다`
+                                }
+                            </p>
+                        )}
+                    </div>
+
+                    {pointsUsed > 0 && (
+                        <div className="summary-row point-discount-row">
+                            <span>포인트 할인</span>
+                            <span className="point-discount-amount">-₩{pointsUsed.toLocaleString()}</span>
                         </div>
                     )}
                     <div className="summary-row">

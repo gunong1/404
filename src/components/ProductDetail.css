@@ -380,3 +380,231 @@
         font-size: 0.95rem;
     }
 }
+
+/* ===== Reviews Section ===== */
+.reviews-section {
+    margin-bottom: 60px;
+}
+
+.reviews-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.reviews-header h3 {
+    margin: 0 !important;
+}
+
+.reviews-summary {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.avg-star {
+    color: #f5c518;
+    font-size: 1.1rem;
+}
+
+.avg-score {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: #fff;
+}
+
+.review-total-cnt {
+    font-size: 0.85rem;
+    color: #888;
+}
+
+/* Tabs */
+.review-tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 24px;
+}
+
+.review-tab-btn {
+    padding: 8px 20px;
+    background: #1a1a1a;
+    border: 1px solid #2a2a2a;
+    border-radius: 30px;
+    color: #888;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.review-tab-btn.active {
+    background: #fff;
+    color: #000;
+    border-color: #fff;
+}
+
+.review-tab-btn:hover:not(.active) {
+    border-color: #555;
+    color: #ccc;
+}
+
+/* Review List */
+.review-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.review-card {
+    background: #111;
+    border: 1px solid #1e1e1e;
+    border-radius: 16px;
+    padding: 20px 24px;
+    transition: border-color 0.2s;
+}
+
+.review-card:hover {
+    border-color: #333;
+}
+
+.review-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 14px;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.review-user-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.review-user-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #2a2a2a, #444);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #fff;
+    flex-shrink: 0;
+}
+
+.review-user-email {
+    font-size: 0.85rem;
+    color: #aaa;
+}
+
+.my-review-badge {
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: #4a9eff;
+    background: rgba(74, 158, 255, 0.12);
+    border: 1px solid rgba(74, 158, 255, 0.25);
+    padding: 2px 8px;
+    border-radius: 20px;
+}
+
+/* Channel Badges */
+.channel-badge {
+    display: inline-flex;
+    align-items: center;
+    font-size: 0.68rem;
+    font-weight: 700;
+    padding: 2px 7px;
+    border-radius: 20px;
+    white-space: nowrap;
+}
+
+.naver-badge {
+    color: #fff;
+    background: #03C75A;
+    border: none;
+}
+
+.kakao-badge {
+    color: #181600;
+    background: #FEE500;
+    border: none;
+}
+
+.review-meta {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 4px;
+}
+
+.review-stars {
+    color: #f5c518;
+    font-size: 0.85rem;
+    letter-spacing: 1px;
+}
+
+.review-date {
+    font-size: 0.75rem;
+    color: #555;
+}
+
+.review-image-area {
+    margin-bottom: 14px;
+}
+
+.review-list-image {
+    width: 120px;
+    height: 120px;
+    object-fit: cover;
+    border-radius: 10px;
+    border: 1px solid #222;
+}
+
+.review-content-text {
+    font-size: 0.9rem;
+    color: #ccc;
+    line-height: 1.7;
+    margin: 0 !important;
+}
+
+/* Empty / Loading */
+.reviews-empty {
+    text-align: center;
+    padding: 48px 20px;
+    color: #555;
+    font-size: 0.9rem;
+    background: #0d0d0d;
+    border-radius: 16px;
+    border: 1px dashed #2a2a2a;
+}
+
+.reviews-loading {
+    text-align: center;
+    padding: 40px;
+    color: #555;
+    font-size: 0.9rem;
+}
+
+/* ===== Detail Info Image ===== */
+.detail-info-image-wrap {
+    margin: 0 auto 40px;
+    border-radius: 20px;
+    overflow: hidden;
+    line-height: 0;
+    max-width: 860px;
+    /* 원본 해상도 이상으로 늘어나지 않게 */
+    text-align: center;
+}
+
+.detail-info-image {
+    width: 100%;
+    height: auto;
+    display: block;
+    object-fit: contain;
+}

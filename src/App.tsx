@@ -461,6 +461,7 @@ function App() {
           onBack={() => setView('home')}
           isLoggedIn={isLoggedIn}
           onLoginClick={() => setIsLoginModalOpen(true)}
+          userEmail={userEmail}
           onAddToCart={(qty) => addToCart({
             id: 'bodywash-01',
             name: 'Scent Not Found 바디워시',
