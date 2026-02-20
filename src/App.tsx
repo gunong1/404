@@ -9,6 +9,7 @@ import Checkout from './components/Checkout';
 import OrderComplete from './components/OrderComplete';
 import MyPage from './components/MyPage';
 import AdminOrders from './components/AdminOrders';
+import FloatingChat from './components/FloatingChat';
 
 import LegalPage from './components/LegalPage';
 import { TERMS_CONTENT, PRIVACY_CONTENT } from './data/legalText';
@@ -588,6 +589,7 @@ function App() {
         />
       )}
       <Footer />
+      <FloatingChat />
       <LoginModal
         isOpen={isLoginModalOpen}
         onClose={() => setIsLoginModalOpen(false)}
