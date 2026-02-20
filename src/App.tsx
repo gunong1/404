@@ -184,6 +184,23 @@ function App() {
             } else {
               console.log('Redirected order saved to Supabase');
             }
+
+            // Deduct points if used (mobile redirect)
+            if (pending.pointsUsed > 0 && pending.buyerEmail) {
+              const { data: userData } = await supabase
+                .from('users')
+                .select('points')
+                .eq('email', pending.buyerEmail)
+                .maybeSingle();
+              if (userData && typeof userData.points === 'number') {
+                const newPoints = Math.max(0, userData.points - pending.pointsUsed);
+                await supabase
+                  .from('users')
+                  .update({ points: newPoints })
+                  .eq('email', pending.buyerEmail);
+              }
+            }
+
             // Save default address if user email exists
             if (userEmail && pending.shippingAddress) {
               const { data: updated } = await supabase

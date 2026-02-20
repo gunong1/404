@@ -21,6 +21,8 @@ interface PaymentData {
     buyerPostcode?: string;
     receiverName?: string;
     receiverTel?: string;
+    pointsUsed?: number;
+    couponDiscount?: number;
 }
 
 
@@ -102,6 +104,7 @@ export const usePayment = () => {
                 buyerPostcode: data.buyerPostcode || '',
                 items: data.items || [],
                 orderName: data.orderName,
+                pointsUsed: data.pointsUsed || 0,
             }));
 
             const response = await PortOne.requestPayment({

@@ -230,6 +230,7 @@ const Checkout: React.FC<CheckoutProps> = ({ items, onBack, totalAmount, onOrder
                 receiverName: shipping.name,
                 receiverTel: shipping.phone,
                 couponDiscount,
+                pointsUsed,
             };
 
             const orderId = await requestPayment(paymentData);
@@ -241,12 +242,21 @@ const Checkout: React.FC<CheckoutProps> = ({ items, onBack, totalAmount, onOrder
                         .update({ is_used: true })
                         .eq('id', selectedCouponId);
                 }
-                // Deduct points if used
+                // Deduct points if used (direct DB update, no RPC needed)
                 if (pointsUsed > 0 && userEmail) {
-                    await supabase.rpc('increment_user_points', {
-                        user_email: userEmail,
-                        points_to_add: -pointsUsed,
-                    });
+                    const { data: userData } = await supabase
+                        .from('users')
+                        .select('points')
+                        .eq('email', userEmail)
+                        .maybeSingle();
+                    if (userData && typeof userData.points === 'number') {
+                        const newPoints = Math.max(0, userData.points - pointsUsed);
+                        const { error: pointErr } = await supabase
+                            .from('users')
+                            .update({ points: newPoints })
+                            .eq('email', userEmail);
+                        if (pointErr) console.error('[Checkout] Point deduction failed:', pointErr);
+                    }
                 }
                 // Save default address if checked
                 if (saveAsDefault && userEmail) {
