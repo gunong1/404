@@ -108,6 +108,47 @@ const AdminOrders: React.FC<AdminOrdersProps> = ({ onBack, userRole }) => {
         }
     };
 
+    const handleCancelOrder = async (order: Order) => {
+        if (!confirm(`정말 이 주문을 취소하시겠습니까?\n\n결제금액 ${formatCurrency(order.amount)}이 환불됩니다.`)) return;
+
+        const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+        const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+
+        try {
+            const res = await fetch(`${supabaseUrl}/functions/v1/cancel-payment`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${supabaseAnonKey}`,
+                    'apikey': supabaseAnonKey,
+                },
+                body: JSON.stringify({
+                    paymentId: order.merchant_uid,
+                    orderId: order.id,
+                    reason: '관리자 취소',
+                }),
+            });
+
+            const result = await res.json();
+
+            if (!res.ok || result.error) {
+                alert('결제 취소 실패: ' + (result.error || '알 수 없는 오류'));
+                return;
+            }
+
+            if (result.warning) {
+                alert('⚠️ ' + result.warning);
+            } else {
+                alert('✅ 결제가 취소되었습니다.');
+            }
+
+            setOrders(prev => prev.map(o => o.id === order.id ? { ...o, status: 'cancelled' } : o));
+
+        } catch (err: any) {
+            alert('오류 발생: ' + err.message);
+        }
+    };
+
     const saveTracking = async (orderId: string) => {
         if (!trackingInput.carrier || !trackingInput.tracking_number.trim()) {
             alert('택배사와 운송장 번호를 모두 입력해주세요.');
@@ -533,11 +574,7 @@ const AdminOrders: React.FC<AdminOrdersProps> = ({ onBack, userRole }) => {
                                         {(order.status === 'paid' || order.status === 'shipping') && (
                                             <button
                                                 className="btn-action btn-cancel-order"
-                                                onClick={() => {
-                                                    if (confirm('정말 이 주문을 취소하시겠습니까?')) {
-                                                        updateStatus(order.id, 'cancelled');
-                                                    }
-                                                }}
+                                                onClick={() => handleCancelOrder(order)}
                                             >
                                                 취소
                                             </button>
