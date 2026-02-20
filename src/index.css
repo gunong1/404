@@ -7,10 +7,6 @@
   --font-main: 'Inter', sans-serif;
 }
 
-html {
-  overflow-x: hidden;
-}
-
 * {
   box-sizing: border-box;
   margin: 0;
@@ -24,7 +20,7 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
-  /* Prevent horizontal scroll from full-width hero */
+  /* Prevent horizontal scroll */
 }
 
 h1,

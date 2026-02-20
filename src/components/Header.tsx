@@ -44,8 +44,9 @@ const Header: React.FC<HeaderProps> = ({
                             <a href="#" className="nav-link" onClick={(e) => { e.preventDefault(); onMyPageClick?.(); }}>
                                 마이페이지
                             </a>
-                            <a href="#" className="nav-link" onClick={(e) => { e.preventDefault(); onLogoutClick?.(); }}>
-                                {username}님 (LOGOUT)
+                            <a href="#" className="nav-link nav-link-logout" onClick={(e) => { e.preventDefault(); onLogoutClick?.(); }}>
+                                <span className="nav-text-desktop">{username}님 (LOGOUT)</span>
+                                <span className="nav-text-mobile">LOGOUT</span>
                             </a>
                         </>
                     ) : (

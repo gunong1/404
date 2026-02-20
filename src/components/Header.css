@@ -76,4 +76,23 @@
     .nav-link {
         font-size: 0.68rem;
     }
+
+    .nav-text-desktop {
+        display: none;
+    }
+
+    .nav-text-mobile {
+        display: inline;
+    }
+}
+
+/* 데스크탑: mobile span 숨기기 */
+@media (min-width: 481px) {
+    .nav-text-mobile {
+        display: none;
+    }
+
+    .nav-text-desktop {
+        display: inline;
+    }
 }
