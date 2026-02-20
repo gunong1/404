@@ -85,13 +85,12 @@ const Checkout: React.FC<CheckoutProps> = ({ items, onBack, totalAmount, onOrder
     );
 
     const shippingFee = totalAmount >= 50000 ? 0 : 3000;
-    const MIN_PAYMENT = 15000;
-    // 최종금액 = 상품 - 쿠폰할인 + 배송비 - 포인트, 최소 15,000원
-    const finalAmount = Math.max(MIN_PAYMENT, totalAmount - couponDiscount + shippingFee - pointsUsed);
-    // 실제 적용 가능한 포인트 (최종금액이 15,000원 미만이 되지 않도록 제한)
+    // 최종금액 = 상품 - 쿠폰할인 + 배송비 - 포인트
+    const finalAmount = Math.max(0, totalAmount - couponDiscount + shippingFee - pointsUsed);
+    // 실제 적용 가능한 최대 포인트 (결제금액 초과 불가)
     const maxUsablePoints = Math.min(
         userPoints,
-        Math.max(0, totalAmount - couponDiscount + shippingFee - MIN_PAYMENT)
+        Math.max(0, totalAmount - couponDiscount + shippingFee)
     );
 
     // Load default address from DB
@@ -570,7 +569,7 @@ const Checkout: React.FC<CheckoutProps> = ({ items, onBack, totalAmount, onOrder
                             <label className="point-label">⭐ 포인트 사용</label>
                             <span className="point-balance">잔액: {userPoints.toLocaleString()}P</span>
                         </div>
-                        {userPoints > 0 && maxUsablePoints > 0 ? (
+                        {userPoints > 0 ? (
                             <>
                                 <div className="point-input-row">
                                     <input
@@ -601,17 +600,10 @@ const Checkout: React.FC<CheckoutProps> = ({ items, onBack, totalAmount, onOrder
                                         취소
                                     </button>
                                 </div>
-                                <p className="point-notice">
-                                    최소 결제 15,000원 &middot; 최대 {maxUsablePoints.toLocaleString()}P 사용 가능
-                                </p>
+                                <p className="point-notice">최대 {maxUsablePoints.toLocaleString()}P 사용 가능</p>
                             </>
                         ) : (
-                            <p className="no-point-text">
-                                {userPoints === 0
-                                    ? '사용 가능한 포인트가 없습니다'
-                                    : `최소 결제 ${MIN_PAYMENT.toLocaleString()}원 조건으로 포인트를 사용할 수 없습니다`
-                                }
-                            </p>
+                            <p className="no-point-text">사용 가능한 포인트가 없습니다</p>
                         )}
                     </div>
 
