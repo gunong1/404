@@ -4,6 +4,7 @@
     margin: 0 auto;
     color: #fff;
     animation: fadeIn 0.5s ease;
+    overflow-x: hidden;
 }
 
 @keyframes fadeIn {
@@ -50,6 +51,7 @@
     background: radial-gradient(circle, rgba(20, 20, 20, 1) 0%, rgba(0, 0, 0, 0) 70%);
     border-radius: 30px;
     border: 1px solid rgba(255, 255, 255, 0.05);
+    overflow: hidden;
 }
 
 .detail-image {
@@ -61,8 +63,10 @@
 
 .detail-glow-effect {
     position: absolute;
-    width: 400px;
-    height: 400px;
+    width: 80%;
+    height: 80%;
+    max-width: 400px;
+    max-height: 400px;
     background: radial-gradient(circle, rgba(255, 255, 255, 0.05) 0%, rgba(0, 0, 0, 0) 70%);
     z-index: 1;
 }
