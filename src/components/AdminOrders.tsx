@@ -21,6 +21,8 @@ interface Order {
     shipping_memo: string;
     shipped_at: string;
     created_at: string;
+    points_used?: number;
+    coupon_id?: number | null;
 }
 
 interface AdminOrdersProps {
@@ -491,7 +493,15 @@ const AdminOrders: React.FC<AdminOrdersProps> = ({ onBack, userRole }) => {
                                             ))
                                         ) : '-'}
                                     </td>
-                                    <td className="td-amount">{formatCurrency(order.amount)}</td>
+                                    <td className="td-amount">
+                                        <div>{formatCurrency(order.amount)}</div>
+                                        {order.points_used != null && order.points_used > 0 && (
+                                            <div className="discount-badge points-badge">⭐ 포인트 -{formatCurrency(order.points_used)}</div>
+                                        )}
+                                        {order.coupon_id != null && (
+                                            <div className="discount-badge coupon-badge">🎟 쿠폰 적용</div>
+                                        )}
+                                    </td>
                                     <td className="td-status">
                                         <span
                                             className="status-badge"
