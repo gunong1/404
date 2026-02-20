@@ -203,6 +203,14 @@ function App() {
               }
             }
 
+            // Mark coupon as used (mobile redirect)
+            if (pending.couponId) {
+              await supabase
+                .from('user_coupons')
+                .update({ is_used: true })
+                .eq('id', pending.couponId);
+            }
+
             // Save default address if user email exists
             if (userEmail && pending.shippingAddress) {
               const { data: updated } = await supabase
