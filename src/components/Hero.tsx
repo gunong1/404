@@ -19,6 +19,8 @@ const Hero: React.FC = () => {
                     title="Spline 3D Scene"
                     className="spline-iframe"
                 ></iframe>
+                {/* Spline Watermark Masker */}
+                <div className="spline-masker"></div>
             </div>
         </section>
     );
