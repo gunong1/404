@@ -349,6 +349,10 @@ function App() {
   };
 
   const buyNow = (item: CartItem) => {
+    if (!isLoggedIn) {
+      setIsLoginModalOpen(true);
+      return;
+    }
     setCartItems(prev => {
       const existingToken = prev.find(i => i.id === item.id);
       if (existingToken) {
@@ -464,7 +468,10 @@ function App() {
         username={username}
         onLoginClick={() => setIsLoginModalOpen(true)}
         onLogoutClick={handleLogout}
-        onCartClick={() => setView('checkout')}
+        onCartClick={() => {
+          if (!isLoggedIn) { setIsLoginModalOpen(true); return; }
+          setView('checkout');
+        }}
         onMyPageClick={() => setView('mypage')}
         onHomeClick={() => setView('home')}
         transparent={view === 'home'}
