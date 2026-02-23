@@ -87,7 +87,7 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ onBack, onAddToCart, onBu
                         </div>
                         <div className="spec-item">
                             <span className="spec-label">제품군</span>
-                            <span className="spec-value">올인원 바디워시</span>
+                            <span className="spec-value">체취케어 기능성 바디워시</span>
                         </div>
                     </div>
 
