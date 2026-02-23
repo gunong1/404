@@ -161,7 +161,7 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ onBack, onAddToCart, onBu
                     <ul className="detail-info-list">
                         <li><strong>배송 방법:</strong> 택배 배송</li>
                         <li><strong>배송 지역:</strong> 전국</li>
-                        <li><strong>배송 비용:</strong> 3,000원 (50,000원 이상 구매 시 무료배송 / 제주 및 도서산간 지역 별도 추가)</li>
+                        <li><strong>배송 비용:</strong> 3,000원 (39,000원 이상 구매 시 무료배송 / 제주 및 도서산간 지역 별도 추가)</li>
                         <li><strong>배송 기간:</strong> 결제일로부터 1~3일 (주말/공휴일 제외, 물류 사정에 따라 지연될 수 있음)</li>
                     </ul>
                 </div>

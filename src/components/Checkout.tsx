@@ -84,7 +84,7 @@ const Checkout: React.FC<CheckoutProps> = ({ items, onBack, totalAmount, onOrder
         userPoints
     );
 
-    const shippingFee = totalAmount >= 50000 ? 0 : 3000;
+    const shippingFee = totalAmount >= 39000 ? 0 : 3000;
     // 최종금액 = 상품 - 쿠폰할인 + 배송비 - 포인트
     const finalAmount = Math.max(0, totalAmount - couponDiscount + shippingFee - pointsUsed);
     // 실제 적용 가능한 최대 포인트 (결제금액 초과 불가)
@@ -632,8 +632,8 @@ const Checkout: React.FC<CheckoutProps> = ({ items, onBack, totalAmount, onOrder
                             <span>₩{shippingFee.toLocaleString()}</span>
                         )}
                     </div>
-                    {totalAmount < 50000 && (
-                        <p className="shipping-notice">₩{(50000 - totalAmount).toLocaleString()} 더 구매 시 무료배송!</p>
+                    {totalAmount < 39000 && (
+                        <p className="shipping-notice">₩{(39000 - totalAmount).toLocaleString()} 더 구매 시 무료배송!</p>
                     )}
                     <div className="summary-divider"></div>
                     <div className="summary-total">
