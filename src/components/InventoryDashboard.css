@@ -12,17 +12,17 @@
 
 .inv-header {
     display: flex;
-    align-items: flex-start;
+    align-items: center;
     justify-content: space-between;
     flex-wrap: wrap;
     gap: 12px;
     margin-bottom: 28px;
     padding-bottom: 20px;
-    border-bottom: 1px solid #222;
+    border-bottom: 1px solid #1e1e1e;
 }
 
 .inv-title {
-    font-size: 1.1rem;
+    font-size: 1.05rem;
     font-weight: 700;
     color: #fff;
     letter-spacing: -0.02em;
@@ -32,35 +32,18 @@
 .inv-meta {
     display: flex;
     align-items: center;
-    gap: 14px;
-    flex-wrap: wrap;
-}
-
-.inv-product-name {
-    font-size: 0.8rem;
-    color: #555;
-    background: #111;
-    border: 1px solid #2a2a2a;
-    padding: 4px 10px;
-    border-radius: 20px;
-    letter-spacing: 0.02em;
-}
-
-.inv-updated {
-    font-size: 0.75rem;
-    color: #444;
+    gap: 8px;
 }
 
 .inv-refresh-btn {
     background: transparent;
-    border: 1px solid #333;
-    color: #888;
+    border: 1px solid #2a2a2a;
+    color: #666;
     font-size: 0.78rem;
-    padding: 5px 12px;
+    padding: 6px 12px;
     border-radius: 8px;
     cursor: pointer;
     transition: all 0.2s;
-    letter-spacing: 0.02em;
 }
 
 .inv-refresh-btn:hover {
@@ -68,11 +51,188 @@
     color: #fff;
 }
 
-/* Cards */
+.inv-add-btn {
+    background: #fff;
+    border: none;
+    color: #000;
+    font-size: 0.78rem;
+    font-weight: 700;
+    padding: 6px 14px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.15s;
+    letter-spacing: 0.02em;
+}
+
+.inv-add-btn:hover {
+    background: #ddd;
+}
+
+/* ── 신규 품목 추가 폼 ── */
+.inv-add-form {
+    background: #111;
+    border: 1px solid #2a2a2a;
+    border-radius: 14px;
+    padding: 24px;
+    margin-bottom: 28px;
+}
+
+.inv-add-title {
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: #fff;
+    margin: 0 0 16px;
+    letter-spacing: 0.02em;
+}
+
+.inv-add-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+@media (max-width: 700px) {
+    .inv-add-row {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+@media (max-width: 480px) {
+    .inv-add-row {
+        grid-template-columns: 1fr;
+    }
+}
+
+.inv-add-field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.inv-add-field label {
+    font-size: 0.72rem;
+    color: #555;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-weight: 600;
+}
+
+.inv-required {
+    color: #888;
+}
+
+.inv-add-input {
+    background: #1a1a1a;
+    border: 1px solid #333;
+    border-radius: 8px;
+    color: #fff;
+    font-size: 0.88rem;
+    padding: 8px 12px;
+    outline: none;
+    transition: border-color 0.15s;
+    -moz-appearance: textfield;
+    appearance: textfield;
+}
+
+.inv-add-input::-webkit-outer-spin-button,
+.inv-add-input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+}
+
+.inv-add-input:focus {
+    border-color: #555;
+}
+
+.inv-add-input::placeholder {
+    color: #333;
+}
+
+.inv-add-submit-btn {
+    background: #fff;
+    color: #000;
+    border: none;
+    border-radius: 10px;
+    padding: 10px 24px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.15s;
+}
+
+.inv-add-submit-btn:hover:not(:disabled) {
+    background: #ddd;
+}
+
+.inv-add-submit-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* ── 품목 블록 ── */
+.inv-product-block {
+    border: 1px solid #1e1e1e;
+    border-radius: 14px;
+    padding: 24px;
+    margin-bottom: 20px;
+    transition: border-color 0.2s;
+}
+
+.inv-product-block:hover {
+    border-color: #2a2a2a;
+}
+
+.inv-block--low {
+    border-color: #3d2800;
+}
+
+.inv-block--soldout {
+    border-color: #2a2a2a;
+    opacity: 0.8;
+}
+
+.inv-product-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 18px;
+}
+
+.inv-product-name-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.inv-product-label {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #fff;
+    letter-spacing: -0.01em;
+}
+
+.inv-product-id {
+    font-size: 0.72rem;
+    color: #444;
+    background: #111;
+    border: 1px solid #222;
+    padding: 2px 8px;
+    border-radius: 20px;
+}
+
+.inv-updated {
+    font-size: 0.72rem;
+    color: #3a3a3a;
+}
+
+/* ── 카드 그리드 ── */
 .inv-cards {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 16px;
+    gap: 14px;
 }
 
 @media (max-width: 700px) {
@@ -83,89 +243,90 @@
 
 .inv-card {
     background: #111;
-    border: 1px solid #222;
-    border-radius: 14px;
-    padding: 24px 20px 20px;
+    border: 1px solid #1e1e1e;
+    border-radius: 12px;
+    padding: 20px 18px 16px;
     position: relative;
     display: flex;
     flex-direction: column;
     gap: 4px;
-    transition: border-color 0.2s;
-    min-height: 130px;
+    min-height: 120px;
 }
 
 .inv-card:hover {
-    border-color: #444;
+    border-color: #333;
 }
 
 .inv-card--low {
-    border-color: #7a5500;
-    background: #120e00;
+    border-color: #5a3c00;
+    background: #0e0900;
 }
 
 .inv-card--soldout {
-    border-color: #555;
-    background: #0d0d0d;
-    opacity: 0.85;
+    border-color: #222;
+    opacity: 0.7;
 }
 
-.inv-card--safe {
-    border-color: #2a2a2a;
-}
+.inv-card--safe {}
 
-.inv-card--sold {
-    border-color: #2a2a2a;
-}
+.inv-card--sold {}
 
 .inv-card-label {
-    font-size: 0.72rem;
+    font-size: 0.68rem;
     text-transform: uppercase;
     letter-spacing: 0.1em;
-    color: #555;
+    color: #444;
     font-weight: 600;
 }
 
+/* 값 + 수정 버튼 행 */
+.inv-value-row {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    margin-top: 6px;
+}
+
 .inv-card-value {
-    font-size: 2.4rem;
+    font-size: 2.2rem;
     font-weight: 800;
     color: #fff;
     letter-spacing: -0.04em;
     line-height: 1;
-    margin-top: 8px;
 }
 
 .inv-card--soldout .inv-card-value {
-    color: #555;
+    color: #444;
 }
 
-.inv-card-unit {
+.inv-card-unit-inline {
     font-size: 0.85rem;
     color: #555;
-    margin-top: -4px;
+    font-weight: 400;
+    margin-left: 2px;
 }
 
 .inv-card-sub {
-    font-size: 0.72rem;
-    color: #444;
-    margin-top: 8px;
+    font-size: 0.7rem;
+    color: #3a3a3a;
+    margin-top: 6px;
 }
 
 /* Badges */
 .inv-card-badge {
     position: absolute;
-    top: 14px;
-    right: 14px;
-    font-size: 0.68rem;
+    top: 12px;
+    right: 12px;
+    font-size: 0.65rem;
     font-weight: 700;
-    padding: 3px 8px;
+    padding: 2px 7px;
     border-radius: 20px;
-    letter-spacing: 0.04em;
 }
 
 .inv-badge--soldout {
-    background: #2a2a2a;
-    color: #888;
-    border: 1px solid #333;
+    background: #222;
+    color: #666;
+    border: 1px solid #2a2a2a;
 }
 
 .inv-badge--low {
@@ -174,12 +335,13 @@
     border: 1px solid #5a3c00;
 }
 
-/* Edit controls */
+/* ── 인라인 수정 컨트롤 ── */
 .inv-edit-row {
     display: flex;
     align-items: center;
-    gap: 8px;
-    margin-top: 8px;
+    gap: 6px;
+    margin-top: 6px;
+    flex-wrap: wrap;
 }
 
 .inv-safe-input {
@@ -187,10 +349,10 @@
     border: 1px solid #444;
     border-radius: 8px;
     color: #fff;
-    font-size: 1.4rem;
+    font-size: 1.2rem;
     font-weight: 700;
-    padding: 6px 10px;
-    width: 90px;
+    padding: 5px 8px;
+    width: 100px;
     outline: none;
     -moz-appearance: textfield;
     appearance: textfield;
@@ -201,11 +363,16 @@
     -webkit-appearance: none;
 }
 
+.inv-safe-input[type="text"] {
+    font-size: 0.9rem;
+    width: 140px;
+}
+
 .inv-save-btn,
 .inv-cancel-btn {
-    font-size: 0.78rem;
-    padding: 6px 12px;
-    border-radius: 8px;
+    font-size: 0.75rem;
+    padding: 5px 10px;
+    border-radius: 7px;
     cursor: pointer;
     border: none;
     font-weight: 600;
@@ -243,15 +410,14 @@
 
 .inv-edit-btn {
     background: transparent;
-    border: 1px solid #2a2a2a;
-    color: #666;
-    font-size: 0.72rem;
-    padding: 4px 10px;
-    border-radius: 8px;
+    border: 1px solid #222;
+    color: #555;
+    font-size: 0.7rem;
+    padding: 3px 8px;
+    border-radius: 6px;
     cursor: pointer;
-    margin-top: 6px;
-    align-self: flex-start;
     transition: all 0.15s;
+    line-height: 1.4;
 }
 
 .inv-edit-btn:hover {
@@ -259,12 +425,12 @@
     color: #fff;
 }
 
-/* Alerts */
+/* ── 알림 배너 ── */
 .inv-alert {
-    margin-top: 20px;
-    padding: 14px 18px;
+    margin-top: 14px;
+    padding: 12px 16px;
     border-radius: 10px;
-    font-size: 0.85rem;
+    font-size: 0.82rem;
     background: #1a1200;
     border: 1px solid #5a3c00;
     color: #e8a020;
@@ -273,8 +439,8 @@
 
 .inv-alert--soldout {
     background: #111;
-    border-color: #333;
-    color: #888;
+    border-color: #2a2a2a;
+    color: #666;
 }
 
 /* Loading / Error */
@@ -288,13 +454,14 @@
 }
 
 .inv-spinner {
-    width: 16px;
-    height: 16px;
+    width: 14px;
+    height: 14px;
     border: 2px solid #333;
     border-top-color: #fff;
     border-radius: 50%;
     animation: inv-spin 0.7s linear infinite;
     display: inline-block;
+    flex-shrink: 0;
 }
 
 @keyframes inv-spin {
@@ -305,19 +472,19 @@
 
 .inv-error {
     background: #111;
-    border: 1px solid #333;
+    border: 1px solid #2a2a2a;
     border-radius: 12px;
-    color: #888;
-    padding: 20px 24px;
-    font-size: 0.88rem;
+    color: #666;
+    padding: 18px 22px;
+    font-size: 0.85rem;
     line-height: 1.6;
-    margin-bottom: 24px;
+    margin-bottom: 20px;
 }
 
 .inv-error code {
     background: #1a1a1a;
-    padding: 1px 6px;
+    padding: 1px 5px;
     border-radius: 4px;
-    color: #bbb;
+    color: #aaa;
     font-size: 0.85em;
 }
