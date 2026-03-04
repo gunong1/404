@@ -483,7 +483,7 @@ function App() {
             onProductClick={() => setView('detail')}
             onQuickBuy={() => buyNow({
               id: 'bodywash-01',
-              name: '빼곡 404 Not Found 바디워시',
+              name: '404 Not Found 바디워시',
               price: 19800,
               quantity: 1,
               image: '/bottle_404.jpg'
