@@ -1,0 +1,323 @@
+/* ==============================
+   Inventory Dashboard — B&W Chic
+   ============================== */
+.inv-dashboard {
+    background: #0a0a0a;
+    border: 1px solid #222;
+    border-radius: 16px;
+    padding: 32px;
+    margin-bottom: 40px;
+    font-family: 'Inter', 'Apple SD Gothic Neo', sans-serif;
+}
+
+.inv-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 28px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #222;
+}
+
+.inv-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #fff;
+    letter-spacing: -0.02em;
+    margin: 0;
+}
+
+.inv-meta {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex-wrap: wrap;
+}
+
+.inv-product-name {
+    font-size: 0.8rem;
+    color: #555;
+    background: #111;
+    border: 1px solid #2a2a2a;
+    padding: 4px 10px;
+    border-radius: 20px;
+    letter-spacing: 0.02em;
+}
+
+.inv-updated {
+    font-size: 0.75rem;
+    color: #444;
+}
+
+.inv-refresh-btn {
+    background: transparent;
+    border: 1px solid #333;
+    color: #888;
+    font-size: 0.78rem;
+    padding: 5px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+    letter-spacing: 0.02em;
+}
+
+.inv-refresh-btn:hover {
+    border-color: #fff;
+    color: #fff;
+}
+
+/* Cards */
+.inv-cards {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+}
+
+@media (max-width: 700px) {
+    .inv-cards {
+        grid-template-columns: 1fr;
+    }
+}
+
+.inv-card {
+    background: #111;
+    border: 1px solid #222;
+    border-radius: 14px;
+    padding: 24px 20px 20px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    transition: border-color 0.2s;
+    min-height: 130px;
+}
+
+.inv-card:hover {
+    border-color: #444;
+}
+
+.inv-card--low {
+    border-color: #7a5500;
+    background: #120e00;
+}
+
+.inv-card--soldout {
+    border-color: #555;
+    background: #0d0d0d;
+    opacity: 0.85;
+}
+
+.inv-card--safe {
+    border-color: #2a2a2a;
+}
+
+.inv-card--sold {
+    border-color: #2a2a2a;
+}
+
+.inv-card-label {
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: #555;
+    font-weight: 600;
+}
+
+.inv-card-value {
+    font-size: 2.4rem;
+    font-weight: 800;
+    color: #fff;
+    letter-spacing: -0.04em;
+    line-height: 1;
+    margin-top: 8px;
+}
+
+.inv-card--soldout .inv-card-value {
+    color: #555;
+}
+
+.inv-card-unit {
+    font-size: 0.85rem;
+    color: #555;
+    margin-top: -4px;
+}
+
+.inv-card-sub {
+    font-size: 0.72rem;
+    color: #444;
+    margin-top: 8px;
+}
+
+/* Badges */
+.inv-card-badge {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    font-size: 0.68rem;
+    font-weight: 700;
+    padding: 3px 8px;
+    border-radius: 20px;
+    letter-spacing: 0.04em;
+}
+
+.inv-badge--soldout {
+    background: #2a2a2a;
+    color: #888;
+    border: 1px solid #333;
+}
+
+.inv-badge--low {
+    background: #3d2800;
+    color: #e8a020;
+    border: 1px solid #5a3c00;
+}
+
+/* Edit controls */
+.inv-edit-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 8px;
+}
+
+.inv-safe-input {
+    background: #1a1a1a;
+    border: 1px solid #444;
+    border-radius: 8px;
+    color: #fff;
+    font-size: 1.4rem;
+    font-weight: 700;
+    padding: 6px 10px;
+    width: 90px;
+    outline: none;
+    -moz-appearance: textfield;
+    appearance: textfield;
+}
+
+.inv-safe-input::-webkit-outer-spin-button,
+.inv-safe-input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+}
+
+.inv-save-btn,
+.inv-cancel-btn {
+    font-size: 0.78rem;
+    padding: 6px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    border: none;
+    font-weight: 600;
+    transition: all 0.15s;
+}
+
+.inv-save-btn {
+    background: #fff;
+    color: #000;
+}
+
+.inv-save-btn:hover:not(:disabled) {
+    background: #ddd;
+}
+
+.inv-save-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.inv-cancel-btn {
+    background: #222;
+    color: #888;
+}
+
+.inv-cancel-btn:hover:not(:disabled) {
+    color: #fff;
+    background: #333;
+}
+
+.inv-cancel-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.inv-edit-btn {
+    background: transparent;
+    border: 1px solid #2a2a2a;
+    color: #666;
+    font-size: 0.72rem;
+    padding: 4px 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    margin-top: 6px;
+    align-self: flex-start;
+    transition: all 0.15s;
+}
+
+.inv-edit-btn:hover {
+    border-color: #fff;
+    color: #fff;
+}
+
+/* Alerts */
+.inv-alert {
+    margin-top: 20px;
+    padding: 14px 18px;
+    border-radius: 10px;
+    font-size: 0.85rem;
+    background: #1a1200;
+    border: 1px solid #5a3c00;
+    color: #e8a020;
+    line-height: 1.5;
+}
+
+.inv-alert--soldout {
+    background: #111;
+    border-color: #333;
+    color: #888;
+}
+
+/* Loading / Error */
+.inv-loading {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: #555;
+    font-size: 0.9rem;
+    padding: 24px 0;
+}
+
+.inv-spinner {
+    width: 16px;
+    height: 16px;
+    border: 2px solid #333;
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: inv-spin 0.7s linear infinite;
+    display: inline-block;
+}
+
+@keyframes inv-spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.inv-error {
+    background: #111;
+    border: 1px solid #333;
+    border-radius: 12px;
+    color: #888;
+    padding: 20px 24px;
+    font-size: 0.88rem;
+    line-height: 1.6;
+    margin-bottom: 24px;
+}
+
+.inv-error code {
+    background: #1a1a1a;
+    padding: 1px 6px;
+    border-radius: 4px;
+    color: #bbb;
+    font-size: 0.85em;
+}

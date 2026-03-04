@@ -187,6 +187,24 @@ function App() {
               console.log('Redirected order saved to Supabase');
             }
 
+            // 재고 차감 (모바일 리다이렉트 결제 성공 즉시)
+            if (pending.items && Array.isArray(pending.items)) {
+              const totalQty = pending.items.reduce((sum: number, item: any) => sum + (item.quantity || 1), 0);
+              const { data: stockResult, error: stockErr } = await supabase.rpc('deduct_stock', {
+                product_id: 'bodywash-01',
+                qty: totalQty,
+              });
+              if (stockErr) {
+                console.error('[Stock] Mobile deduct failed:', stockErr);
+              } else {
+                console.log('[Stock] Mobile deducted', totalQty, '| Remaining:', stockResult?.sellable_stock);
+                if (stockResult?.sellable_stock <= 50) {
+                  console.warn('[ADMIN ALERT] Low stock! Only', stockResult.sellable_stock, 'left.');
+                }
+              }
+            }
+
+
             // Deduct points if used (mobile redirect)
             if (pending.pointsUsed > 0 && pending.buyerEmail) {
               const { data: userData } = await supabase

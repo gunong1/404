@@ -228,6 +228,26 @@
     background-color: #f0f0f0;
 }
 
+.buy-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* 품절 버튼 */
+.sold-out-btn {
+    background-color: #2a2a2a;
+    color: #555;
+    cursor: not-allowed;
+    border: 1px solid #333;
+    letter-spacing: 0.02em;
+}
+
+.sold-out-btn:hover {
+    transform: none;
+    background-color: #2a2a2a;
+}
+
 .detail-action-btn:active {
     transform: scale(0.98);
 }

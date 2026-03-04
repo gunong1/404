@@ -3,6 +3,8 @@ import './AdminOrders.css';
 import { supabase } from '../lib/supabase';
 import * as XLSX from 'xlsx';
 import { getTrackingUrl } from '../utils/carrierTracking';
+import InventoryDashboard from './InventoryDashboard';
+
 
 interface Order {
     id: string;
@@ -367,6 +369,10 @@ const AdminOrders: React.FC<AdminOrdersProps> = ({ onBack, userRole }) => {
                     <button className="admin-refresh-btn" onClick={fetchOrders}>🔄 새로고침</button>
                 </div>
             </div>
+
+            {/* 재고 대시보드 */}
+            <InventoryDashboard />
+
 
             {/* 송장 일괄 등록 모달 */}
             {showBulkModal && (

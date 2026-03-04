@@ -236,6 +236,22 @@ const Checkout: React.FC<CheckoutProps> = ({ items, onBack, totalAmount, onOrder
 
             const orderId = await requestPayment(paymentData);
             if (orderId) {
+                // 재고 차감 (결제 성공 즉시)
+                const totalQty = items.reduce((sum, item) => sum + item.quantity, 0);
+                const { data: stockResult, error: stockError } = await supabase.rpc('deduct_stock', {
+                    product_id: 'bodywash-01',
+                    qty: totalQty,
+                });
+                if (stockError) {
+                    console.error('[Stock] Deduct failed:', stockError);
+                } else if (stockResult && !stockResult.success) {
+                    console.warn('[Stock] Deduct returned failure:', stockResult);
+                } else {
+                    console.log('[Stock] Deducted', totalQty, '| Remaining:', stockResult?.sellable_stock);
+                    if (stockResult?.sellable_stock <= 50) {
+                        console.warn('[ADMIN ALERT] Low stock! Only', stockResult.sellable_stock, 'left.');
+                    }
+                }
                 // Mark coupon as used
                 if (selectedCouponId) {
                     await supabase

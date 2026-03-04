@@ -14,6 +14,8 @@ interface ProductDetailProps {
 
 const ProductDetail: React.FC<ProductDetailProps> = ({ onBack, onAddToCart, onBuyNow, isLoggedIn, onLoginClick, userEmail }) => {
     const [quantity, setQuantity] = useState(1);
+    const [isSoldOut, setIsSoldOut] = useState(false);
+    const [stockLoading, setStockLoading] = useState(true);
     const originalPrice = 32000;
     const basePrice = 19800;
     const discountRate = 38;
@@ -35,6 +37,20 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ onBack, onAddToCart, onBu
     const [reviewTab, setReviewTab] = useState<'all' | 'photo'>('all');
     const [reviewsLoading, setReviewsLoading] = useState(true);
 
+    // 재고 조회
+    useEffect(() => {
+        supabase
+            .from('products')
+            .select('sellable_stock')
+            .eq('id', 'bodywash-01')
+            .maybeSingle()
+            .then(({ data }) => {
+                if (data) setIsSoldOut(data.sellable_stock <= 0);
+                setStockLoading(false);
+            });
+    }, []);
+
+    // 리뷰 조회
     useEffect(() => {
         supabase
             .from('reviews')
@@ -103,24 +119,41 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ onBack, onAddToCart, onBu
                     </div>
 
                     <div className="detail-controls">
-                        <div className="detail-qty-control">
-                            <button onClick={() => setQuantity(Math.max(1, quantity - 1))}>−</button>
-                            <span>{quantity}</span>
-                            <button onClick={() => setQuantity(quantity + 1)}>+</button>
-                        </div>
+                        {!isSoldOut && (
+                            <div className="detail-qty-control">
+                                <button onClick={() => setQuantity(Math.max(1, quantity - 1))}>−</button>
+                                <span>{quantity}</span>
+                                <button onClick={() => setQuantity(quantity + 1)}>+</button>
+                            </div>
+                        )}
                         <div className="action-buttons">
-                            <button
-                                className="detail-action-btn cart-btn"
-                                onClick={handleAddToCart}
-                            >
-                                장바구니 담기
-                            </button>
-                            <button
-                                className="detail-action-btn buy-btn"
-                                onClick={handleBuyNow}
-                            >
-                                바로 구매하기
-                            </button>
+                            {stockLoading ? (
+                                <button className="detail-action-btn buy-btn" disabled>
+                                    재고 확인 중...
+                                </button>
+                            ) : isSoldOut ? (
+                                <button
+                                    className="detail-action-btn sold-out-btn"
+                                    disabled
+                                >
+                                    [품절] 재입고 알림 받기
+                                </button>
+                            ) : (
+                                <>
+                                    <button
+                                        className="detail-action-btn cart-btn"
+                                        onClick={handleAddToCart}
+                                    >
+                                        장바구니 담기
+                                    </button>
+                                    <button
+                                        className="detail-action-btn buy-btn"
+                                        onClick={handleBuyNow}
+                                    >
+                                        바로 구매하기
+                                    </button>
+                                </>
+                            )}
                         </div>
                     </div>
                     {!isLoggedIn && (
