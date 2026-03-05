@@ -5,6 +5,7 @@
     color: #fff;
     animation: fadeIn 0.5s ease;
     overflow-x: hidden;
+    width: 100%;
 }
 
 @keyframes fadeIn {
@@ -382,6 +383,9 @@
 
     .action-buttons {
         width: 100%;
+        flex-wrap: wrap;
+        /* 버튼이 너무 길면 줄바꿈 허용 */
+        gap: 8px;
     }
 
     .detail-content-more {
@@ -402,6 +406,17 @@
 
     .detail-quote {
         font-size: 0.95rem;
+    }
+
+    /* 모바일 상세 스펙 줄바꿈 대응 */
+    .detail-specs {
+        flex-wrap: wrap;
+        gap: 15px 30px;
+    }
+
+    .spec-item {
+        flex: 1 1 auto;
+        min-width: 120px;
     }
 }
 
@@ -449,6 +464,8 @@
     display: flex;
     gap: 8px;
     margin-bottom: 24px;
+    flex-wrap: wrap;
+    /* 모바일 줄바꿈 추가 */
 }
 
 .review-tab-btn {
@@ -500,6 +517,8 @@
     margin-bottom: 14px;
     flex-wrap: wrap;
     gap: 10px;
+    align-items: flex-start;
+    /* 모바일 대응: 위쪽 정렬 */
 }
 
 .review-user-info {
