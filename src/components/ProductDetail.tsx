@@ -157,7 +157,7 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ onBack, onAddToCart, onBu
                         </div>
                     </div>
                     {!isLoggedIn && (
-                        <div style={{ marginTop: '30px', borderTop: '1px solid #333', paddingTop: '20px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                        <div style={{ marginTop: '30px', borderTop: '1px solid #333', paddingTop: '20px' }}>
                             <p style={{ textAlign: 'center', color: '#666', marginBottom: '10px', fontSize: '0.9rem' }}>간편 로그인 / 회원가입</p>
                             <SocialLoginButtons />
                         </div>

@@ -20,16 +20,7 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
-  width: 100%;
-  margin: 0;
-  padding: 0;
-}
-
-html {
-  overflow-x: hidden;
-  width: 100%;
-  margin: 0;
-  padding: 0;
+  /* Prevent horizontal scroll */
 }
 
 h1,
