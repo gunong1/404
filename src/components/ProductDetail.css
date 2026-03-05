@@ -6,6 +6,10 @@
     animation: fadeIn 0.5s ease;
     overflow-x: hidden;
     width: 100%;
+    display: block;
+    /* 블록 요소 명시 */
+    text-align: left;
+    /* 내부 요소는 왼쪽 정렬 기본 */
 }
 
 @keyframes fadeIn {
