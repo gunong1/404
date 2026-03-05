@@ -1,7 +1,7 @@
 .site-header {
-    position: fixed;
+    position: sticky;
+    /* fixed 대신 sticky를 사용하여 .App의 align-items: center 영향 하에 두어 정렬 일관성 확보 */
     top: 0;
-    left: 0;
     width: 100%;
     z-index: 1000;
     transition: background-color 0.3s ease, padding 0.3s ease;

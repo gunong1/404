@@ -21,12 +21,15 @@ body {
   -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
   width: 100%;
-  position: relative;
+  margin: 0;
+  padding: 0;
 }
 
 html {
   overflow-x: hidden;
   width: 100%;
+  margin: 0;
+  padding: 0;
 }
 
 h1,
