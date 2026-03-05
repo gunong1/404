@@ -1,10 +1,11 @@
 .product-detail-section {
     padding: 20px 20px 100px;
-    max-width: 1200px;
+    max-width: 860px;
+    /* 1200px에서 860px로 조정하여 사용자 요청 반영 */
     margin: 0 auto;
     color: #fff;
     animation: fadeIn 0.5s ease;
-    overflow-x: hidden;
+    /* overflow-x: hidden; 제거하여 중앙 정렬 시 발생할 수 있는 잠재적 이슈 방지 */
 }
 
 @keyframes fadeIn {
@@ -262,7 +263,8 @@
     border-top: 1px solid #222;
     padding-top: 80px;
     text-align: left;
-    max-width: 800px;
+    max-width: 100%;
+    /* 부모 섹션이 860px이므로 100%로 설정하여 일관성 유지 */
     margin: 0 auto;
 }
 
