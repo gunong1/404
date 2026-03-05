@@ -167,12 +167,14 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ onBack, onAddToCart, onBu
 
             <div className="detail-content-more">
                 {/* 상세 이미지 */}
-                <div className="detail-info-image-wrap">
-                    <img
-                        src="/detail_info.png?v=2"
-                        alt="404 바디워시 상세 정보"
-                        className="detail-info-image"
-                    />
+                <div className="parent-centering-container">
+                    <div className="detail-info-image-wrap">
+                        <img
+                            src="/detail_info.png?v=2"
+                            alt="404 바디워시 상세 정보"
+                            className="detail-info-image"
+                        />
+                    </div>
                 </div>
 
                 <div className="detail-section">
