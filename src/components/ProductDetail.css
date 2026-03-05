@@ -36,10 +36,12 @@
 
 .product-detail-container {
     display: grid;
-    grid-template-columns: 0.8fr 1.2fr;
-    gap: 60px;
+    grid-template-columns: 1fr 1fr;
+    /* 대칭 구조로 균형 확보 */
+    gap: 40px;
     align-items: center;
     margin-bottom: 100px;
+    width: 100%;
 }
 
 .detail-image-area {

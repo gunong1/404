@@ -33,9 +33,9 @@ const forceFullViewport = (el: HTMLElement) => {
         position: fixed !important;
         top: 0 !important;
         left: 0 !important;
-        width: 100vw !important;
-        height: 100vh !important;
-        max-width: 100vw !important;
+        width: 100% !important;
+        height: 100% !important;
+        max-width: 100% !important;
         z-index: 99999 !important;
         overflow: auto !important;
     `;
@@ -45,7 +45,7 @@ const forceFullViewport = (el: HTMLElement) => {
         (iframe as HTMLElement).style.cssText = `
             width: 100% !important;
             height: 100% !important;
-            max-width: 100vw !important;
+            max-width: 100% !important;
             border: none !important;
         `;
     });
