@@ -1,11 +1,16 @@
 .product-detail-section {
     padding: 20px 20px 100px;
+    width: 100%;
+    /* 부모 컨테이너는 화면 전체 너비 사용 */
     max-width: 860px;
-    /* 1200px에서 860px로 조정하여 사용자 요청 반영 */
     margin: 0 auto;
     color: #fff;
     animation: fadeIn 0.5s ease;
-    /* overflow-x: hidden; 제거하여 중앙 정렬 시 발생할 수 있는 잠재적 이슈 방지 */
+
+    /* 사용자 요청 패턴: Flex 아이템 중앙 정렬 */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 @keyframes fadeIn {
@@ -640,9 +645,13 @@
     border-radius: 20px;
     overflow: hidden;
     line-height: 0;
+    width: 100%;
     max-width: 860px;
-    /* 원본 해상도 이상으로 늘어나지 않게 */
     text-align: center;
+    /* 추가적인 중앙 정렬 보장 */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 .detail-info-image {

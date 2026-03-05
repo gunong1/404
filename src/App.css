@@ -6,13 +6,15 @@
 
 .App {
   width: 100%;
+  max-width: 100%;
   min-height: 100vh;
   margin: 0;
   padding: 0;
+  /* 사용자 요청: Flex 센터링 패턴 적용 */
   display: flex;
   flex-direction: column;
   align-items: center;
-  /* 모든 최상위 뷰를 중앙 정렬 */
+  overflow-x: hidden;
   text-align: left;
 }
 
