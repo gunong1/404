@@ -227,6 +227,21 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ onBack, onAddToCart, onBu
                 <div className="detail-divider-line"></div>
 
                 <div className="detail-section reviews-section">
+                    {/* 리뷰 보상 안내 */}
+                    <div className="review-reward-banner">
+                        <div className="review-reward-block">
+                            <p className="review-reward-title">📝 리뷰 보상</p>
+                            <p className="review-reward-item">📸 포토 평가 <span className="review-reward-highlight">(사진+글)</span> : <strong>1,000 포인트</strong> 즉시 지급</p>
+                            <p className="review-reward-item">✏️ 텍스트 평가 <span className="review-reward-highlight">(글)</span> : <strong>500 포인트</strong> 즉시 지급</p>
+                            <p className="review-reward-note">지급된 포인트는 다음 결제 시 100% 사용 가능합니다.</p>
+                        </div>
+                        <div className="review-reward-block">
+                            <p className="review-reward-title">🏆 이달의 평가자 선정</p>
+                            <p className="review-reward-item">매월 1일, 가장 직관적인 포토 리뷰를 남겨주신 <strong>3명</strong>을 선정합니다.</p>
+                            <p className="review-reward-item">선정된 분들께는 <strong>404 바디워시 본품 1개</strong>를 추가 발송해 드립니다.</p>
+                        </div>
+                    </div>
+
                     {/* 리뷰 요약 헤더 */}
                     <div className="reviews-header">
                         <h3>고객 리뷰</h3>

@@ -428,6 +428,53 @@
 }
 
 /* ===== Reviews Section ===== */
+.review-reward-banner {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.02));
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 16px;
+    padding: 20px 24px;
+    margin-bottom: 28px;
+}
+
+.review-reward-block {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.review-reward-title {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 4px;
+    letter-spacing: 0.3px;
+}
+
+.review-reward-item {
+    font-size: 0.82rem;
+    color: #bbb;
+    line-height: 1.6;
+}
+
+.review-reward-item strong {
+    color: #fff;
+    font-weight: 700;
+}
+
+.review-reward-highlight {
+    color: #888;
+    font-size: 0.78rem;
+}
+
+.review-reward-note {
+    font-size: 0.75rem;
+    color: #666;
+    margin-top: 2px;
+}
+
 .reviews-section {
     margin-bottom: 60px;
 }
