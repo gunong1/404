@@ -475,6 +475,15 @@
     margin-top: 2px;
 }
 
+.review-reward-disclaimer {
+    font-size: 0.68rem;
+    color: #444;
+    margin-top: 8px;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    padding-top: 8px;
+    line-height: 1.5;
+}
+
 .reviews-section {
     margin-bottom: 60px;
 }

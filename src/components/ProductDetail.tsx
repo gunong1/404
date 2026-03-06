@@ -240,6 +240,7 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ onBack, onAddToCart, onBu
                             <p className="review-reward-item">매월 1일, 가장 직관적인 포토 리뷰를 남겨주신 <strong>3명</strong>을 선정합니다.</p>
                             <p className="review-reward-item">선정된 분들께는 <strong>404 바디워시 본품 1개</strong>를 추가 발송해 드립니다.</p>
                         </div>
+                        <p className="review-reward-disclaimer">* 비방, 광고성, 제품과 무관한 리뷰는 사전 고지 없이 혜택 지급이 제한될 수 있습니다.</p>
                     </div>
 
                     {/* 리뷰 요약 헤더 */}
