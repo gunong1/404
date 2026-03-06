@@ -488,6 +488,33 @@
     margin-bottom: 60px;
 }
 
+/* \uc0c1\uc138\ud398\uc774\uc9c0 \ub9ac\ubdf0 \uc791\uc131 \ubc84\ud2bc */
+.write-review-btn-detail {
+    padding: 8px 18px;
+    background: #fff;
+    color: #000;
+    border: none;
+    border-radius: 30px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform 0.2s, background 0.2s;
+    white-space: nowrap;
+}
+
+.write-review-btn-detail:hover {
+    transform: scale(1.05);
+    background: #f0f0f0;
+}
+
+.review-done-badge {
+    font-size: 0.78rem;
+    color: #4a9eff;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+
 .reviews-header {
     display: flex;
     align-items: center;
