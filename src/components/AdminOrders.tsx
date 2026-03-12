@@ -595,6 +595,27 @@ const AdminOrders: React.FC<AdminOrdersProps> = ({ onBack, userRole }) => {
                                                 취소
                                             </button>
                                         )}
+                                        {(order.status === 'cancelled' || order.status === 'completed') && (
+                                            <button
+                                                className="btn-action btn-delete-order"
+                                                onClick={async () => {
+                                                    if (!confirm('정말 이 주문 내역을 목록에서 완전히 삭제하시겠습니까?\n이 작업은 되돌릴 수 없습니다.')) return;
+                                                    const { error } = await supabase
+                                                        .from('orders')
+                                                        .delete()
+                                                        .eq('id', order.id);
+                                                    if (error) {
+                                                        alert('주문 삭제 실패: ' + error.message);
+                                                    } else {
+                                                        setOrders(prev => prev.filter(o => o.id !== order.id));
+                                                        alert('주문이 삭제되었습니다.');
+                                                    }
+                                                }}
+                                                style={{ backgroundColor: '#c0392b', color: 'white', marginTop: '5px' }}
+                                            >
+                                                삭제
+                                            </button>
+                                        )}
                                     </td>
                                 </tr>
                             ))}
