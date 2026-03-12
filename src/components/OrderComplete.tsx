@@ -64,7 +64,7 @@ const OrderComplete: React.FC<OrderCompleteProps> = ({
 
                 <div className="order-info-box">
                     <p>📦 배송은 결제 완료 후 1~3영업일 이내에 시작됩니다.</p>
-                    <p>📧 주문 관련 문의: support@404bodycare.com</p>
+                    <p>💬 주문 관련 문의: 카카오톡 또는 cs@404notfound.co.kr</p>
                 </div>
 
                 <button className="go-home-btn" onClick={onGoHome}>
