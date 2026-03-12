@@ -41,10 +41,10 @@ serve(async (req) => {
             throw new Error(`PortOne 취소 실패: ${cancelData.message || cancelRes.status}`);
         }
 
-        // 2. 주문 정보 조회 (포인트/쿠폰 복구를 위해)
+        // 2. 주문 정보 조회 (포인트/쿠폰/재고 복구를 위해)
         const { data: orderData, error: orderFetchError } = await supabaseAdmin
             .from("orders")
-            .select("buyer_email, points_used, coupon_id")
+            .select("buyer_email, points_used, coupon_id, order_items")
             .eq("id", orderId)
             .maybeSingle();
 
@@ -91,6 +91,28 @@ serve(async (req) => {
                 .update({ is_used: false })
                 .eq("id", orderData.coupon_id);
             console.log(`쿠폰 복구: coupon_id=${orderData.coupon_id}`);
+        }
+
+        // 6. 재고 및 누적 판매량 복구
+        if (!orderFetchError && orderData?.order_items) {
+            try {
+                const items = orderData.order_items || [];
+                const totalQty = items.reduce((sum: number, item: any) => sum + (item.quantity || 0), 0);
+
+                if (totalQty > 0) {
+                    const { error: stockError } = await supabaseAdmin.rpc('restore_stock', {
+                        product_id: 'bodywash-01',
+                        qty: totalQty
+                    });
+                    if (stockError) {
+                        console.error("재고 복구 실패:", stockError);
+                    } else {
+                        console.log(`재고 복구 성공: +${totalQty}개`);
+                    }
+                }
+            } catch (err) {
+                console.error("재고 복구 계산 중 오류:", err);
+            }
         }
 
         return new Response(
