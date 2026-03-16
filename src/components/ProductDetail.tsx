@@ -258,6 +258,27 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ onBack, onAddToCart, onBu
                         </ul>
                     </div>
 
+                    {/* ===== 자주 묻는 질문 ===== */}
+                    <div className="detail-divider-line"></div>
+
+                    <div className="detail-section faq-section">
+                        <h3>자주 묻는 질문</h3>
+                        <div className="faq-list">
+                            <div className="faq-item">
+                                <p className="faq-question">Q. 펌핑했을 때 특유의 냄새(발효취)가 살짝 납니다. 왜 그런가요?</p>
+                                <p className="faq-answer">A. 페디오코쿠스 발효균으로 감을 2년 발효시킨 핵심성분(감발효원액)의 진짜 냄새입니다. 향기로 체취를 덮지 않기 위해 고농축 원료를 담아 발생한 냄새이며, 샤워 중 불쾌감을 잡을 최소 향료만 배합했습니다. 물로 씻어내면 잔향 없이 완벽하게 지워집니다.</p>
+                            </div>
+                            <div className="faq-item">
+                                <p className="faq-question">Q. 미산성(pH 4.5) 제품은 세정력이 약한 건 아닌가요?</p>
+                                <p className="faq-answer">A. 거품의 크기만 다를 뿐, 노폐물 타격력은 완벽합니다. 피부 수분까지 뺏어가는 알칼리성의 크고 거친 거품이 아닙니다. 조밀하고 쫀쫀한 미세 거품(마이크로 폼)과 숯가루 성분이 모공 속 피지와 냄새 원인균만 정밀하게 흡착하여 씻어냅니다. 샤워 후 피부가 당기지 않는 진짜 세정을 경험하십시오.</p>
+                            </div>
+                            <div className="faq-item">
+                                <p className="faq-question">Q. 남편 냄새 때문에 샀는데, 여성이 같이 써도 괜찮은가요?</p>
+                                <p className="faq-answer">A. 물론입니다. 완벽한 '향수 베이스'가 되어줍니다. 3040 남성의 강력한 체취를 타겟으로 개발되었지만, 여성의 불쾌한 땀 냄새를 지우는 데도 압도적인 성능을 발휘합니다. 인공적인 향기가 살에 남지 않아, 샤워 후 평소 즐겨 쓰시는 향수나 바디로션의 향을 전혀 방해하지 않습니다.</p>
+                            </div>
+                        </div>
+                    </div>
+
                     {/* ===== 리뷰 섹션 ===== */}
                     <div className="detail-divider-line"></div>
 
