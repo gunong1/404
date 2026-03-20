@@ -276,6 +276,10 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ onBack, onAddToCart, onBu
                                 <p className="faq-question">Q. 남편 냄새 때문에 샀는데, 여성이 같이 써도 괜찮은가요?</p>
                                 <p className="faq-answer">A. 물론입니다. 완벽한 '향수 베이스'가 되어줍니다. 3040 남성의 강력한 체취를 타겟으로 개발되었지만, 여성의 불쾌한 땀 냄새를 지우는 데도 압도적인 성능을 발휘합니다. 인공적인 향기가 살에 남지 않아, 샤워 후 평소 즐겨 쓰시는 향수나 바디로션의 향을 전혀 방해하지 않습니다.</p>
                             </div>
+                            <div className="faq-item">
+                                <p className="faq-question">Q. 일반 체취 바디워시와 무엇이 다릅니까?</p>
+                                <p className="faq-answer">A. 타겟(Target)이 다릅니다. 시중의 제품은 5060의 지용성 노인 냄새(노네랄)를 닦아내는 데 집중합니다. 404 (Not Found)는 3040 특유의 수용성 쩐내, '디아세틸'을 삭제합니다. 원인 물질이 다르면, 지우는 공식도 달라야 합니다. 우리는 향으로 덮지 않고, 감발효원액으로 디아세틸 분자를 생화학적으로 중화합니다. 철저한 무(無)의 상태를 경험하십시오.</p>
+                            </div>
                         </div>
                     </div>
 
