@@ -278,7 +278,7 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ onBack, onAddToCart, onBu
                             </div>
                             <div className="faq-item">
                                 <p className="faq-question">Q. 일반 체취 바디워시와 무엇이 다릅니까?</p>
-                                <p className="faq-answer">A. 타겟(Target)이 다릅니다. 시중의 제품은 5060의 지용성 노인 냄새(노네랄)를 닦아내는 데 집중합니다. 404 (Not Found)는 3040 특유의 수용성 쩐내, '디아세틸'을 삭제합니다. 원인 물질이 다르면, 지우는 공식도 달라야 합니다. 우리는 향으로 덮지 않고, 감발효원액으로 디아세틸 분자를 생화학적으로 중화합니다. 철저한 무(無)의 상태를 경험하십시오.</p>
+                                <p className="faq-answer">A. 타겟(Target)이 다릅니다. 시중의 제품은 50대 이상의 '산화성 체취(노네랄)' 세정에 집중합니다. 404 (Not Found)는 3040 특유의 '피지 변형 악취(디아세틸)'를 삭제합니다. 원인 물질이 다르면, 삭제 공식도 달라야 합니다. 향으로 덮지 않습니다. 감(탄닌)발효원액으로 원인 분자를 생화학적으로 분해합니다. 아무 냄새도 나지 않게 원인을 제거 하십시오.</p>
                             </div>
                         </div>
                     </div>
