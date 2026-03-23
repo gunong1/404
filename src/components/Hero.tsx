@@ -7,7 +7,7 @@ const Hero: React.FC = () => {
             <div className="hero-content">
                 <p className="hero-description" style={{ fontSize: '1.2rem', fontWeight: 600 }}>
                     향을 입히지 않습니다.<br />
-                    원인을 제거합니다.
+                    원인을 삭제합니다.
                 </p>
             </div>
             <div className="spline-container">
