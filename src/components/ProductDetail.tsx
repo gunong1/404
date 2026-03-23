@@ -274,6 +274,10 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ onBack, onAddToCart, onBu
                         <h3>자주 묻는 질문</h3>
                         <div className="faq-list">
                             <div className="faq-item">
+                                <p className="faq-question">Q. 사용할 때 까만 알갱이가 보이는데 뭔가요? 욕조나 피부가 검게 되지 않나요?</p>
+                                <p className="faq-answer">A. 실제 숯가루입니다. 물과 만나면 폼으로 녹아들며 모공 속 피지를 물리적으로 흡착합니다. 피부를 긁지 않고 녹아드는 저자극 방식입니다. 씻어내는 과정에서 잔여물 없이 제거되며, 욕조나 피부에 착색되지 않습니다.</p>
+                            </div>
+                            <div className="faq-item">
                                 <p className="faq-question">Q. 펌핑했을 때 특유의 냄새(발효취)가 살짝 납니다. 왜 그런가요?</p>
                                 <p className="faq-answer">A. 페디오코쿠스 발효균으로 감을 2년 발효시킨 핵심성분(감발효원액)의 진짜 냄새입니다. 향기로 체취를 덮지 않기 위해 고농축 원료를 담아 발생한 냄새이며, 샤워 중 불쾌감을 잡을 최소 향료만 배합했습니다. 물로 씻어내면 잔향 없이 완벽하게 지워집니다.</p>
                             </div>
