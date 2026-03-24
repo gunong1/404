@@ -31,6 +31,7 @@ function App() {
     setView(newView);
     if (push) {
       const path = newView === 'home' ? '/' :
+        newView === 'detail' ? '/detail' :
         newView === 'admin' ? '/admin/orders' :
           newView === 'terms' ? '/terms' :
             newView === 'privacy' ? '/privacy-policy' : '/';
@@ -147,6 +148,8 @@ function App() {
       handleSetView('privacy', false);
     } else if (currentPath === '/admin/orders') {
       handleSetView('admin', false);
+    } else if (currentPath === '/detail') {
+      handleSetView('detail', false);
     }
 
     // 2. 초기 상태 replaceState (뒤로가기 시 기준점)
