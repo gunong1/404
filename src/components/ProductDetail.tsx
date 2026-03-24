@@ -204,19 +204,11 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ onBack, onAddToCart, onBu
                     {/* 상세 이미지 */}
                     <div className="parent-centering-container">
                         <div className="detail-info-image-wrap">
-                            <iframe
-                                src="/detail_info.html"
-                                title="404 바디워시 상세 정보"
+                            <img
+                                src="/detail_info.png"
+                                alt="404 바디워시 상세 정보"
                                 className="detail-info-image"
-                                style={{ width: '100%', border: 'none', display: 'block', minHeight: '3000px' }}
-                                scrolling="no"
-                                onLoad={(e) => {
-                                    try {
-                                        const frame = e.currentTarget;
-                                        const height = frame.contentDocument?.body?.scrollHeight;
-                                        if (height) frame.style.height = height + 'px';
-                                    } catch (_) { }
-                                }}
+                                style={{ width: '100%', display: 'block' }}
                             />
                         </div>
                     </div>
