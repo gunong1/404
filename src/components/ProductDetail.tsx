@@ -128,7 +128,7 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ onBack, onAddToCart, onBu
                         <span className="detail-subtitle">신상품</span>
                         <h1 className="detail-title">404 Not Found 바디워시</h1>
                         <p className="detail-description">
-                            향을 입히지 않습니다. 원인을 삭제합니다.
+                            향으로 덮지 않습니다. 원인을 삭제합니다.
                         </p>
 
                         <div className="detail-specs">
@@ -216,7 +216,7 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ onBack, onAddToCart, onBu
                     <div className="detail-section">
                         <h3>제품 상세 설명</h3>
                         <p className="detail-text-highlight">404 Not Found : 체취의 삭제</p>
-                        <p className="detail-quote">"향을 입히지 않습니다. 원인을 삭제합니다."</p>
+                        <p className="detail-quote">"향으로 덮지 않습니다. 원인을 삭제합니다."</p>
                         <p>3040 남성 체취의 주범은 향의 부재가 아니다. 피지가 산화되며 생성되는 디아세틸(Diacetyl)이다. 404 바디워시는 숯가루의 물리적 흡착과 2년 숙성 감탄닌의 화학적 분해로 원인을 제거한다. 덮지 않는다. 삭제한다.</p>
                         <ul className="detail-specs-list">
                             <li><strong>Effect:</strong> 체취 원인 물질 제거, 피부 장벽 보호</li>
