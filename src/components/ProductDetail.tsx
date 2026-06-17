@@ -17,9 +17,9 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ onBack, onAddToCart, onBu
     const [quantity, setQuantity] = useState(1);
     const [isSoldOut, setIsSoldOut] = useState(false);
     const [stockLoading, setStockLoading] = useState(true);
-    const originalPrice = 32000;
-    const basePrice = 19800;
-    const discountRate = 38;
+    const originalPrice = 29800;
+    const basePrice = 29800;
+    const discountRate = 0;
     const totalPrice = basePrice * quantity;
 
     // Review states
@@ -145,8 +145,12 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ onBack, onAddToCart, onBu
                         <div className="detail-divider"></div>
 
                         <div className="detail-price-area">
-                            <span className="discount-badge">{discountRate}%</span>
-                            <span className="original-price">₩{(originalPrice * quantity).toLocaleString()}</span>
+                            {discountRate > 0 && (
+                                <>
+                                    <span className="discount-badge">{discountRate}%</span>
+                                    <span className="original-price">₩{(originalPrice * quantity).toLocaleString()}</span>
+                                </>
+                            )}
                             <div className="sale-price">
                                 <span className="detail-currency">₩</span>
                                 <span className="detail-amount">{totalPrice.toLocaleString()}</span>

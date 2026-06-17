@@ -451,7 +451,7 @@ function App() {
             onQuickBuy={() => buyNow({
               id: 'bodywash-01',
               name: '404 Not Found 바디워시',
-              price: 19800,
+              price: 29800,
               quantity: 1,
               image: '/bottle_404.jpg'
             })}
@@ -467,14 +467,14 @@ function App() {
           onAddToCart={(qty) => addToCart({
             id: 'bodywash-01',
             name: '404 Not Found 바디워시',
-            price: 19800,
+            price: 29800,
             quantity: qty,
             image: '/bottle_404.jpg'
           })}
           onBuyNow={(qty) => buyNow({
             id: 'bodywash-01',
             name: '404 Not Found 바디워시',
-            price: 19800,
+            price: 29800,
             quantity: qty,
             image: '/bottle_404.jpg'
           })}
