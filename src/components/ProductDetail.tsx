@@ -182,14 +182,16 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ onBack, onAddToCart, onBu
                                         <button
                                             className="detail-action-btn cart-btn"
                                             onClick={handleAddToCart}
+                                            disabled
                                         >
                                             장바구니 담기
                                         </button>
                                         <button
                                             className="detail-action-btn buy-btn"
                                             onClick={handleBuyNow}
+                                            disabled
                                         >
-                                            바로 구매하기
+                                            오픈 준비 중 (주문 불가)
                                         </button>
                                     </>
                                 )}
@@ -209,7 +211,7 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ onBack, onAddToCart, onBu
                     <div className="parent-centering-container">
                         <div className="detail-info-image-wrap">
                             <img
-                                src="/detail_info.png"
+                                src="/detail_info.png?v=2"
                                 alt="404 바디워시 상세 정보"
                                 className="detail-info-image"
                                 style={{ width: '100%', display: 'block' }}

@@ -17,7 +17,7 @@ const BentoGrid: React.FC<BentoGridProps> = ({ onProductClick, onQuickBuy }) => 
                         <h2 className="apple-card-title">404 Not Found<br />바디워시</h2>
                         <p className="apple-card-desc">향으로 덮지 않습니다. 원인을 삭제합니다.</p>
                         <div className="apple-card-actions">
-                            <button className="apple-btn-fill" onClick={(e) => { e.stopPropagation(); onQuickBuy(); }}>구입하기</button>
+                            <button className="apple-btn-fill" onClick={(e) => { e.stopPropagation(); onQuickBuy(); }} disabled>준비중</button>
                         </div>
                     </div>
                     <div className="apple-card-image">

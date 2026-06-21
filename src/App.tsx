@@ -305,29 +305,15 @@ function App() {
   }, [view]);
 
   const addToCart = (item: CartItem) => {
-    setCartItems(prev => {
-      const existingToken = prev.find(i => i.id === item.id);
-      if (existingToken) {
-        return prev.map(i => i.id === item.id ? { ...i, quantity: i.quantity + item.quantity } : i);
-      }
-      return [...prev, item];
-    });
-    alert(`장바구니에 ${item.name}이(가) ${item.quantity}개 추가되었습니다.`);
+    if (item) { /* no-op: resolve unused parameter error */ }
+    alert('현재는 홈페이지 오픈 준비 기간으로, 상품 주문 및 장바구니 기능을 이용하실 수 없습니다.');
+    return;
   };
 
   const buyNow = (item: CartItem) => {
-    if (!isLoggedIn) {
-      setIsLoginModalOpen(true);
-      return;
-    }
-    setCartItems(prev => {
-      const existingToken = prev.find(i => i.id === item.id);
-      if (existingToken) {
-        return prev.map(i => i.id === item.id ? { ...i, quantity: i.quantity + item.quantity } : i);
-      }
-      return [...prev, item];
-    });
-    handleSetView('checkout');
+    if (item) { /* no-op: resolve unused parameter error */ }
+    alert('현재는 홈페이지 오픈 준비 기간으로, 상품 주문 및 장바구니 기능을 이용하실 수 없습니다.');
+    return;
   };
 
   const cartTotalCount = cartItems.reduce((acc, item) => acc + item.quantity, 0);
@@ -436,8 +422,7 @@ function App() {
         onLoginClick={() => setIsLoginModalOpen(true)}
         onLogoutClick={handleLogout}
         onCartClick={() => {
-          if (!isLoggedIn) { setIsLoginModalOpen(true); return; }
-          handleSetView('checkout');
+          alert('현재는 홈페이지 오픈 준비 기간으로, 상품 주문 및 장바구니 기능을 이용하실 수 없습니다.');
         }}
         onMyPageClick={() => handleSetView('mypage')}
         onHomeClick={() => handleSetView('home')}
